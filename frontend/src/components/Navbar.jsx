@@ -34,10 +34,10 @@ const Navbar = () => {
 
           {/* Profil Pengguna & Tombol Keluar */}
           <div className="flex items-center space-x-4">
-            {user?.email && (
+            {(user?.username || user?.email) && (
               <div className="hidden sm:flex items-center space-x-2 text-sm text-slate-600 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
                 <User className="w-4 h-4 text-blue-600" />
-                <span className="font-medium text-slate-800">{user.email}</span>
+                <span className="font-semibold text-slate-800">{user.username || user.email}</span>
               </div>
             )}
 

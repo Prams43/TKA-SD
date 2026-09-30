@@ -1,33 +1,51 @@
 import bcrypt from 'bcryptjs';
-import { findUserByEmail, findUserById, createUser } from '../models/user.model.js';
+import {
+  findUserByEmail,
+  findUserByUsername,
+  findUserByIdentifier,
+  findUserById,
+  createUser,
+  updateUserOtp,
+  markUserAsVerified,
+  deleteUnverifiedUser,
+} from '../models/user.model.js';
 import { generateToken } from '../utils/token.js';
-import { isValidGmail, isValidPassword } from '../utils/validator.js';
+import { isValidEmail, isValidUsername, isValidPassword, isValidOtp } from '../utils/validator.js';
+import { sendOtpEmail } from '../services/email.service.js';
 
 /**
- * Controller untuk registrasi pengguna baru
+ * Controller untuk registrasi pengguna baru dengan pengiriman kode OTP 6 digit
  * POST /api/register
  */
 export const register = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { username, email, password } = req.body;
 
     // 1. Validasi input kelengkapan data
-    if (!email || !password) {
+    if (!username || !email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Gmail dan password wajib diisi.',
+        message: 'Username, Email, dan password wajib diisi.',
       });
     }
 
-    // 2. Validasi format Gmail
-    if (!isValidGmail(email)) {
+    // 2. Validasi format Username
+    if (!isValidUsername(username)) {
       return res.status(400).json({
         success: false,
-        message: 'Format email tidak valid. Email harus berakhiran @gmail.com.',
+        message: 'Username harus 3-20 karakter (huruf, angka, titik, atau underscore tanpa spasi).',
       });
     }
 
-    // 3. Validasi panjang password
+    // 3. Validasi format Email (Bebas domain apapun)
+    if (!isValidEmail(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Format email tidak valid. Pastikan penulisan alamat email sudah benar.',
+      });
+    }
+
+    // 4. Validasi panjang password
     if (!isValidPassword(password)) {
       return res.status(400).json({
         success: false,
@@ -35,27 +53,49 @@ export const register = async (req, res, next) => {
       });
     }
 
-    // 4. Periksa apakah Gmail sudah terdaftar di Cloudflare D1
-    const existingUser = await findUserByEmail(email);
-    if (existingUser) {
+    // 5. Periksa apakah Email sudah terdaftar dan terverifikasi
+    const existingEmailUser = await findUserByEmail(email);
+    if (existingEmailUser) {
+      if (existingEmailUser.is_verified === 1) {
+        return res.status(409).json({
+          success: false,
+          message: 'Alamat email ini sudah terdaftar dan aktif. Silakan langsung masuk.',
+        });
+      }
+      // Jika email pernah didaftarkan tetapi belum diverifikasi, hapus data lama agar bisa daftar ulang
+      await deleteUnverifiedUser(email);
+    }
+
+    // 6. Periksa apakah Username sudah digunakan oleh akun terverifikasi
+    const existingUsername = await findUserByUsername(username);
+    if (existingUsername && existingUsername.is_verified === 1) {
       return res.status(409).json({
         success: false,
-        message: 'Gmail sudah terdaftar. Silakan gunakan akun lain atau masuk.',
+        message: 'Username sudah digunakan. Silakan pilih username lain.',
       });
     }
 
-    // 5. Enkripsi password menggunakan bcryptjs
+    // 7. Enkripsi password menggunakan bcryptjs
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // 6. Simpan pengguna baru ke database D1
-    const newUser = await createUser(email, hashedPassword);
+    // 8. Generate kode OTP 6 digit acak dan masa berlaku 10 menit
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+
+    // 9. Simpan pengguna baru dengan status belum terverifikasi (is_verified = 0)
+    const newUser = await createUser(username, email, hashedPassword, otpCode, otpExpiresAt);
+
+    // 10. Kirim kode OTP ke email pengguna
+    await sendOtpEmail(email, otpCode, username);
 
     return res.status(201).json({
       success: true,
-      message: 'Registrasi berhasil! Silakan masuk dengan akun Anda.',
+      requiresOtp: true,
+      message: `Kode verifikasi 6 digit telah dikirim ke ${email}.`,
       data: {
         id: newUser.id,
+        username: newUser.username,
         email: newUser.email,
       },
     });
@@ -65,27 +105,140 @@ export const register = async (req, res, next) => {
 };
 
 /**
- * Controller untuk autentikasi login pengguna
- * POST /api/login
+ * Controller untuk memverifikasi kode OTP 6 digit pendaftaran
+ * POST /api/verify-otp
  */
-export const login = async (req, res, next) => {
+export const verifyOtp = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, otp } = req.body;
 
-    // 1. Validasi input kelengkapan
-    if (!email || !password) {
+    if (!email || !otp) {
       return res.status(400).json({
         success: false,
-        message: 'Gmail dan password wajib diisi.',
+        message: 'Email dan kode OTP wajib diisi.',
       });
     }
 
-    // 2. Cari pengguna di database D1
+    if (!isValidOtp(otp)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Kode OTP harus berupa 6 digit angka.',
+      });
+    }
+
     const user = await findUserByEmail(email);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Data akun tidak ditemukan.',
+      });
+    }
+
+    if (user.is_verified === 1) {
+      return res.status(200).json({
+        success: true,
+        message: 'Akun Anda sudah terverifikasi sebelumnya. Silakan langsung masuk.',
+      });
+    }
+
+    // Periksa kesesuaian kode OTP
+    if (user.otp_code !== otp.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Kode OTP yang Anda masukkan salah. Periksa kembali email Anda.',
+      });
+    }
+
+    // Periksa masa berlaku kode OTP
+    if (user.otp_expires_at && new Date(user.otp_expires_at) < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Kode OTP telah kedaluwarsa. Silakan klik tombol kirim ulang kode.',
+      });
+    }
+
+    // Aktifkan akun pengguna
+    await markUserAsVerified(email);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Verifikasi akun berhasil! Selamat datang di Portal TKA SD, silakan masuk.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Controller untuk mengirim ulang kode OTP baru
+ * POST /api/resend-otp
+ */
+export const resendOtp = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email wajib diisi.',
+      });
+    }
+
+    const user = await findUserByEmail(email);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Data pendaftaran dengan email ini tidak ditemukan.',
+      });
+    }
+
+    if (user.is_verified === 1) {
+      return res.status(400).json({
+        success: false,
+        message: 'Akun ini sudah terverifikasi aktif.',
+      });
+    }
+
+    // Buat kode OTP baru
+    const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const newExpiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+
+    await updateUserOtp(email, newOtp, newExpiresAt);
+    await sendOtpEmail(email, newOtp, user.username);
+
+    return res.status(200).json({
+      success: true,
+      message: `Kode OTP baru berhasil dikirim ke ${email}.`,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Controller untuk autentikasi login pengguna
+ * POST /api/login
+ * Mendukung login menggunakan Username ATAU Email (dengan pemeriksaan status verifikasi)
+ */
+export const login = async (req, res, next) => {
+  try {
+    const { identifier, email, username, password } = req.body;
+    const userIdentifier = identifier || username || email;
+
+    // 1. Validasi input kelengkapan
+    if (!userIdentifier || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Username/Email dan password wajib diisi.',
+      });
+    }
+
+    // 2. Cari pengguna di database D1 berdasarkan username ATAU email
+    const user = await findUserByIdentifier(userIdentifier);
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Gmail atau password salah.',
+        message: 'Username/Email atau password salah.',
       });
     }
 
@@ -94,13 +247,24 @@ export const login = async (req, res, next) => {
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
-        message: 'Gmail atau password salah.',
+        message: 'Username/Email atau password salah.',
       });
     }
 
-    // 4. Buat token JWT (berlaku 1 hari)
+    // 4. Periksa apakah akun sudah diverifikasi
+    if (user.is_verified === 0) {
+      return res.status(403).json({
+        success: false,
+        requiresOtp: true,
+        email: user.email,
+        message: 'Akun Anda belum diverifikasi. Silakan masukkan kode OTP yang telah dikirim ke email Anda.',
+      });
+    }
+
+    // 5. Buat token JWT (berlaku 1 hari)
     const token = generateToken({
       id: user.id,
+      username: user.username,
       email: user.email,
     });
 
@@ -110,6 +274,7 @@ export const login = async (req, res, next) => {
       token,
       user: {
         id: user.id,
+        username: user.username,
         email: user.email,
       },
     });
@@ -138,6 +303,7 @@ export const getMe = async (req, res, next) => {
       success: true,
       user: {
         id: user.id,
+        username: user.username,
         email: user.email,
         createdAt: user.created_at,
       },
@@ -146,3 +312,5 @@ export const getMe = async (req, res, next) => {
     next(error);
   }
 };
+
+

@@ -8,6 +8,7 @@ export const env = {
   cfAccountId: process.env.CF_ACCOUNT_ID || '',
   cfDatabaseId: process.env.CF_DATABASE_ID || '',
   cfApiToken: process.env.CF_API_TOKEN || '',
+  cfEmail: process.env.CF_EMAIL || '',
   jwtSecret: process.env.JWT_SECRET || 'kunci_rahasia_default_tka_sd',
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
 };

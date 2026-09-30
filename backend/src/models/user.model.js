@@ -6,8 +6,31 @@ import { query } from '../config/db.js';
  * @returns {Promise<Object|null>} Data pengguna atau null jika tidak ditemukan
  */
 export const findUserByEmail = async (email) => {
-  const sql = 'SELECT id, email, password, created_at FROM users WHERE email = ? LIMIT 1';
+  const sql = 'SELECT id, username, email, password, is_verified, otp_code, otp_expires_at, created_at FROM users WHERE LOWER(email) = ? LIMIT 1';
   const response = await query(sql, [email.toLowerCase().trim()]);
+  return response.results.length > 0 ? response.results[0] : null;
+};
+
+/**
+ * Mencari pengguna berdasarkan username
+ * @param {string} username
+ * @returns {Promise<Object|null>} Data pengguna atau null jika tidak ditemukan
+ */
+export const findUserByUsername = async (username) => {
+  const sql = 'SELECT id, username, email, password, is_verified, otp_code, otp_expires_at, created_at FROM users WHERE LOWER(username) = ? LIMIT 1';
+  const response = await query(sql, [username.toLowerCase().trim()]);
+  return response.results.length > 0 ? response.results[0] : null;
+};
+
+/**
+ * Mencari pengguna berdasarkan identifier (bisa username ATAU email)
+ * @param {string} identifier
+ * @returns {Promise<Object|null>} Data pengguna atau null jika tidak ditemukan
+ */
+export const findUserByIdentifier = async (identifier) => {
+  const clean = identifier.toLowerCase().trim();
+  const sql = 'SELECT id, username, email, password, is_verified, otp_code, otp_expires_at, created_at FROM users WHERE LOWER(email) = ? OR LOWER(username) = ? LIMIT 1';
+  const response = await query(sql, [clean, clean]);
   return response.results.length > 0 ? response.results[0] : null;
 };
 
@@ -17,23 +40,60 @@ export const findUserByEmail = async (email) => {
  * @returns {Promise<Object|null>} Data profil pengguna atau null jika tidak ditemukan
  */
 export const findUserById = async (id) => {
-  const sql = 'SELECT id, email, created_at FROM users WHERE id = ? LIMIT 1';
+  const sql = 'SELECT id, username, email, is_verified, created_at FROM users WHERE id = ? LIMIT 1';
   const response = await query(sql, [id]);
   return response.results.length > 0 ? response.results[0] : null;
 };
 
 /**
- * Membuat dan menyimpan data pengguna baru ke Cloudflare D1
+ * Membuat dan menyimpan data pendaftaran baru ke Cloudflare D1 (belum terverifikasi)
+ * @param {string} username
  * @param {string} email
  * @param {string} hashedPassword
+ * @param {string} otpCode
+ * @param {string} otpExpiresAt
  * @returns {Promise<Object>} Pengguna yang baru dibuat
  */
-export const createUser = async (email, hashedPassword) => {
-  const sql = 'INSERT INTO users (email, password) VALUES (?, ?)';
-  const response = await query(sql, [email.toLowerCase().trim(), hashedPassword]);
+export const createUser = async (username, email, hashedPassword, otpCode = null, otpExpiresAt = null) => {
+  const cleanUsername = username.trim();
+  const cleanEmail = email.toLowerCase().trim();
+  const sql = 'INSERT INTO users (username, email, password, is_verified, otp_code, otp_expires_at) VALUES (?, ?, ?, 0, ?, ?)';
+  const response = await query(sql, [cleanUsername, cleanEmail, hashedPassword, otpCode, otpExpiresAt]);
   
   return {
     id: response.meta?.last_row_id || null,
-    email: email.toLowerCase().trim(),
+    username: cleanUsername,
+    email: cleanEmail,
   };
 };
+
+/**
+ * Memperbarui kode OTP dan masa berlakunya
+ * @param {string} email
+ * @param {string} otpCode
+ * @param {string} otpExpiresAt
+ */
+export const updateUserOtp = async (email, otpCode, otpExpiresAt) => {
+  const sql = 'UPDATE users SET otp_code = ?, otp_expires_at = ? WHERE LOWER(email) = ?';
+  return await query(sql, [otpCode, otpExpiresAt, email.toLowerCase().trim()]);
+};
+
+/**
+ * Mengaktifkan akun pengguna setelah kode OTP terverifikasi
+ * @param {string} email
+ */
+export const markUserAsVerified = async (email) => {
+  const sql = 'UPDATE users SET is_verified = 1, otp_code = NULL, otp_expires_at = NULL WHERE LOWER(email) = ?';
+  return await query(sql, [email.toLowerCase().trim()]);
+};
+
+/**
+ * Menghapus akun yang belum terverifikasi jika pengguna ingin mendaftar ulang
+ * @param {string} email
+ */
+export const deleteUnverifiedUser = async (email) => {
+  const sql = 'DELETE FROM users WHERE LOWER(email) = ? AND (is_verified = 0 OR is_verified IS NULL)';
+  return await query(sql, [email.toLowerCase().trim()]);
+};
+
+

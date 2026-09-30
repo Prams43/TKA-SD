@@ -34,10 +34,10 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   /**
-   * Fungsi Login
+   * Fungsi Login (bisa menggunakan Username atau Gmail)
    */
-  const login = async (email, password) => {
-    const data = await authService.login(email, password);
+  const login = async (identifier, password) => {
+    const data = await authService.login(identifier, password);
     if (data.token && data.user) {
       setToken(data.token);
       setUser(data.user);
@@ -48,10 +48,24 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
-   * Fungsi Registrasi
+   * Fungsi Registrasi (dengan Username, Gmail, dan Password)
    */
-  const register = async (email, password) => {
-    return await authService.register(email, password);
+  const register = async (username, email, password) => {
+    return await authService.register(username, email, password);
+  };
+
+  /**
+   * Fungsi Verifikasi OTP
+   */
+  const verifyOtp = async (email, otp) => {
+    return await authService.verifyOtp(email, otp);
+  };
+
+  /**
+   * Fungsi Kirim Ulang OTP
+   */
+  const resendOtp = async (email) => {
+    return await authService.resendOtp(email);
   };
 
   /**
@@ -71,6 +85,8 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: !!token,
     login,
     register,
+    verifyOtp,
+    resendOtp,
     logout,
   };
 

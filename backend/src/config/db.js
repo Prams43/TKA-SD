@@ -17,9 +17,20 @@ export const query = async (sql, params = []) => {
     );
   }
 
-  const endpoint = `https://api.cloudflare.com/client/v4/accounts/${env.cfAccountId}/d1/database/${env.cfDatabaseId}/query`;
-
   try {
+    const endpoint = `https://api.cloudflare.com/client/v4/accounts/${env.cfAccountId}/d1/database/${env.cfDatabaseId}/query`;
+
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    if (env.cfEmail || env.cfApiToken.startsWith('cfk_')) {
+      headers['X-Auth-Key'] = env.cfApiToken;
+      headers['X-Auth-Email'] = env.cfEmail || 'Yumenoboken@gmail.com';
+    } else {
+      headers['Authorization'] = `Bearer ${env.cfApiToken}`;
+    }
+
     const response = await axios.post(
       endpoint,
       {
@@ -27,10 +38,7 @@ export const query = async (sql, params = []) => {
         params,
       },
       {
-        headers: {
-          Authorization: `Bearer ${env.cfApiToken}`,
-          'Content-Type': 'application/json',
-        },
+        headers,
         timeout: 10000, // Timeout 10 detik
       }
     );

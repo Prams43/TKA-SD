@@ -79,7 +79,7 @@ const Dashboard = () => {
             </div>
 
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight mb-3">
-              Halo, {user?.email || 'Siswa'}! 👋
+              Halo, {user?.username || user?.email?.split('@')[0] || 'Siswa'}! 👋
             </h1>
 
             <p className="text-blue-100 text-sm sm:text-base leading-relaxed mb-6">

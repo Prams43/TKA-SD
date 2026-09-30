@@ -6,12 +6,13 @@ import api from './api';
 export const authService = {
   /**
    * Melakukan pendaftaran akun baru
+   * @param {string} username
    * @param {string} email
    * @param {string} password
    */
-  async register(email, password) {
+  async register(username, email, password) {
     try {
-      const response = await api.post('/register', { email, password });
+      const response = await api.post('/register', { username, email, password });
       return response.data;
     } catch (error) {
       if (!error.response) {
@@ -23,19 +24,54 @@ export const authService = {
   },
 
   /**
-   * Melakukan login pengguna
-   * @param {string} email
+   * Melakukan login pengguna (dengan Username ATAU Gmail)
+   * @param {string} identifier (username atau email)
    * @param {string} password
    */
-  async login(email, password) {
+  async login(identifier, password) {
     try {
-      const response = await api.post('/login', { email, password });
+      const response = await api.post('/login', { identifier, password });
       return response.data;
     } catch (error) {
       if (!error.response) {
         throw new Error('Tidak dapat terhubung ke server backend. Pastikan server backend sudah dijalankan (npm run dev di folder backend).');
       }
-      const message = error.response.data?.message || 'Login gagal. Periksa kembali email dan password.';
+      const message = error.response.data?.message || 'Login gagal. Periksa kembali username/email dan password.';
+      throw new Error(message);
+    }
+  },
+
+  /**
+   * Memverifikasi kode OTP 6 digit
+   * @param {string} email
+   * @param {string} otp
+   */
+  async verifyOtp(email, otp) {
+    try {
+      const response = await api.post('/verify-otp', { email, otp });
+      return response.data;
+    } catch (error) {
+      if (!error.response) {
+        throw new Error('Tidak dapat terhubung ke server backend.');
+      }
+      const message = error.response.data?.message || 'Kode OTP tidak valid atau telah kedaluwarsa.';
+      throw new Error(message);
+    }
+  },
+
+  /**
+   * Mengirim ulang kode OTP ke email
+   * @param {string} email
+   */
+  async resendOtp(email) {
+    try {
+      const response = await api.post('/resend-otp', { email });
+      return response.data;
+    } catch (error) {
+      if (!error.response) {
+        throw new Error('Tidak dapat terhubung ke server backend.');
+      }
+      const message = error.response.data?.message || 'Gagal mengirim ulang kode OTP.';
       throw new Error(message);
     }
   },
@@ -56,3 +92,4 @@ export const authService = {
     }
   },
 };
+
