@@ -69,6 +69,27 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
+   * Fungsi Permintaan Lupa Password
+   */
+  const forgotPassword = async (identifier) => {
+    return await authService.forgotPassword(identifier);
+  };
+
+  /**
+   * Fungsi Verifikasi OTP Reset Password
+   */
+  const verifyResetOtp = async (email, otp) => {
+    return await authService.verifyResetOtp(email, otp);
+  };
+
+  /**
+   * Fungsi Reset Password Baru dengan OTP
+   */
+  const resetPassword = async (email, otp, newPassword) => {
+    return await authService.resetPassword(email, otp, newPassword);
+  };
+
+  /**
    * Fungsi Logout
    */
   const logout = () => {
@@ -87,6 +108,9 @@ export const AuthProvider = ({ children }) => {
     register,
     verifyOtp,
     resendOtp,
+    forgotPassword,
+    verifyResetOtp,
+    resetPassword,
     logout,
   };
 

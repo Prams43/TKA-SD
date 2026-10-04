@@ -243,6 +243,13 @@ const Login = () => {
                       Ingat akun ini
                     </span>
                   </label>
+
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                  >
+                    Lupa password?
+                  </Link>
                 </div>
 
                 {/* Tombol Utama: Login */}
@@ -330,7 +337,7 @@ const Login = () => {
                   autoComplete="current-password"
                 />
 
-                {/* Checkbox Ingat Saya */}
+                {/* Checkbox Ingat Saya & Link Lupa Password */}
                 <div className="flex items-center justify-between mt-3 mb-1">
                   <label
                     htmlFor="remember-me"
@@ -348,6 +355,13 @@ const Login = () => {
                       Ingat saya
                     </span>
                   </label>
+
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                  >
+                    Lupa password?
+                  </Link>
                 </div>
 
                 <div className="mt-5">

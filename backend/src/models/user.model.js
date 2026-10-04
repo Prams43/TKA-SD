@@ -96,4 +96,14 @@ export const deleteUnverifiedUser = async (email) => {
   return await query(sql, [email.toLowerCase().trim()]);
 };
 
+/**
+ * Memperbarui password pengguna dan mereset status OTP
+ * @param {string} email
+ * @param {string} newHashedPassword
+ */
+export const updateUserPassword = async (email, newHashedPassword) => {
+  const sql = 'UPDATE users SET password = ?, otp_code = NULL, otp_expires_at = NULL WHERE LOWER(email) = ?';
+  return await query(sql, [newHashedPassword, email.toLowerCase().trim()]);
+};
+
 

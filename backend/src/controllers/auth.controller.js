@@ -8,10 +8,11 @@ import {
   updateUserOtp,
   markUserAsVerified,
   deleteUnverifiedUser,
+  updateUserPassword,
 } from '../models/user.model.js';
 import { generateToken } from '../utils/token.js';
 import { isValidEmail, isValidUsername, isValidPassword, isValidOtp } from '../utils/validator.js';
-import { sendOtpEmail } from '../services/email.service.js';
+import { sendOtpEmail, sendResetPasswordEmail } from '../services/email.service.js';
 
 /**
  * Controller untuk registrasi pengguna baru dengan pengiriman kode OTP 6 digit
@@ -312,5 +313,194 @@ export const getMe = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * Controller untuk meminta kode OTP reset password
+ * POST /api/forgot-password
+ */
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const { identifier } = req.body;
+
+    if (!identifier || !identifier.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Username atau alamat email wajib diisi.',
+      });
+    }
+
+    const cleanIdentifier = identifier.trim();
+    const user = await findUserByIdentifier(cleanIdentifier);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Akun dengan username atau email tersebut tidak ditemukan.',
+      });
+    }
+
+    if (user.is_verified === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Akun ini belum diverifikasi. Silakan selesaikan pendaftaran dan verifikasi terlebih dahulu.',
+      });
+    }
+
+    // Generate kode OTP 6 digit dan masa berlaku 10 menit
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+
+    // Simpan ke database
+    await updateUserOtp(user.email, otpCode, otpExpiresAt);
+
+    // Kirim email reset password
+    await sendResetPasswordEmail(user.email, otpCode, user.username);
+
+    // Masking email untuk privasi (misal: yu***@gmail.com)
+    const [localPart, domain] = user.email.split('@');
+    const maskedLocal = localPart.length > 2
+      ? localPart.substring(0, 2) + '*'.repeat(Math.max(localPart.length - 2, 3))
+      : localPart + '***';
+    const maskedEmail = `${maskedLocal}@${domain}`;
+
+    return res.status(200).json({
+      success: true,
+      message: `Kode keamanan reset password telah dikirim ke ${maskedEmail}.`,
+      email: user.email,
+      maskedEmail,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Controller untuk memverifikasi kode OTP reset password sebelum memasukkan password baru
+ * POST /api/verify-reset-otp
+ */
+export const verifyResetOtp = async (req, res, next) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email dan kode OTP wajib diisi.',
+      });
+    }
+
+    if (!isValidOtp(otp)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Kode OTP harus berupa 6 digit angka.',
+      });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    const user = await findUserByEmail(cleanEmail);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Data akun tidak ditemukan.',
+      });
+    }
+
+    // Periksa kesesuaian kode OTP
+    if (!user.otp_code || user.otp_code !== otp.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Kode OTP yang Anda masukkan salah. Periksa kembali email Anda.',
+      });
+    }
+
+    // Periksa kedaluwarsa kode OTP
+    if (user.otp_expires_at && new Date(user.otp_expires_at) < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Kode OTP telah kedaluwarsa. Silakan minta kode baru.',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Kode OTP terverifikasi! Silakan buat password baru Anda.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Controller untuk memverifikasi OTP dan mengatur password baru
+ * POST /api/reset-password
+ */
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email, kode OTP, dan password baru wajib diisi.',
+      });
+    }
+
+    if (!isValidOtp(otp)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Kode OTP harus berupa 6 digit angka.',
+      });
+    }
+
+    if (!isValidPassword(newPassword)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password baru harus memiliki panjang minimal 8 karakter.',
+      });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    const user = await findUserByEmail(cleanEmail);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Data akun tidak ditemukan.',
+      });
+    }
+
+    // Periksa kesesuaian kode OTP
+    if (!user.otp_code || user.otp_code !== otp.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Kode OTP yang Anda masukkan salah. Silakan periksa kembali email Anda.',
+      });
+    }
+
+    // Periksa kedaluwarsa kode OTP
+    if (user.otp_expires_at && new Date(user.otp_expires_at) < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Kode OTP telah kedaluwarsa. Silakan minta kode baru.',
+      });
+    }
+
+    // Enkripsi password baru
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    // Update password dan reset OTP
+    await updateUserPassword(cleanEmail, hashedPassword);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Password berhasil diperbarui! Silakan masuk dengan password baru Anda.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 

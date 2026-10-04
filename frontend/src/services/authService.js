@@ -77,6 +77,60 @@ export const authService = {
   },
 
   /**
+   * Meminta kode OTP reset password (dengan username atau email)
+   * @param {string} identifier
+   */
+  async forgotPassword(identifier) {
+    try {
+      const response = await api.post('/forgot-password', { identifier });
+      return response.data;
+    } catch (error) {
+      if (!error.response) {
+        throw new Error('Tidak dapat terhubung ke server backend.');
+      }
+      const message = error.response.data?.message || 'Gagal memproses permintaan reset password.';
+      throw new Error(message);
+    }
+  },
+
+  /**
+   * Memverifikasi kode OTP reset password
+   * @param {string} email
+   * @param {string} otp
+   */
+  async verifyResetOtp(email, otp) {
+    try {
+      const response = await api.post('/verify-reset-otp', { email, otp });
+      return response.data;
+    } catch (error) {
+      if (!error.response) {
+        throw new Error('Tidak dapat terhubung ke server backend.');
+      }
+      const message = error.response.data?.message || 'Kode OTP tidak valid atau kedaluwarsa.';
+      throw new Error(message);
+    }
+  },
+
+  /**
+   * Mengatur ulang kata sandi dengan kode OTP
+   * @param {string} email
+   * @param {string} otp
+   * @param {string} newPassword
+   */
+  async resetPassword(email, otp, newPassword) {
+    try {
+      const response = await api.post('/reset-password', { email, otp, newPassword });
+      return response.data;
+    } catch (error) {
+      if (!error.response) {
+        throw new Error('Tidak dapat terhubung ke server backend.');
+      }
+      const message = error.response.data?.message || 'Gagal mereset password.';
+      throw new Error(message);
+    }
+  },
+
+  /**
    * Mengambil data profil pengguna yang sedang login
    */
   async getMe() {
