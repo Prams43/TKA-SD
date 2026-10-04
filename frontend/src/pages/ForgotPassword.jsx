@@ -86,7 +86,16 @@ const ForgotPassword = () => {
         otpInputRefs.current[0]?.focus();
       }, 150);
     } catch (err) {
-      setServerError(err.message || 'Gagal mengirimkan kode pemulihan.');
+      const errMsg = err.message || 'Gagal mengirimkan kode pemulihan.';
+      setServerError(errMsg);
+      if (
+        errMsg.toLowerCase().includes('tidak ditemukan') ||
+        errMsg.toLowerCase().includes('username') ||
+        errMsg.toLowerCase().includes('email') ||
+        errMsg.toLowerCase().includes('belum diverifikasi')
+      ) {
+        setErrors({ identifier: errMsg });
+      }
     } finally {
       setIsLoading(false);
     }

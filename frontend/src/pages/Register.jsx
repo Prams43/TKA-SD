@@ -92,7 +92,28 @@ const Register = () => {
         otpInputRefs.current[0]?.focus();
       }, 150);
     } catch (err) {
-      setServerError(err.message || 'Maaf, belum bisa melakukan registrasi.');
+      const errMsg = err.message || 'Maaf, belum bisa melakukan registrasi.';
+      setServerError(errMsg);
+
+      // Berikan warna merah dan pesan error pada kolom/field spesifik
+      if (err.field === 'username' || errMsg.toLowerCase().includes('username')) {
+        setErrors((prev) => ({
+          ...prev,
+          username: errMsg.includes('sudah digunakan')
+            ? 'Username sudah digunakan. Silakan pilih username lain.'
+            : errMsg,
+        }));
+      } else if (err.field === 'email' || errMsg.toLowerCase().includes('email')) {
+        setErrors((prev) => ({
+          ...prev,
+          email: errMsg,
+        }));
+      } else if (err.field === 'password' || errMsg.toLowerCase().includes('password')) {
+        setErrors((prev) => ({
+          ...prev,
+          password: errMsg,
+        }));
+      }
     } finally {
       setIsLoading(false);
     }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 /**
  * Komponen Input serbaguna dengan label, validasi error, dan tombol intip password
@@ -25,8 +25,13 @@ const InputField = ({
   return (
     <div className="w-full mb-4">
       {label && (
-        <label htmlFor={id || name} className="block text-sm font-medium text-slate-700 mb-1.5">
-          {label} {required && <span className="text-rose-500">*</span>}
+        <label
+          htmlFor={id || name}
+          className={`block text-sm font-medium mb-1.5 transition-colors duration-200 ${
+            error ? 'text-red-600 font-semibold' : 'text-slate-700'
+          }`}
+        >
+          {label} {required && <span className={error ? 'text-red-600' : 'text-rose-500'}>*</span>}
         </label>
       )}
 
@@ -40,10 +45,10 @@ const InputField = ({
           placeholder={placeholder}
           disabled={disabled}
           autoComplete={autoComplete}
-          className={`w-full px-4 py-2.5 rounded-lg border text-sm transition-colors duration-200 outline-none
+          className={`w-full px-4 py-2.5 rounded-lg border text-sm transition-all duration-200 outline-none
             ${
               error
-                ? 'border-rose-400 bg-rose-50/30 text-rose-900 focus:border-rose-500 focus:ring-2 focus:ring-rose-200'
+                ? 'border-red-500 bg-red-50/60 text-red-900 placeholder-red-300 ring-2 ring-red-500/20 focus:border-red-600 focus:ring-4 focus:ring-red-500/25'
                 : 'border-slate-300 bg-white text-slate-800 focus:border-blue-600 focus:ring-2 focus:ring-blue-100'
             }
             ${disabled ? 'bg-slate-100 cursor-not-allowed text-slate-400' : ''}
@@ -64,7 +69,12 @@ const InputField = ({
         )}
       </div>
 
-      {error && <p className="mt-1 text-xs text-rose-600 font-medium animate-fade-in">{error}</p>}
+      {error && (
+        <p className="mt-1.5 text-xs text-red-600 font-medium flex items-center gap-1.5 animate-fade-in">
+          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 text-red-500" />
+          <span>{error}</span>
+        </p>
+      )}
     </div>
   );
 };

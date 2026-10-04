@@ -134,7 +134,13 @@ const Login = () => {
 
       navigate('/dashboard');
     } catch (err) {
-      setServerError(err.message || 'Username/Gmail atau password salah.');
+      const errMsg = err.message || 'Username/Gmail atau password salah.';
+      setServerError(errMsg);
+      if (errMsg.toLowerCase().includes('password')) {
+        setErrors((prev) => ({ ...prev, password: errMsg }));
+      } else {
+        setErrors((prev) => ({ ...prev, identifier: errMsg }));
+      }
     } finally {
       setIsLoading(false);
     }

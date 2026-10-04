@@ -88,13 +88,25 @@ export const markUserAsVerified = async (email) => {
 };
 
 /**
- * Menghapus akun yang belum terverifikasi jika pengguna ingin mendaftar ulang
+ * Menghapus akun yang belum terverifikasi berdasarkan email jika pengguna ingin mendaftar ulang
  * @param {string} email
  */
-export const deleteUnverifiedUser = async (email) => {
+export const deleteUnverifiedUserByEmail = async (email) => {
   const sql = 'DELETE FROM users WHERE LOWER(email) = ? AND (is_verified = 0 OR is_verified IS NULL)';
   return await query(sql, [email.toLowerCase().trim()]);
 };
+
+/**
+ * Menghapus akun yang belum terverifikasi berdasarkan username
+ * Digunakan agar username yang belum diaktifkan/diverifikasi tetap bisa dipakai oleh pengguna lain
+ * @param {string} username
+ */
+export const deleteUnverifiedUserByUsername = async (username) => {
+  const sql = 'DELETE FROM users WHERE LOWER(username) = ? AND (is_verified = 0 OR is_verified IS NULL)';
+  return await query(sql, [username.toLowerCase().trim()]);
+};
+
+export const deleteUnverifiedUser = deleteUnverifiedUserByEmail;
 
 /**
  * Memperbarui password pengguna dan mereset status OTP

@@ -8,6 +8,8 @@ import {
   updateUserOtp,
   markUserAsVerified,
   deleteUnverifiedUser,
+  deleteUnverifiedUserByEmail,
+  deleteUnverifiedUserByUsername,
   updateUserPassword,
 } from '../models/user.model.js';
 import { generateToken } from '../utils/token.js';
@@ -34,6 +36,7 @@ export const register = async (req, res, next) => {
     if (!isValidUsername(username)) {
       return res.status(400).json({
         success: false,
+        field: 'username',
         message: 'Username harus 3-20 karakter (huruf, angka, titik, atau underscore tanpa spasi).',
       });
     }
@@ -42,6 +45,7 @@ export const register = async (req, res, next) => {
     if (!isValidEmail(email)) {
       return res.status(400).json({
         success: false,
+        field: 'email',
         message: 'Format email tidak valid. Pastikan penulisan alamat email sudah benar.',
       });
     }
@@ -50,6 +54,7 @@ export const register = async (req, res, next) => {
     if (!isValidPassword(password)) {
       return res.status(400).json({
         success: false,
+        field: 'password',
         message: 'Password harus memiliki panjang minimal 8 karakter.',
       });
     }
@@ -60,20 +65,27 @@ export const register = async (req, res, next) => {
       if (existingEmailUser.is_verified === 1) {
         return res.status(409).json({
           success: false,
+          field: 'email',
           message: 'Alamat email ini sudah terdaftar dan aktif. Silakan langsung masuk.',
         });
       }
-      // Jika email pernah didaftarkan tetapi belum diverifikasi, hapus data lama agar bisa daftar ulang
-      await deleteUnverifiedUser(email);
+      // Jika email pernah didaftarkan tetapi belum diverifikasi/aktif, hapus data lama agar bisa daftar ulang
+      await deleteUnverifiedUserByEmail(email);
     }
 
-    // 6. Periksa apakah Username sudah digunakan oleh akun terverifikasi
+    // 6. Periksa apakah Username sudah digunakan oleh akun terverifikasi / aktif
     const existingUsername = await findUserByUsername(username);
-    if (existingUsername && existingUsername.is_verified === 1) {
-      return res.status(409).json({
-        success: false,
-        message: 'Username sudah digunakan. Silakan pilih username lain.',
-      });
+    if (existingUsername) {
+      if (existingUsername.is_verified === 1) {
+        return res.status(409).json({
+          success: false,
+          field: 'username',
+          message: 'Username sudah digunakan. Silakan pilih username lain.',
+        });
+      }
+      // Jika username pernah didaftarkan tetapi BELUM diverifikasi/diaktifkan akunnya,
+      // hapus data unverified lama sehingga username ini otomatis bebas dan bisa dipakai!
+      await deleteUnverifiedUserByUsername(username);
     }
 
     // 7. Enkripsi password menggunakan bcryptjs
