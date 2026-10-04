@@ -212,16 +212,27 @@ export const resendOtp = async (req, res, next) => {
       });
     }
 
+    // Periksa batas maksimal 5 kali pengiriman OTP
+    const currentCount = user.otp_count !== undefined && user.otp_count !== null ? user.otp_count : 1;
+    if (currentCount >= 5) {
+      return res.status(429).json({
+        success: false,
+        message: 'Batas pengiriman kode OTP telah tercapai (maksimal 5 kali). Silakan periksa folder Inbox atau Spam email Anda.',
+      });
+    }
+
     // Buat kode OTP baru
     const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
     const newExpiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    const nextCount = currentCount + 1;
 
-    await updateUserOtp(email, newOtp, newExpiresAt);
+    await updateUserOtp(email, newOtp, newExpiresAt, nextCount);
     await sendOtpEmail(email, newOtp, user.username);
 
     return res.status(200).json({
       success: true,
-      message: `Kode OTP baru berhasil dikirim ke ${email}.`,
+      message: `Kode OTP baru berhasil dikirim ke ${email}. (Pengiriman ke-${nextCount} dari maksimal 5 kali)`,
+      attemptsLeft: 5 - nextCount,
     });
   } catch (error) {
     next(error);
@@ -358,12 +369,22 @@ export const forgotPassword = async (req, res, next) => {
       });
     }
 
+    // Periksa batas maksimal 5 kali pengiriman OTP reset
+    const currentCount = user.otp_count || 0;
+    if (currentCount >= 5) {
+      return res.status(429).json({
+        success: false,
+        message: 'Batas permintaan kode OTP reset password telah tercapai (maksimal 5 kali). Silakan periksa folder Inbox atau Spam email Anda.',
+      });
+    }
+
     // Generate kode OTP 6 digit dan masa berlaku 10 menit
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    const nextCount = currentCount + 1;
 
-    // Simpan ke database
-    await updateUserOtp(user.email, otpCode, otpExpiresAt);
+    // Simpan ke database dengan otp_count bertambah
+    await updateUserOtp(user.email, otpCode, otpExpiresAt, nextCount);
 
     // Kirim email reset password
     await sendResetPasswordEmail(user.email, otpCode, user.username);
@@ -377,9 +398,10 @@ export const forgotPassword = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      message: `Kode keamanan reset password telah dikirim ke ${maskedEmail}.`,
+      message: `Kode keamanan reset password telah dikirim ke ${maskedEmail}. (Pengiriman ke-${nextCount} dari maksimal 5 kali)`,
       email: user.email,
       maskedEmail,
+      attemptsLeft: 5 - nextCount,
     });
   } catch (error) {
     next(error);
