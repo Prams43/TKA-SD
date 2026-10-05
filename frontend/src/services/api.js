@@ -36,7 +36,7 @@ api.interceptors.response.use(
       if (existingToken && !error.config.url.includes('/login')) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.href = '/';
+        window.location.hash = '#/';
       }
     }
     return Promise.reject(error);
