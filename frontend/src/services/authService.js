@@ -7,6 +7,9 @@ const extractErrorMessage = (error, defaultMessage) => {
   if (!error.response || error.response.status >= 500) {
     return 'Tidak dapat terhubung ke server backend. Pastikan server backend sudah dijalankan di port 5000 (cd backend && npm run dev).';
   }
+  if (error.response.status === 404) {
+    return 'Endpoint API tidak ditemukan (404). Jika diakses dari GitHub Pages, backend Express harus di-deploy online terlebih dahulu.';
+  }
   return defaultMessage;
 };
 

@@ -1,7 +1,9 @@
 import axios from 'axios';
 
-// Gunakan URL dari .env frontend jika ada, atau fallback ke '/api' (lewat proxy Vite) / 'http://localhost:5000/api'
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+// Gunakan URL dari .env frontend jika ada, atau URL backend live Vercel di production, atau '/api' di development (proxy Vite)
+const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.PROD ? 'https://tka-sd-six.vercel.app/api' : '/api');
 
 const api = axios.create({
   baseURL: BASE_URL,
