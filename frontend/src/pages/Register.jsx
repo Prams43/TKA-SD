@@ -200,7 +200,7 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100/50 flex flex-col justify-center items-center p-4 sm:p-6">
+    <div className="min-h-screen bg-doodle-pattern flex flex-col justify-center items-center p-4 sm:p-6">
       <div className="w-full max-w-md">
         {/* Header Identitas */}
         <div className="text-center mb-8">
@@ -218,7 +218,7 @@ const Register = () => {
         </div>
 
         {/* Card Form Utama */}
-        <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/60 border border-slate-200/80 p-6 sm:p-8 backdrop-blur-sm">
+        <div className="bg-white/95 rounded-2xl shadow-xl shadow-blue-950/10 border border-slate-200/90 p-6 sm:p-8 backdrop-blur-md">
           {/* STEP 1: FORMULIR PENDAFTARAN */}
           {step === 'form' && (
             <div className="animate-fade-in">

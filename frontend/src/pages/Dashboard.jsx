@@ -28,36 +28,27 @@ const Dashboard = () => {
   const [activeModal, setActiveModal] = useState(null); // 'materi' | 'latihan' | 'tryout' | 'rapor' | null
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100 selection:bg-blue-500 selection:text-white">
-      {/* 1. Navbar Bagian Atas */}
+    <div className="min-h-screen flex flex-col bg-doodle-pattern text-slate-800 selection:bg-blue-200 selection:text-blue-900">
+      {/* 1. Navbar Bagian Atas (Navy) */}
       <Navbar />
 
-      {/* 2. Area Utama di Bawah Navbar: Gradient Biru ke Arah Gelap */}
-      <main className="flex-1 relative flex flex-col justify-center items-center overflow-hidden bg-gradient-to-b from-[#0a1e4a] via-[#071534] to-[#030914] px-3 sm:px-6 lg:px-12 py-5 sm:py-10">
-        {/* Dekorasi Cahaya Ambient (Glow Effect) di Latar Belakang */}
-        <div className="absolute top-1/4 left-1/4 w-72 sm:w-96 h-72 sm:h-96 rounded-full bg-blue-600/15 blur-[100px] sm:blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-10 right-1/4 w-80 sm:w-[30rem] h-80 sm:h-[30rem] rounded-full bg-indigo-500/10 blur-[120px] sm:blur-[140px] pointer-events-none" />
-        <div className="absolute top-10 right-10 w-48 sm:w-64 h-48 sm:h-64 rounded-full bg-emerald-500/10 blur-[80px] sm:blur-[100px] pointer-events-none" />
-
-        {/* Pola Grid Halus Modern */}
-        <div
-          className="absolute inset-0 opacity-[0.03] pointer-events-none"
-          style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
-            backgroundSize: '28px 28px',
-          }}
-        />
+      {/* 2. Area Utama di Bawah Navbar: Background Putih Doodle Edukasi */}
+      <main className="flex-1 relative flex flex-col justify-center items-center overflow-hidden px-3 sm:px-6 lg:px-12 py-5 sm:py-10">
+        {/* Dekorasi Cahaya Ambient Lembut di Latar Belakang */}
+        <div className="absolute top-1/4 left-1/4 w-72 sm:w-96 h-72 sm:h-96 rounded-full bg-blue-400/10 blur-[100px] sm:blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-10 right-1/4 w-80 sm:w-[30rem] h-80 sm:h-[30rem] rounded-full bg-indigo-300/10 blur-[120px] sm:blur-[140px] pointer-events-none" />
+        <div className="absolute top-10 right-10 w-48 sm:w-64 h-48 sm:h-64 rounded-full bg-emerald-300/10 blur-[80px] sm:blur-[100px] pointer-events-none" />
 
         <div className="relative z-10 max-w-6xl w-full mx-auto flex flex-col justify-center">
-          {/* Header Judul (Responsive di atas menu) */}
+          {/* Header Judul */}
           <div className="mb-4 sm:mb-8 text-center lg:text-left animate-fade-in">
-            <span className="inline-block px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-400/30 backdrop-blur-md">
-              🎯 Asesmen Standar Pusmendik Kemendikdasmen
+            <span className="inline-block px-3.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-blue-100/90 text-[#0a1e4a] border border-blue-200 shadow-sm backdrop-blur-sm">
+                Asesmen Standar Pusmendik Kemendikdasmen
             </span>
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mt-1.5 sm:mt-2 tracking-tight">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#0a1e4a] mt-2 tracking-tight">
               Halo, {user?.username || user?.email?.split('@')[0] || 'Siswa'}! 👋
             </h1>
-            <p className="text-xs sm:text-sm text-slate-300 mt-1">
+            <p className="text-xs sm:text-sm text-slate-600 mt-1 font-medium">
               Selamat datang di Portal Latihan TKA SD. Pilih menu di bawah untuk mulai belajar!
             </p>
           </div>
@@ -71,7 +62,6 @@ const Dashboard = () => {
                 label="Materi"
                 icon={BookOpen}
                 accentColor="blue"
-                badgeText="BI & MTK"
                 onClick={() => setActiveModal('materi')}
               />
 
@@ -80,7 +70,6 @@ const Dashboard = () => {
                 label="Latihan Soal"
                 icon={FileQuestion}
                 accentColor="emerald"
-                badgeText="Level 1-10"
                 onClick={() => setActiveModal('latihan')}
               />
 
@@ -89,7 +78,6 @@ const Dashboard = () => {
                 label="Tryout"
                 icon={Trophy}
                 accentColor="amber"
-                badgeText="5 Paket"
                 onClick={() => setActiveModal('tryout')}
               />
 
@@ -98,7 +86,6 @@ const Dashboard = () => {
                 label="Rapor"
                 icon={BarChart3}
                 accentColor="purple"
-                badgeText="Statistik"
                 onClick={() => setActiveModal('rapor')}
               />
             </section>

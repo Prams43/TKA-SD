@@ -116,14 +116,14 @@ const CharacterIllustration = () => {
 
   return (
     <div className="relative flex flex-col items-center justify-center select-none group w-full max-w-[170px] xs:max-w-[210px] sm:max-w-[320px] md:max-w-[420px]">
-      {/* Ambient Radial Glow */}
-      <div className="absolute w-36 h-36 sm:w-72 sm:h-72 md:w-96 md:h-96 rounded-full bg-blue-500/20 blur-2xl sm:blur-3xl pointer-events-none animate-pulse-glow" />
-      <div className="absolute w-28 h-28 sm:w-56 sm:h-56 rounded-full bg-emerald-400/15 blur-xl sm:blur-2xl pointer-events-none -bottom-2 sm:-bottom-4" />
+      {/* Ambient Radial Glow Halus */}
+      <div className="absolute w-36 h-36 sm:w-72 sm:h-72 md:w-96 md:h-96 rounded-full bg-blue-400/10 blur-2xl sm:blur-3xl pointer-events-none animate-pulse-glow" />
+      <div className="absolute w-28 h-28 sm:w-56 sm:h-56 rounded-full bg-emerald-400/10 blur-xl sm:blur-2xl pointer-events-none -bottom-2 sm:-bottom-4" />
 
       {/* Interactive Speech Bubble */}
       <div
         onClick={handleCharacterClick}
-        className="cursor-pointer mb-1 sm:mb-3 px-2 sm:px-3.5 py-1 sm:py-2 rounded-xl sm:rounded-2xl bg-white/95 text-slate-800 text-[9px] sm:text-xs md:text-sm font-semibold shadow-lg shadow-black/20 border border-white/60 flex items-center space-x-1.5 backdrop-blur-md transform transition-all duration-300 hover:scale-105 active:scale-95 z-20 text-center animate-fade-in"
+        className="cursor-pointer mb-1 sm:mb-3 px-2 sm:px-3.5 py-1 sm:py-2 rounded-xl sm:rounded-2xl bg-white text-slate-800 text-[9px] sm:text-xs md:text-sm font-semibold shadow-md shadow-blue-950/10 border border-slate-200/90 flex items-center space-x-1.5 backdrop-blur-md transform transition-all duration-300 hover:scale-105 active:scale-95 z-20 text-center animate-fade-in"
       >
         <Sparkles className="w-3 h-3 text-amber-500 flex-shrink-0 animate-bounce" />
         <span className="line-clamp-2 sm:line-clamp-none">{quotes[quoteIndex]}</span>
@@ -140,7 +140,7 @@ const CharacterIllustration = () => {
         <img
           src={processedSrc || originalImage}
           alt="Karakter Siswa Pintar TKA SD"
-          className="w-auto h-[210px] xs:h-[250px] sm:h-[350px] md:h-[440px] lg:h-[490px] object-contain drop-shadow-[0_12px_25px_rgba(0,0,0,0.4)] transition-all duration-300 max-w-full"
+          className="w-auto h-[210px] xs:h-[250px] sm:h-[350px] md:h-[440px] lg:h-[490px] object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-all duration-300 max-w-full"
           draggable="false"
         />
 
