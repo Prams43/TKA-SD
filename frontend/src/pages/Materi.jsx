@@ -15,6 +15,8 @@ import {
   Trophy,
   BookMarked,
   LayoutDashboard,
+  Search,
+  X,
 } from 'lucide-react';
 
 /**
@@ -39,6 +41,7 @@ const Materi = () => {
   const [hasSubmittedAnswer, setHasSubmittedAnswer] = useState(false);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
   const [quizFinished, setQuizFinished] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const activityData = getActivityData();
   const completedBabIds = activityData?.materiCompleted || [];
@@ -308,68 +311,161 @@ const Materi = () => {
                         />
                       </div>
                     </div>
+
+                    {/* Search Bar */}
+                    <div className="relative pt-2 border-t border-slate-200">
+                      <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-[calc(50%+4px)] -translate-y-1/2 pointer-events-none" />
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Cari materi (contoh: KPK, Sudut, Huruf Kapital, Pecahan, Skala)..."
+                        className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-white border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all shadow-2xs"
+                      />
+                      {searchQuery && (
+                        <button
+                          onClick={() => setSearchQuery('')}
+                          className="absolute right-3.5 top-[calc(50%+4px)] -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
 
-                  {/* Loop Elemen Kurikulum */}
-                  <div className="space-y-5">
-                    {PUSMENDIK_MATERI[selectedSubject].elemen.map((elemen) => (
-                      <div
-                        key={elemen.id}
-                        className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200"
-                      >
-                        <div className="mb-3">
-                          <h4 className="text-sm font-bold text-blue-900">{elemen.namaElemen}</h4>
-                          <p className="text-xs text-slate-500 mt-0.5">{elemen.deskripsi}</p>
-                        </div>
+                  {/* Jika mencari materi */}
+                  {searchQuery.trim() ? (
+                    (() => {
+                      const qLower = searchQuery.toLowerCase();
+                      const matchedBabs = allBabs.filter(
+                        (b) =>
+                          b.judul.toLowerCase().includes(qLower) ||
+                          b.ringkasan?.toLowerCase().includes(qLower) ||
+                          b.konsepKunci?.toLowerCase().includes(qLower)
+                      );
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-                          {elemen.bab.map((bab) => {
-                            const isDone = completedBabIds.includes(bab.id);
-                            return (
-                              <div
-                                key={bab.id}
-                                onClick={() => handleOpenBab(bab)}
-                                className="p-3.5 rounded-xl bg-white hover:bg-blue-50/50 border border-slate-200 hover:border-blue-400 shadow-sm transition-all cursor-pointer flex items-center justify-between group hover:shadow-md"
-                              >
-                                <div className="space-y-1.5 pr-2 flex-1">
-                                  <div className="flex items-center space-x-2 flex-wrap">
-                                    <span className="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">
-                                      {bab.no}
-                                    </span>
-                                    <h5 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
-                                      {bab.judul}
-                                    </h5>
+                      if (matchedBabs.length === 0) {
+                        return (
+                          <div className="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200 text-slate-500 text-xs sm:text-sm">
+                            Tidak ditemukan materi dengan kata kunci "<strong>{searchQuery}</strong>". Silakan coba kata kunci lain.
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div className="space-y-3">
+                          <div className="text-xs font-semibold text-slate-600">
+                            Ditemukan <strong>{matchedBabs.length}</strong> materi pembelajaran:
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {matchedBabs.map((bab) => {
+                              const isDone = completedBabIds.includes(bab.id);
+                              return (
+                                <div
+                                  key={bab.id}
+                                  onClick={() => handleOpenBab(bab)}
+                                  className="p-3.5 rounded-xl bg-white hover:bg-blue-50/50 border border-slate-200 hover:border-blue-400 shadow-sm transition-all cursor-pointer flex items-center justify-between group hover:shadow-md"
+                                >
+                                  <div className="space-y-1.5 pr-2 flex-1">
+                                    <div className="flex items-center space-x-2 flex-wrap">
+                                      <span className="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">
+                                        {bab.no}
+                                      </span>
+                                      <h5 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+                                        {bab.judul}
+                                      </h5>
+                                    </div>
+                                    <p className="text-[11px] text-slate-500 line-clamp-1 pl-8">
+                                      {bab.ringkasan}
+                                    </p>
                                   </div>
-                                  <p className="text-[11px] text-slate-500 line-clamp-1 pl-8">
-                                    {bab.ringkasan}
-                                  </p>
-                                </div>
 
-                                {/* Status Materi: Centang hijau jika selesai, panah navigasi jika belum */}
-                                <div className="flex-shrink-0 ml-3 flex items-center">
-                                  {isDone ? (
-                                    <div
-                                      className="w-7 h-7 rounded-full bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-600 shadow-xs"
-                                      title="Selesai Dipelajari"
-                                    >
-                                      <Check className="w-4 h-4 stroke-[3]" />
-                                    </div>
-                                  ) : (
-                                    <div
-                                      className="w-7 h-7 rounded-full bg-slate-50 border border-slate-200 group-hover:border-blue-300 group-hover:bg-blue-50 flex items-center justify-center text-slate-400 group-hover:text-blue-600 transition-all"
-                                      title="Buka Materi"
-                                    >
-                                      <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                                    </div>
-                                  )}
+                                  <div className="flex-shrink-0 ml-3 flex items-center">
+                                    {isDone ? (
+                                      <div
+                                        className="w-7 h-7 rounded-full bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-600 shadow-xs"
+                                        title="Selesai Dipelajari"
+                                      >
+                                        <Check className="w-4 h-4 stroke-[3]" />
+                                      </div>
+                                    ) : (
+                                      <div
+                                        className="w-7 h-7 rounded-full bg-slate-50 border border-slate-200 group-hover:border-blue-300 group-hover:bg-blue-50 flex items-center justify-center text-slate-400 group-hover:text-blue-600 transition-all"
+                                        title="Buka Materi"
+                                      >
+                                        <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
-                            );
-                          })}
+                              );
+                            })}
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      );
+                    })()
+                  ) : (
+                    /* Loop Elemen Kurikulum */
+                    <div className="space-y-5">
+                      {PUSMENDIK_MATERI[selectedSubject].elemen.map((elemen) => (
+                        <div
+                          key={elemen.id}
+                          className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200"
+                        >
+                          <div className="mb-3">
+                            <h4 className="text-sm font-bold text-blue-900">{elemen.namaElemen}</h4>
+                            <p className="text-xs text-slate-500 mt-0.5">{elemen.deskripsi}</p>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                            {elemen.bab.map((bab) => {
+                              const isDone = completedBabIds.includes(bab.id);
+                              return (
+                                <div
+                                  key={bab.id}
+                                  onClick={() => handleOpenBab(bab)}
+                                  className="p-3.5 rounded-xl bg-white hover:bg-blue-50/50 border border-slate-200 hover:border-blue-400 shadow-sm transition-all cursor-pointer flex items-center justify-between group hover:shadow-md"
+                                >
+                                  <div className="space-y-1.5 pr-2 flex-1">
+                                    <div className="flex items-center space-x-2 flex-wrap">
+                                      <span className="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">
+                                        {bab.no}
+                                      </span>
+                                      <h5 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+                                        {bab.judul}
+                                      </h5>
+                                    </div>
+                                    <p className="text-[11px] text-slate-500 line-clamp-1 pl-8">
+                                      {bab.ringkasan}
+                                    </p>
+                                  </div>
+
+                                  {/* Status Materi: Centang hijau jika selesai, panah navigasi jika belum */}
+                                  <div className="flex-shrink-0 ml-3 flex items-center">
+                                    {isDone ? (
+                                      <div
+                                        className="w-7 h-7 rounded-full bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-600 shadow-xs"
+                                        title="Selesai Dipelajari"
+                                      >
+                                        <Check className="w-4 h-4 stroke-[3]" />
+                                      </div>
+                                    ) : (
+                                      <div
+                                        className="w-7 h-7 rounded-full bg-slate-50 border border-slate-200 group-hover:border-blue-300 group-hover:bg-blue-50 flex items-center justify-center text-slate-400 group-hover:text-blue-600 transition-all"
+                                        title="Buka Materi"
+                                      >
+                                        <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })()}
