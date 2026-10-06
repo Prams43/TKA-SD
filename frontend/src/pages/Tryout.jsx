@@ -9,6 +9,7 @@ import {
   ArrowLeft,
   Clock,
   CheckCircle2,
+  Check,
   XCircle,
   HelpCircle,
   ChevronRight,
@@ -97,21 +98,42 @@ const Tryout = () => {
 
     questions.forEach((q, idx) => {
       const userVal = userAnswers[idx];
-      if (q.tipe === 'isian') {
+      const type = q.type || q.tipe;
+
+      if (type === 'mcma') {
+        // Pilihan Ganda Kompleks: array jawaban
+        if (Array.isArray(userVal) && Array.isArray(q.answer)) {
+          const matchAll =
+            q.answer.length === userVal.length &&
+            q.answer.every((ans) => userVal.includes(ans));
+          if (matchAll) correctCount++;
+        }
+      } else if (type === 'category') {
+        // Benar / Salah per pernyataan
+        if (typeof userVal === 'object' && userVal !== null && Array.isArray(q.statements)) {
+          const allCorrect = q.statements.every((s, sIdx) => userVal[sIdx] === s.answer);
+          if (allCorrect) correctCount++;
+        }
+      } else if (type === 'isian') {
         if (
           userVal &&
-          String(userVal).trim().toLowerCase() === String(q.jawabanBenar).trim().toLowerCase()
+          String(userVal).trim().toLowerCase() === String(q.answer || q.jawabanBenar).trim().toLowerCase()
         ) {
           correctCount++;
         }
       } else {
-        if (userVal === q.jawabanBenar) {
+        // Pilihan Ganda Tunggal (mcq)
+        if (
+          userVal === q.answer ||
+          (typeof userVal === 'number' && q.options && q.options[userVal] === q.answer) ||
+          userVal === q.jawabanBenar
+        ) {
           correctCount++;
         }
       }
     });
 
-    const score = Number(((correctCount / questions.length) * 100).toFixed(1));
+    const score = Number(((correctCount / (questions.length || 1)) * 100).toFixed(1));
     const result = {
       score,
       correctCount,
@@ -375,8 +397,20 @@ const Tryout = () => {
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto pr-1">
-                    {activePackage.soal.map((_, idx) => {
-                      const isAnswered = userAnswers[idx] !== undefined && userAnswers[idx] !== '';
+                    {activePackage.soal.map((q, idx) => {
+                      const ans = userAnswers[idx];
+                      let isAnswered = false;
+                      if (ans !== undefined && ans !== null && ans !== '') {
+                        if (q.type === 'mcma') {
+                          isAnswered = Array.isArray(ans) && ans.length > 0;
+                        } else if (q.type === 'category') {
+                          isAnswered =
+                            typeof ans === 'object' &&
+                            Object.keys(ans).length === (q.statements?.length || 0);
+                        } else {
+                          isAnswered = true;
+                        }
+                      }
                       const isCurrent = currentQuestionIndex === idx;
 
                       return (
@@ -402,11 +436,13 @@ const Tryout = () => {
                 {(() => {
                   const currentQ = activePackage.soal[currentQuestionIndex];
                   const currentAnswer = userAnswers[currentQuestionIndex];
+                  const qType = currentQ.type || currentQ.tipe || 'mcq';
+                  const options = currentQ.options || currentQ.pilihan || [];
 
                   return (
                     <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-md space-y-4">
-                      {/* Header Soal: Nomor, Tipe, & Tingkat Kesulitan Acak */}
-                      <div className="flex items-center justify-between text-xs pb-3 border-b border-slate-100">
+                      {/* Header Soal: Nomor, Tipe, & Tingkat Kesulitan */}
+                      <div className="flex items-center justify-between text-xs pb-3 border-b border-slate-100 flex-wrap gap-2">
                         <span className="font-bold text-slate-900">
                           Nomor {currentQuestionIndex + 1} dari {activePackage.soal.length}
                         </span>
@@ -420,21 +456,178 @@ const Tryout = () => {
                                 : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                             }`}
                           >
-                            Tingkat: {currentQ.kesulitan}
+                            Level: {currentQ.level || 3} ({currentQ.kesulitan})
                           </span>
                           <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-semibold border border-slate-200">
-                            {currentQ.tipe === 'isian' ? 'Isian Singkat' : 'Pilihan Ganda'}
+                            {qType === 'mcma'
+                              ? 'PG Kompleks'
+                              : qType === 'category'
+                              ? 'Benar / Salah'
+                              : qType === 'isian'
+                              ? 'Isian Singkat'
+                              : 'Pilihan Ganda'}
                           </span>
                         </div>
                       </div>
 
-                      {/* Teks Pertanyaan */}
-                      <h4 className="text-sm sm:text-base font-semibold text-slate-900 leading-relaxed whitespace-pre-line">
-                        {currentQ.pertanyaan}
-                      </h4>
+                      {/* Stimulus Bacaan / Konteks (jika ada) */}
+                      {currentQ.stimulus && (
+                        <div className="p-4 rounded-xl bg-amber-50/50 border-l-4 border-amber-500 text-slate-800 text-xs sm:text-sm leading-relaxed space-y-1.5 shadow-2xs">
+                          <div className="flex items-center space-x-1.5 text-amber-900 font-bold text-xs">
+                            <BookOpen className="w-3.5 h-3.5" />
+                            <span>Konteks Bacaan / Stimulus:</span>
+                          </div>
+                          <div
+                            className="text-slate-700 leading-relaxed font-normal"
+                            dangerouslySetInnerHTML={{ __html: currentQ.stimulus }}
+                          />
+                        </div>
+                      )}
 
-                      {/* Input Jawaban Sesuai Format: PG atau Isian Singkat */}
-                      {currentQ.tipe === 'isian' ? (
+                      {/* Teks Pertanyaan */}
+                      <div
+                        className="text-sm sm:text-base font-bold text-slate-900 leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: currentQ.question || currentQ.pertanyaan }}
+                      />
+
+                      {/* OPSI JAWABAN */}
+                      {/* 1. MCQ (Pilihan Ganda Tunggal) */}
+                      {qType === 'mcq' && (
+                        <div className="space-y-2.5 pt-2">
+                          {options.map((opt, oIdx) => {
+                            const isSelected = currentAnswer === opt || currentAnswer === oIdx;
+                            return (
+                              <button
+                                key={oIdx}
+                                onClick={() => handleAnswerChange(opt)}
+                                className={`w-full p-3.5 rounded-xl text-left text-xs sm:text-sm font-medium border transition-all flex items-center justify-between ${
+                                  isSelected
+                                    ? 'bg-amber-50 border-2 border-amber-500 text-slate-900 shadow-sm font-semibold'
+                                    : 'bg-slate-50/70 border-slate-200 text-slate-700 hover:bg-slate-100'
+                                }`}
+                              >
+                                <span dangerouslySetInnerHTML={{ __html: opt }} />
+                                <div
+                                  className={`w-6 h-6 rounded-full border flex items-center justify-center text-xs font-bold flex-shrink-0 ml-2 ${
+                                    isSelected
+                                      ? 'border-amber-500 bg-amber-500 text-white'
+                                      : 'border-slate-300 text-slate-500 bg-white'
+                                  }`}
+                                >
+                                  {String.fromCharCode(65 + oIdx)}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* 2. MCMA (Pilihan Ganda Kompleks - Multi select) */}
+                      {qType === 'mcma' && (
+                        <div className="space-y-2.5 pt-2">
+                          <div className="p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-800 font-medium flex items-center space-x-2">
+                            <CheckCircle2 className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                            <span>Pilihan Ganda Kompleks: Anda dapat memilih lebih dari satu jawaban yang benar.</span>
+                          </div>
+                          {options.map((opt, oIdx) => {
+                            const selectedList = Array.isArray(currentAnswer) ? currentAnswer : [];
+                            const isSelected = selectedList.includes(opt);
+                            return (
+                              <button
+                                key={oIdx}
+                                onClick={() => {
+                                  const nextList = isSelected
+                                    ? selectedList.filter((x) => x !== opt)
+                                    : [...selectedList, opt];
+                                  handleAnswerChange(nextList);
+                                }}
+                                className={`w-full p-3.5 rounded-xl text-left text-xs sm:text-sm font-medium border transition-all flex items-center justify-between ${
+                                  isSelected
+                                    ? 'bg-blue-50 border-2 border-blue-500 text-blue-900 shadow-sm font-semibold'
+                                    : 'bg-slate-50/70 border-slate-200 text-slate-700 hover:bg-slate-100'
+                                }`}
+                              >
+                                <span dangerouslySetInnerHTML={{ __html: opt }} />
+                                <div
+                                  className={`w-5 h-5 rounded-md border flex items-center justify-center text-xs font-bold flex-shrink-0 ml-2 ${
+                                    isSelected
+                                      ? 'border-blue-500 bg-blue-600 text-white'
+                                      : 'border-slate-300 text-slate-400 bg-white'
+                                  }`}
+                                >
+                                  {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* 3. CATEGORY (Benar / Salah per baris pernyataan) */}
+                      {qType === 'category' && (
+                        <div className="space-y-3 pt-2">
+                          <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 font-medium flex items-center space-x-2">
+                            <HelpCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                            <span>Tentukan apakah setiap pernyataan berikut bernilai <strong>Benar</strong> atau <strong>Salah</strong>.</span>
+                          </div>
+                          <div className="divide-y divide-slate-200 border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs">
+                            {currentQ.statements?.map((stmt, sIdx) => {
+                              const stmtVal =
+                                typeof currentAnswer === 'object' && currentAnswer !== null
+                                  ? currentAnswer[sIdx]
+                                  : undefined;
+                              return (
+                                <div
+                                  key={sIdx}
+                                  className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/80"
+                                >
+                                  <span
+                                    className="text-xs sm:text-sm text-slate-800 flex-1 leading-relaxed"
+                                    dangerouslySetInnerHTML={{ __html: stmt.text }}
+                                  />
+                                  <div className="flex items-center space-x-2 flex-shrink-0">
+                                    <button
+                                      onClick={() => {
+                                        const obj =
+                                          typeof currentAnswer === 'object' && currentAnswer !== null
+                                            ? currentAnswer
+                                            : {};
+                                        handleAnswerChange({ ...obj, [sIdx]: true });
+                                      }}
+                                      className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                        stmtVal === true
+                                          ? 'bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-400'
+                                          : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200'
+                                      }`}
+                                    >
+                                      Benar
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        const obj =
+                                          typeof currentAnswer === 'object' && currentAnswer !== null
+                                            ? currentAnswer
+                                            : {};
+                                        handleAnswerChange({ ...obj, [sIdx]: false });
+                                      }}
+                                      className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                        stmtVal === false
+                                          ? 'bg-rose-600 text-white shadow-sm ring-2 ring-rose-400'
+                                          : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200'
+                                      }`}
+                                    >
+                                      Salah
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 4. ISIAN SINGKAT (Fallback) */}
+                      {qType === 'isian' && (
                         <div className="space-y-2 pt-2">
                           <label className="block text-xs font-medium text-slate-700">
                             Ketik jawaban singkat Anda di bawah ini:
@@ -446,31 +639,6 @@ const Tryout = () => {
                             placeholder="Ketik jawabanmu di sini..."
                             className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 text-sm focus:bg-white focus:border-amber-500 focus:outline-none transition-colors"
                           />
-                        </div>
-                      ) : (
-                        <div className="space-y-2.5 pt-2">
-                          {currentQ.pilihan.map((opt, oIdx) => (
-                            <button
-                              key={oIdx}
-                              onClick={() => handleAnswerChange(oIdx)}
-                              className={`w-full p-3.5 rounded-xl text-left text-xs sm:text-sm font-medium border transition-all flex items-center justify-between ${
-                                currentAnswer === oIdx
-                                  ? 'bg-amber-50 border-2 border-amber-400 text-slate-900 shadow-sm font-semibold'
-                                  : 'bg-slate-50/70 border-slate-200 text-slate-700 hover:bg-slate-100'
-                              }`}
-                            >
-                              <span>{opt}</span>
-                              <div
-                                className={`w-6 h-6 rounded-full border flex items-center justify-center text-xs font-bold ${
-                                  currentAnswer === oIdx
-                                    ? 'border-amber-500 bg-amber-500 text-white'
-                                    : 'border-slate-300 text-slate-500 bg-white'
-                                }`}
-                              >
-                                {String.fromCharCode(65 + oIdx)}
-                              </div>
-                            </button>
-                          ))}
                         </div>
                       )}
 
@@ -599,32 +767,49 @@ const Tryout = () => {
                 <div className="space-y-5">
                   {activePackage.soal.map((q, idx) => {
                     const userVal = userAnswers[idx];
+                    const qType = q.type || q.tipe || 'mcq';
                     let isCorrect = false;
 
-                    if (q.tipe === 'isian') {
+                    if (qType === 'mcma') {
+                      isCorrect =
+                        Array.isArray(userVal) &&
+                        Array.isArray(q.answer) &&
+                        q.answer.length === userVal.length &&
+                        q.answer.every((ans) => userVal.includes(ans));
+                    } else if (qType === 'category') {
+                      isCorrect =
+                        typeof userVal === 'object' &&
+                        userVal !== null &&
+                        Array.isArray(q.statements) &&
+                        q.statements.every((s, sIdx) => userVal[sIdx] === s.answer);
+                    } else if (qType === 'isian') {
                       isCorrect =
                         userVal &&
-                        String(userVal).trim().toLowerCase() === String(q.jawabanBenar).trim().toLowerCase();
+                        String(userVal).trim().toLowerCase() ===
+                          String(q.answer || q.jawabanBenar).trim().toLowerCase();
                     } else {
-                      isCorrect = userVal === q.jawabanBenar;
+                      isCorrect =
+                        userVal === q.answer ||
+                        (typeof userVal === 'number' && q.options && q.options[userVal] === q.answer) ||
+                        userVal === q.jawabanBenar;
                     }
 
                     return (
                       <div
-                        key={q.id}
+                        key={q.id || idx}
                         className={`p-5 rounded-2xl border-2 ${
                           isCorrect
                             ? 'bg-emerald-50/40 border-emerald-200'
                             : 'bg-rose-50/40 border-rose-200'
                         }`}
                       >
-                        <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                           <div className="flex items-center space-x-2">
                             <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-white">
                               Soal #{idx + 1}
                             </span>
                             <span className="text-[10px] px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-200 font-medium">
-                              {q.kesulitan} • {q.tipe === 'isian' ? 'Isian' : 'PG'}
+                              {q.kesulitan} • {qType === 'mcma' ? 'PG Kompleks' : qType === 'category' ? 'Benar / Salah' : qType === 'isian' ? 'Isian' : 'PG'}
                             </span>
                           </div>
 
@@ -641,40 +826,104 @@ const Tryout = () => {
                           )}
                         </div>
 
-                        <h4 className="text-sm font-semibold text-slate-900 mb-3 leading-relaxed whitespace-pre-line">
-                          {q.pertanyaan}
-                        </h4>
+                        {/* Stimulus jika ada */}
+                        {q.stimulus && (
+                          <div className="p-3.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-700 mb-3 leading-relaxed shadow-2xs">
+                            <strong className="text-amber-800 block text-[11px] mb-1 font-bold">Konteks Bacaan / Stimulus:</strong>
+                            <div dangerouslySetInnerHTML={{ __html: q.stimulus }} />
+                          </div>
+                        )}
+
+                        <h4
+                          className="text-sm font-semibold text-slate-900 mb-3 leading-relaxed"
+                          dangerouslySetInnerHTML={{ __html: q.question || q.pertanyaan }}
+                        />
 
                         {/* Info Jawaban Siswa & Kunci */}
-                        <div className="p-3 rounded-xl bg-white border border-slate-200 text-xs space-y-1 mb-3">
-                          <div>
-                            <span className="text-slate-500">Jawaban Anda: </span>
-                            <strong className={isCorrect ? 'text-emerald-700' : 'text-rose-700'}>
-                              {q.tipe === 'isian'
-                                ? userVal || '(Tidak dijawab)'
-                                : userVal !== undefined
-                                ? `${String.fromCharCode(65 + userVal)}. ${q.pilihan[userVal]}`
-                                : '(Tidak dijawab)'}
-                            </strong>
-                          </div>
-                          <div>
-                            <span className="text-slate-500">Kunci Jawaban: </span>
-                            <strong className="text-emerald-700">
-                              {q.tipe === 'isian'
-                                ? q.jawabanBenar
-                                : `${String.fromCharCode(65 + q.jawabanBenar)}. ${q.pilihan[q.jawabanBenar]}`}
-                            </strong>
-                          </div>
+                        <div className="p-3 rounded-xl bg-white border border-slate-200 text-xs space-y-1.5 mb-3 shadow-2xs">
+                          {qType === 'category' ? (
+                            <div className="space-y-1">
+                              <span className="text-slate-500 font-semibold block">Rincian Pernyataan:</span>
+                              {q.statements?.map((stmt, sIdx) => {
+                                const uPick =
+                                  typeof userVal === 'object' && userVal !== null
+                                    ? userVal[sIdx]
+                                    : undefined;
+                                const isStmtCorrect = uPick === stmt.answer;
+                                return (
+                                  <div
+                                    key={sIdx}
+                                    className="flex items-center justify-between text-[11px] py-1 border-b border-slate-100 last:border-0 flex-wrap gap-1"
+                                  >
+                                    <span
+                                      className="flex-1 pr-2"
+                                      dangerouslySetInnerHTML={{ __html: stmt.text }}
+                                    />
+                                    <span className="font-semibold">
+                                      Anda:{' '}
+                                      <strong className={isStmtCorrect ? 'text-emerald-700' : 'text-rose-700'}>
+                                        {uPick === true
+                                          ? 'Benar'
+                                          : uPick === false
+                                          ? 'Salah'
+                                          : '(Belum dijawab)'}
+                                      </strong>{' '}
+                                      | Kunci:{' '}
+                                      <strong className="text-emerald-700">
+                                        {stmt.answer ? 'Benar' : 'Salah'}
+                                      </strong>
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <>
+                              <div>
+                                <span className="text-slate-500">Jawaban Anda: </span>
+                                <strong className={isCorrect ? 'text-emerald-700' : 'text-rose-700'}>
+                                  {qType === 'mcma'
+                                    ? Array.isArray(userVal) && userVal.length > 0
+                                      ? userVal.join('; ')
+                                      : '(Tidak dijawab)'
+                                    : userVal !== undefined
+                                    ? String(userVal)
+                                    : '(Tidak dijawab)'}
+                                </strong>
+                              </div>
+                              <div>
+                                <span className="text-slate-500">Kunci Jawaban: </span>
+                                <strong className="text-emerald-700">
+                                  {qType === 'mcma' && Array.isArray(q.answer)
+                                    ? q.answer.join('; ')
+                                    : q.answer || q.jawabanBenar}
+                                </strong>
+                              </div>
+                            </>
+                          )}
                         </div>
 
+                        {/* Indikator Pusmendik */}
+                        {q.indicator && (
+                          <div className="p-2.5 rounded-xl bg-blue-50/60 border border-blue-200 text-xs text-blue-900 mb-2">
+                            <strong>Indikator Capaian: </strong>
+                            <span>{q.indicator}</span>
+                          </div>
+                        )}
+
                         {/* Pembahasan */}
-                        <div className="p-3.5 rounded-xl bg-amber-50/80 border border-amber-200 text-xs">
-                          <strong className="text-amber-900 flex items-center space-x-1.5 mb-1 font-bold">
-                            <HelpCircle className="w-3.5 h-3.5 text-amber-600" />
-                            <span>Pembahasan Soal:</span>
-                          </strong>
-                          <p className="text-slate-700 leading-relaxed">{q.pembahasan}</p>
-                        </div>
+                        {(q.explanation || q.pembahasan) && (
+                          <div className="p-3.5 rounded-xl bg-amber-50/80 border border-amber-200 text-xs">
+                            <strong className="text-amber-900 flex items-center space-x-1.5 mb-1 font-bold">
+                              <HelpCircle className="w-3.5 h-3.5 text-amber-600" />
+                              <span>Pembahasan Langkah-demi-Langkah:</span>
+                            </strong>
+                            <div
+                              className="text-slate-700 leading-relaxed"
+                              dangerouslySetInnerHTML={{ __html: q.explanation || q.pembahasan }}
+                            />
+                          </div>
+                        )}
                       </div>
                     );
                   })}
