@@ -7,6 +7,10 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from './pages/Dashboard';
+import Materi from './pages/Materi';
+import LatihanSoal from './pages/LatihanSoal';
+import Tryout from './pages/Tryout';
+import Rapor from './pages/Rapor';
 
 function App() {
   return (
@@ -23,6 +27,10 @@ function App() {
           {/* Route Terlindungi (Memerlukan token login aktif) */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/materi" element={<Materi />} />
+            <Route path="/latihan" element={<LatihanSoal />} />
+            <Route path="/tryout" element={<Tryout />} />
+            <Route path="/rapor" element={<Rapor />} />
           </Route>
 
           {/* Fallback ke halaman utama jika path tidak ditemukan */}

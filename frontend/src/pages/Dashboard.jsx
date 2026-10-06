@@ -1,31 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import CharacterIllustration from '../components/CharacterIllustration';
 import PillMenuButton from '../components/PillMenuButton';
-import MateriView from '../components/views/MateriView';
-import LatihanSoalView from '../components/views/LatihanSoalView';
-import TryoutView from '../components/views/TryoutView';
-import RaporView from '../components/views/RaporView';
 import { BookOpen, FileQuestion, Trophy, BarChart3 } from 'lucide-react';
 
 /**
  * Halaman Dashboard Utama TKA SD
  * 
  * Fitur:
- * 1. Background gradient biru gelap berkelas dengan ambient glow
- * 2. 4 Tombol Menu Kapsul Interaktif (Materi, Latihan Soal, Tryout, Rapor)
- * 3. Karakter Siswa Cerdas tetap di sebelah kanan tombol (bahkan saat di layar mobile)
- * 4. Modul Lengkap Berstandar Pusmendik Kemendikdasmen:
- *    - Materi (Bahasa Indonesia & Matematika, 3 Soal di akhir dengan hint dan baca ulang)
- *    - Latihan Soal (Level 1-3 = 5 soal, Level 4-7 = 10 soal, Level 8-10 = 20 soal + Review Penjelasan)
- *    - Tryout (5 Paket per mapel, 30 Soal HOTS/Sedang/Mudah acak, PG + Isian Singkat)
- *    - Rapor (Statistik lengkap aktivitas belajar murid)
+ * 1. Background gradient doodle edukasi terang & bersih
+ * 2. 4 Tombol Menu Kapsul Navy Interaktif (Materi, Latihan Soal, Tryout, Rapor)
+ * 3. Membuka Halaman Penuh Baru saat tombol ditekan (bukan modal pop-up)
+ * 4. Karakter Siswa Cerdas tetap di sebelah kanan tombol
  */
 const Dashboard = () => {
   const { user } = useAuth();
-  // State untuk kontrol tampilan modul aktif
-  const [activeModal, setActiveModal] = useState(null); // 'materi' | 'latihan' | 'tryout' | 'rapor' | null
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex flex-col bg-doodle-pattern text-slate-800 selection:bg-blue-200 selection:text-blue-900">
@@ -62,7 +54,7 @@ const Dashboard = () => {
                 label="Materi"
                 icon={BookOpen}
                 accentColor="blue"
-                onClick={() => setActiveModal('materi')}
+                onClick={() => navigate('/materi')}
               />
 
               {/* Tombol 2: Latihan Soal */}
@@ -70,7 +62,7 @@ const Dashboard = () => {
                 label="Latihan Soal"
                 icon={FileQuestion}
                 accentColor="emerald"
-                onClick={() => setActiveModal('latihan')}
+                onClick={() => navigate('/latihan')}
               />
 
               {/* Tombol 3: Tryout */}
@@ -78,7 +70,7 @@ const Dashboard = () => {
                 label="Tryout"
                 icon={Trophy}
                 accentColor="amber"
-                onClick={() => setActiveModal('tryout')}
+                onClick={() => navigate('/tryout')}
               />
 
               {/* Tombol 4: Rapor */}
@@ -86,7 +78,7 @@ const Dashboard = () => {
                 label="Rapor"
                 icon={BarChart3}
                 accentColor="purple"
-                onClick={() => setActiveModal('rapor')}
+                onClick={() => navigate('/rapor')}
               />
             </section>
 
@@ -97,27 +89,6 @@ const Dashboard = () => {
           </div>
         </div>
       </main>
-
-      {/* 3. Tampilan Modul Interaktif Sesuai Permintaan */}
-      <MateriView
-        isOpen={activeModal === 'materi'}
-        onClose={() => setActiveModal(null)}
-      />
-
-      <LatihanSoalView
-        isOpen={activeModal === 'latihan'}
-        onClose={() => setActiveModal(null)}
-      />
-
-      <TryoutView
-        isOpen={activeModal === 'tryout'}
-        onClose={() => setActiveModal(null)}
-      />
-
-      <RaporView
-        isOpen={activeModal === 'rapor'}
-        onClose={() => setActiveModal(null)}
-      />
     </div>
   );
 };
