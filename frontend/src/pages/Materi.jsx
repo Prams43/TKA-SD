@@ -9,6 +9,7 @@ import {
   Calculator,
   ArrowLeft,
   CheckCircle2,
+  Check,
   HelpCircle,
   ChevronRight,
   Trophy,
@@ -296,7 +297,7 @@ const Materi = () => {
                     <div className="pt-2 border-t border-slate-200">
                       <div className="flex items-center justify-between text-xs mb-1.5 font-medium">
                         <span className="text-slate-600">
-                          Status Checklist Selesai: <strong className="text-slate-900">{doneCount}</strong> dari <strong>{allBabs.length}</strong> Materi
+                          Status Pembelajaran: <strong className="text-slate-900">{doneCount}</strong> dari <strong>{allBabs.length}</strong> Materi Selesai
                         </span>
                         <span className="font-bold text-blue-700">{percent}% Tuntas</span>
                       </div>
@@ -344,20 +345,22 @@ const Materi = () => {
                                   </p>
                                 </div>
 
-                                {/* Checklist Format Sesuai Buku: (     ) vs ( ✓ Tuntas ) */}
-                                <div className="flex-shrink-0 ml-2">
+                                {/* Status Materi: Centang hijau jika selesai, panah navigasi jika belum */}
+                                <div className="flex-shrink-0 ml-3 flex items-center">
                                   {isDone ? (
-                                    <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-mono font-bold border border-emerald-300 shadow-sm">
-                                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                                      <span>( ✓ )</span>
-                                    </span>
-                                  ) : (
-                                    <span
-                                      className="inline-flex items-center justify-center px-2.5 py-1 rounded-lg bg-slate-100 text-slate-400 text-xs font-mono font-bold border border-slate-200 group-hover:border-blue-300 group-hover:text-blue-600 transition-colors"
-                                      title="Belum dipelajari"
+                                    <div
+                                      className="w-7 h-7 rounded-full bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-600 shadow-xs"
+                                      title="Selesai Dipelajari"
                                     >
-                                      (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)
-                                    </span>
+                                      <Check className="w-4 h-4 stroke-[3]" />
+                                    </div>
+                                  ) : (
+                                    <div
+                                      className="w-7 h-7 rounded-full bg-slate-50 border border-slate-200 group-hover:border-blue-300 group-hover:bg-blue-50 flex items-center justify-center text-slate-400 group-hover:text-blue-600 transition-all"
+                                      title="Buka Materi"
+                                    >
+                                      <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                                    </div>
                                   )}
                                 </div>
                               </div>

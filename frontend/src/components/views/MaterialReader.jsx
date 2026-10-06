@@ -245,7 +245,7 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
             <span>Materi Selesai Dipelajari!</span>
           </h4>
           <p className="text-xs text-slate-600 mt-1">
-            Selesaikan <strong>3 soal pemahaman</strong> di bawah ini untuk menuntaskan materi ini dan menandai checklist tuntas.
+            Selesaikan <strong>3 soal pemahaman</strong> di bawah ini untuk menuntaskan bab materi ini.
           </p>
         </div>
 
