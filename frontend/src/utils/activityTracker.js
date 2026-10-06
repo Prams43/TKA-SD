@@ -16,7 +16,7 @@ export const getActivityData = () => {
 
   // Default initial data
   return {
-    materiCompleted: ['bi_tekstual_1', 'mtk_bilangan_1'], // Sample initial progress
+    materiCompleted: ['mtk_1', 'bi_1'], // Sample initial progress (Bab 1 MTK & Bab 1 BI)
     latihanHistory: [
       {
         id: 'lat_sample_1',
@@ -115,7 +115,7 @@ export const getFullStats = () => {
   const data = getActivityData();
 
   // 1. Statistik Materi
-  const totalMateriTersedia = 10; // 5 Bab BI + 5 Bab MTK
+  const totalMateriTersedia = 33; // 12 Bab MTK + 21 Bab BI Sesuai Silabus Buku
   const materiSelesai = data.materiCompleted.length;
   const persenMateri = Math.min(100, Math.round((materiSelesai / totalMateriTersedia) * 100));
 
