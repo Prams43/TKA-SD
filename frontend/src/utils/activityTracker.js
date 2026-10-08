@@ -7,57 +7,79 @@
 const STORAGE_KEY = 'tka_sd_user_activity_v1';
 
 export const getActivityData = () => {
+  let data = null;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) data = JSON.parse(raw);
   } catch (e) {
     console.error('Gagal membaca aktivitas:', e);
   }
 
-  // Default initial data
-  return {
-    materiCompleted: ['mtk_1', 'bi_1'], // Sample initial progress (Bab 1 MTK & Bab 1 BI)
-    latihanHistory: [
-      {
-        id: 'lat_sample_1',
-        subject: 'bahasa_indonesia',
-        level: 1,
-        score: 100,
-        correct: 5,
-        total: 5,
-        date: '28 Sep 2026',
-      },
-      {
-        id: 'lat_sample_2',
-        subject: 'matematika',
-        level: 1,
-        score: 80,
-        correct: 4,
-        total: 5,
-        date: '29 Sep 2026',
-      },
-    ],
-    tryoutHistory: [
-      {
-        id: 'to_sample_1',
-        subject: 'bahasa_indonesia',
-        packageNum: 1,
-        score: 86.7,
-        correct: 26,
-        total: 30,
-        date: '25 Sep 2026',
-      },
-      {
-        id: 'to_sample_2',
-        subject: 'matematika',
-        packageNum: 1,
-        score: 93.3,
-        correct: 28,
-        total: 30,
-        date: '29 Sep 2026',
-      },
-    ],
-  };
+  if (!data) {
+    data = {
+      materiCompleted: [], // Posisi awal belum ada yang selesai, hanya level 1 tiap mapel yang terbuka
+      unlockedMateri: ['mtk_1', 'bi_1'], // Level 1 MTK & Level 1 BI terbuka default
+      latihanHistory: [
+        {
+          id: 'lat_sample_1',
+          subject: 'bahasa_indonesia',
+          level: 1,
+          score: 100,
+          correct: 5,
+          total: 5,
+          date: '28 Sep 2026',
+        },
+        {
+          id: 'lat_sample_2',
+          subject: 'matematika',
+          level: 1,
+          score: 80,
+          correct: 4,
+          total: 5,
+          date: '29 Sep 2026',
+        },
+      ],
+      tryoutHistory: [
+        {
+          id: 'to_sample_1',
+          subject: 'bahasa_indonesia',
+          packageNum: 1,
+          score: 86.7,
+          correct: 26,
+          total: 30,
+          date: '25 Sep 2026',
+        },
+        {
+          id: 'to_sample_2',
+          subject: 'matematika',
+          packageNum: 1,
+          score: 93.3,
+          correct: 28,
+          total: 30,
+          date: '29 Sep 2026',
+        },
+      ],
+    };
+  }
+
+  // Bersihkan data mock lama jika hanya berisi ['mtk_1', 'bi_1'] sebagai materi selesai
+  if (
+    data.materiCompleted &&
+    data.materiCompleted.length === 2 &&
+    data.materiCompleted.includes('mtk_1') &&
+    data.materiCompleted.includes('bi_1')
+  ) {
+    data.materiCompleted = [];
+  }
+
+  if (!data.unlockedMateri) {
+    data.unlockedMateri = ['mtk_1', 'bi_1'];
+  } else {
+    if (!data.unlockedMateri.includes('mtk_1')) data.unlockedMateri.push('mtk_1');
+    if (!data.unlockedMateri.includes('bi_1')) data.unlockedMateri.push('bi_1');
+  }
+
+  return data;
 };
 
 export const saveActivityData = (data) => {
@@ -68,12 +90,44 @@ export const saveActivityData = (data) => {
   }
 };
 
-export const markMateriComplete = (babId) => {
+export const unlockMateri = (babId) => {
   const data = getActivityData();
-  if (!data.materiCompleted.includes(babId)) {
-    data.materiCompleted.push(babId);
+  if (!data.unlockedMateri) data.unlockedMateri = ['mtk_1', 'bi_1'];
+  if (!data.unlockedMateri.includes(babId)) {
+    data.unlockedMateri.push(babId);
     saveActivityData(data);
   }
+};
+
+export const resetMateriProgress = (subject = null) => {
+  const data = getActivityData();
+  if (!subject) {
+    data.materiCompleted = [];
+    data.unlockedMateri = ['mtk_1', 'bi_1'];
+  } else if (subject === 'matematika') {
+    data.materiCompleted = (data.materiCompleted || []).filter((id) => !id.startsWith('mtk_'));
+    data.unlockedMateri = (data.unlockedMateri || []).filter((id) => !id.startsWith('mtk_'));
+    data.unlockedMateri.push('mtk_1');
+  } else if (subject === 'bahasa_indonesia') {
+    data.materiCompleted = (data.materiCompleted || []).filter((id) => !id.startsWith('bi_'));
+    data.unlockedMateri = (data.unlockedMateri || []).filter((id) => !id.startsWith('bi_'));
+    data.unlockedMateri.push('bi_1');
+  }
+  saveActivityData(data);
+  return data;
+};
+
+export const markMateriComplete = (babId) => {
+  const data = getActivityData();
+  if (!data.materiCompleted) data.materiCompleted = [];
+  if (!data.materiCompleted.includes(babId)) {
+    data.materiCompleted.push(babId);
+  }
+  if (!data.unlockedMateri) data.unlockedMateri = ['mtk_1', 'bi_1'];
+  if (!data.unlockedMateri.includes(babId)) {
+    data.unlockedMateri.push(babId);
+  }
+  saveActivityData(data);
 };
 
 export const recordLatihan = ({ subject, level, score, correct, total }) => {
@@ -115,8 +169,8 @@ export const getFullStats = () => {
   const data = getActivityData();
 
   // 1. Statistik Materi
-  const totalMateriTersedia = 33; // 12 Bab MTK + 21 Bab BI Sesuai Silabus Buku
-  const materiSelesai = data.materiCompleted.length;
+  const totalMateriTersedia = 33; // 12 Level MTK + 21 Level BI
+  const materiSelesai = Math.min(totalMateriTersedia, (data.materiCompleted || []).length);
   const persenMateri = Math.min(100, Math.round((materiSelesai / totalMateriTersedia) * 100));
 
   // 2. Statistik Latihan
