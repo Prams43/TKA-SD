@@ -11,9 +11,15 @@ export const validateRegisterForm = ({ username, email, password, confirmPasswor
     errors.username = 'Username wajib diisi.';
   } else {
     const trimmedUser = username.trim();
-    const userRegex = /^[a-zA-Z0-9._-]{3,20}$/;
-    if (!userRegex.test(trimmedUser)) {
-      errors.username = 'Username harus 3-20 karakter (huruf, angka, titik, atau underscore tanpa spasi).';
+    if (trimmedUser.includes('@')) {
+      errors.username = 'Username tidak boleh berupa alamat email (jangan gunakan tanda @). Gunakan nama panggilan.';
+    } else if (email && trimmedUser.toLowerCase() === email.trim().toLowerCase()) {
+      errors.username = 'Username tidak boleh sama dengan alamat email.';
+    } else {
+      const userRegex = /^[a-zA-Z0-9._-]{3,20}$/;
+      if (!userRegex.test(trimmedUser)) {
+        errors.username = 'Username harus 3-20 karakter (huruf, angka, titik, atau underscore tanpa spasi).';
+      }
     }
   }
 

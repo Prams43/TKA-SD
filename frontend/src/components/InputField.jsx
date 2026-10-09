@@ -17,6 +17,7 @@ const InputField = ({
   showPasswordToggle = false,
   disabled = false,
   autoComplete,
+  ...restProps
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -45,6 +46,7 @@ const InputField = ({
           placeholder={placeholder}
           disabled={disabled}
           autoComplete={autoComplete}
+          {...restProps}
           className={`w-full px-4 py-2.5 rounded-lg border text-sm transition-all duration-200 outline-none
             ${
               error

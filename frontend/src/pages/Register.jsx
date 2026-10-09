@@ -61,9 +61,15 @@ const Register = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    if (errors[name]) {
+    if (name === 'username' && value.includes('@')) {
+      setErrors((prev) => ({
+        ...prev,
+        username: 'Username tidak boleh berupa alamat email (jangan sertakan tanda @).',
+      }));
+    } else if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
     }
+
     if (serverError) {
       setServerError('');
     }
@@ -240,7 +246,11 @@ const Register = () => {
                   onChange={handleChange}
                   error={errors.username}
                   required
-                  autoComplete="username"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  data-lpignore="true"
                 />
 
                 <InputField
