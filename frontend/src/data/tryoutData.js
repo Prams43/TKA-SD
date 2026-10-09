@@ -16,9 +16,9 @@ export const PUSMENDIK_TRYOUT = {
     "paket": [
       {
         "nomorPaket": 1,
-        "namaPaket": "Paket 1 (ANCHOR)",
+        "namaPaket": "Paket 1",
         "kode": "TO-MTK-01",
-        "deskripsi": "Simulasi Ujian TKA Matematika SD (Paket 1 (ANCHOR)) - 30 Soal Standar Pusmendik.",
+        "deskripsi": "Simulasi Ujian TKA Matematika SD (Paket 1) - 30 Soal Standar Pusmendik.",
         "durasiMenit": 60,
         "soal": [
           {
@@ -677,9 +677,9 @@ export const PUSMENDIK_TRYOUT = {
       },
       {
         "nomorPaket": 2,
-        "namaPaket": "Paket 2 (PATHWAY)",
+        "namaPaket": "Paket 2",
         "kode": "TO-MTK-02",
-        "deskripsi": "Simulasi Ujian TKA Matematika SD (Paket 2 (PATHWAY)) - 30 Soal Standar Pusmendik.",
+        "deskripsi": "Simulasi Ujian TKA Matematika SD (Paket 2) - 30 Soal Standar Pusmendik.",
         "durasiMenit": 60,
         "soal": [
           {
@@ -1378,9 +1378,9 @@ export const PUSMENDIK_TRYOUT = {
       },
       {
         "nomorPaket": 3,
-        "namaPaket": "Paket 3 (FOCUS)",
+        "namaPaket": "Paket 3",
         "kode": "TO-MTK-03",
-        "deskripsi": "Simulasi Ujian TKA Matematika SD (Paket 3 (FOCUS)) - 30 Soal Standar Pusmendik.",
+        "deskripsi": "Simulasi Ujian TKA Matematika SD (Paket 3) - 30 Soal Standar Pusmendik.",
         "durasiMenit": 60,
         "soal": [
           {
@@ -2075,9 +2075,9 @@ export const PUSMENDIK_TRYOUT = {
       },
       {
         "nomorPaket": 4,
-        "namaPaket": "Paket 4 (RHYTHM)",
+        "namaPaket": "Paket 4",
         "kode": "TO-MTK-04",
-        "deskripsi": "Simulasi Ujian TKA Matematika SD (Paket 4 (RHYTHM)) - 30 Soal Standar Pusmendik.",
+        "deskripsi": "Simulasi Ujian TKA Matematika SD (Paket 4) - 30 Soal Standar Pusmendik.",
         "durasiMenit": 60,
         "soal": [
           {
@@ -2766,9 +2766,9 @@ export const PUSMENDIK_TRYOUT = {
       },
       {
         "nomorPaket": 5,
-        "namaPaket": "Paket 5 (INSIGHT)",
+        "namaPaket": "Paket 5",
         "kode": "TO-MTK-05",
-        "deskripsi": "Simulasi Ujian TKA Matematika SD (Paket 5 (INSIGHT)) - 30 Soal Standar Pusmendik.",
+        "deskripsi": "Simulasi Ujian TKA Matematika SD (Paket 5) - 30 Soal Standar Pusmendik.",
         "durasiMenit": 60,
         "soal": [
           {
@@ -3478,9 +3478,9 @@ export const PUSMENDIK_TRYOUT = {
     "paket": [
       {
         "nomorPaket": 1,
-        "namaPaket": "Paket 1 (ANCHOR)",
+        "namaPaket": "Paket 1",
         "kode": "TO-BI-01",
-        "deskripsi": "Simulasi Ujian TKA Bahasa Indonesia SD (Paket 1 (ANCHOR)) - 30 Soal Standar Pusmendik.",
+        "deskripsi": "Simulasi Ujian TKA Bahasa Indonesia SD (Paket 1) - 30 Soal Standar Pusmendik.",
         "durasiMenit": 60,
         "soal": [
           {
@@ -4154,9 +4154,9 @@ export const PUSMENDIK_TRYOUT = {
       },
       {
         "nomorPaket": 2,
-        "namaPaket": "Paket 2 (PATHWAY)",
+        "namaPaket": "Paket 2",
         "kode": "TO-BI-02",
-        "deskripsi": "Simulasi Ujian TKA Bahasa Indonesia SD (Paket 2 (PATHWAY)) - 30 Soal Standar Pusmendik.",
+        "deskripsi": "Simulasi Ujian TKA Bahasa Indonesia SD (Paket 2) - 30 Soal Standar Pusmendik.",
         "durasiMenit": 60,
         "soal": [
           {
@@ -4913,9 +4913,9 @@ export const PUSMENDIK_TRYOUT = {
       },
       {
         "nomorPaket": 3,
-        "namaPaket": "Paket 3 (FOCUS)",
+        "namaPaket": "Paket 3",
         "kode": "TO-BI-03",
-        "deskripsi": "Simulasi Ujian TKA Bahasa Indonesia SD (Paket 3 (FOCUS)) - 30 Soal Standar Pusmendik.",
+        "deskripsi": "Simulasi Ujian TKA Bahasa Indonesia SD (Paket 3) - 30 Soal Standar Pusmendik.",
         "durasiMenit": 60,
         "soal": [
           {
@@ -5662,9 +5662,9 @@ export const PUSMENDIK_TRYOUT = {
       },
       {
         "nomorPaket": 4,
-        "namaPaket": "Paket 4 (RHYTHM)",
+        "namaPaket": "Paket 4",
         "kode": "TO-BI-04",
-        "deskripsi": "Simulasi Ujian TKA Bahasa Indonesia SD (Paket 4 (RHYTHM)) - 30 Soal Standar Pusmendik.",
+        "deskripsi": "Simulasi Ujian TKA Bahasa Indonesia SD (Paket 4) - 30 Soal Standar Pusmendik.",
         "durasiMenit": 60,
         "soal": [
           {
@@ -6297,9 +6297,9 @@ export const PUSMENDIK_TRYOUT = {
       },
       {
         "nomorPaket": 5,
-        "namaPaket": "Paket 5 (INSIGHT)",
+        "namaPaket": "Paket 5",
         "kode": "TO-BI-05",
-        "deskripsi": "Simulasi Ujian TKA Bahasa Indonesia SD (Paket 5 (INSIGHT)) - 30 Soal Standar Pusmendik.",
+        "deskripsi": "Simulasi Ujian TKA Bahasa Indonesia SD (Paket 5) - 30 Soal Standar Pusmendik.",
         "durasiMenit": 60,
         "soal": [
           {

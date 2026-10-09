@@ -79,6 +79,25 @@ export const getActivityData = () => {
     if (!data.unlockedMateri.includes('bi_1')) data.unlockedMateri.push('bi_1');
   }
 
+  if (!data.materiStars) {
+    data.materiStars = {};
+  }
+
+  if (!data.unlockedLatihan) {
+    data.unlockedLatihan = ['mtk_lat_1', 'bi_lat_1'];
+  } else {
+    if (!data.unlockedLatihan.includes('mtk_lat_1')) data.unlockedLatihan.push('mtk_lat_1');
+    if (!data.unlockedLatihan.includes('bi_lat_1')) data.unlockedLatihan.push('bi_lat_1');
+  }
+
+  if (!data.latihanCompleted) {
+    data.latihanCompleted = [];
+  }
+
+  if (!data.latihanStars) {
+    data.latihanStars = {};
+  }
+
   return data;
 };
 
@@ -101,23 +120,31 @@ export const unlockMateri = (babId) => {
 
 export const resetMateriProgress = (subject = null) => {
   const data = getActivityData();
+  if (!data.materiStars) data.materiStars = {};
   if (!subject) {
     data.materiCompleted = [];
     data.unlockedMateri = ['mtk_1', 'bi_1'];
+    data.materiStars = {};
   } else if (subject === 'matematika') {
     data.materiCompleted = (data.materiCompleted || []).filter((id) => !id.startsWith('mtk_'));
     data.unlockedMateri = (data.unlockedMateri || []).filter((id) => !id.startsWith('mtk_'));
     data.unlockedMateri.push('mtk_1');
+    Object.keys(data.materiStars).forEach((key) => {
+      if (key.startsWith('mtk_')) delete data.materiStars[key];
+    });
   } else if (subject === 'bahasa_indonesia') {
     data.materiCompleted = (data.materiCompleted || []).filter((id) => !id.startsWith('bi_'));
     data.unlockedMateri = (data.unlockedMateri || []).filter((id) => !id.startsWith('bi_'));
     data.unlockedMateri.push('bi_1');
+    Object.keys(data.materiStars).forEach((key) => {
+      if (key.startsWith('bi_')) delete data.materiStars[key];
+    });
   }
   saveActivityData(data);
   return data;
 };
 
-export const markMateriComplete = (babId) => {
+export const markMateriComplete = (babId, stars = 3) => {
   const data = getActivityData();
   if (!data.materiCompleted) data.materiCompleted = [];
   if (!data.materiCompleted.includes(babId)) {
@@ -127,7 +154,61 @@ export const markMateriComplete = (babId) => {
   if (!data.unlockedMateri.includes(babId)) {
     data.unlockedMateri.push(babId);
   }
+  if (!data.materiStars) data.materiStars = {};
+  const prevStars = data.materiStars[babId] || 0;
+  data.materiStars[babId] = Math.max(prevStars, Math.max(1, Math.min(3, stars)));
   saveActivityData(data);
+};
+
+export const unlockLatihan = (latihanId) => {
+  const data = getActivityData();
+  if (!data.unlockedLatihan) data.unlockedLatihan = ['mtk_lat_1', 'bi_lat_1'];
+  if (!data.unlockedLatihan.includes(latihanId)) {
+    data.unlockedLatihan.push(latihanId);
+    saveActivityData(data);
+  }
+};
+
+export const markLatihanComplete = (latihanId, stars = 3) => {
+  const data = getActivityData();
+  if (!data.latihanCompleted) data.latihanCompleted = [];
+  if (!data.latihanCompleted.includes(latihanId)) {
+    data.latihanCompleted.push(latihanId);
+  }
+  if (!data.unlockedLatihan) data.unlockedLatihan = ['mtk_lat_1', 'bi_lat_1'];
+  if (!data.unlockedLatihan.includes(latihanId)) {
+    data.unlockedLatihan.push(latihanId);
+  }
+  if (!data.latihanStars) data.latihanStars = {};
+  const prevStars = data.latihanStars[latihanId] || 0;
+  data.latihanStars[latihanId] = Math.max(prevStars, Math.max(1, Math.min(3, stars)));
+  saveActivityData(data);
+};
+
+export const resetLatihanProgress = (subject = null) => {
+  const data = getActivityData();
+  if (!data.latihanStars) data.latihanStars = {};
+  if (!subject) {
+    data.latihanCompleted = [];
+    data.unlockedLatihan = ['mtk_lat_1', 'bi_lat_1'];
+    data.latihanStars = {};
+  } else if (subject === 'matematika') {
+    data.latihanCompleted = (data.latihanCompleted || []).filter((id) => !id.startsWith('mtk_lat_'));
+    data.unlockedLatihan = (data.unlockedLatihan || []).filter((id) => !id.startsWith('mtk_lat_'));
+    data.unlockedLatihan.push('mtk_lat_1');
+    Object.keys(data.latihanStars).forEach((key) => {
+      if (key.startsWith('mtk_lat_')) delete data.latihanStars[key];
+    });
+  } else if (subject === 'bahasa_indonesia') {
+    data.latihanCompleted = (data.latihanCompleted || []).filter((id) => !id.startsWith('bi_lat_'));
+    data.unlockedLatihan = (data.unlockedLatihan || []).filter((id) => !id.startsWith('bi_lat_'));
+    data.unlockedLatihan.push('bi_lat_1');
+    Object.keys(data.latihanStars).forEach((key) => {
+      if (key.startsWith('bi_lat_')) delete data.latihanStars[key];
+    });
+  }
+  saveActivityData(data);
+  return data;
 };
 
 export const recordLatihan = ({ subject, level, score, correct, total }) => {
@@ -146,7 +227,7 @@ export const recordLatihan = ({ subject, level, score, correct, total }) => {
   return newRecord;
 };
 
-export const recordTryout = ({ subject, packageNum, score, correct, total }) => {
+export const recordTryout = ({ subject, packageNum, score, correct, total, userAnswers = {} }) => {
   const data = getActivityData();
   const newRecord = {
     id: `to_${Date.now()}`,
@@ -155,6 +236,7 @@ export const recordTryout = ({ subject, packageNum, score, correct, total }) => 
     score,
     correct,
     total,
+    userAnswers,
     date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
   };
   data.tryoutHistory.unshift(newRecord);
@@ -173,7 +255,39 @@ export const getFullStats = () => {
   const materiSelesai = Math.min(totalMateriTersedia, (data.materiCompleted || []).length);
   const persenMateri = Math.min(100, Math.round((materiSelesai / totalMateriTersedia) * 100));
 
+  let totalBintangMateri = 0;
+  if (data.materiStars) {
+    Object.values(data.materiStars).forEach((s) => {
+      totalBintangMateri += Number(s) || 0;
+    });
+  }
+  // Tambahkan fallback bintang jika materiCompleted ada tapi materiStars belum tercatat
+  (data.materiCompleted || []).forEach((id) => {
+    if (!data.materiStars || !data.materiStars[id]) {
+      totalBintangMateri += 3;
+    }
+  });
+  const maxBintangMateri = totalMateriTersedia * 3;
+
   // 2. Statistik Latihan
+  const totalLatihanTersedia = 20; // 10 Level MTK + 10 Level BI
+  const latihanSelesai = Math.min(totalLatihanTersedia, (data.latihanCompleted || []).length);
+  const persenLatihan = Math.min(100, Math.round((latihanSelesai / totalLatihanTersedia) * 100));
+
+  let totalBintangLatihan = 0;
+  if (data.latihanStars) {
+    Object.values(data.latihanStars).forEach((s) => {
+      totalBintangLatihan += Number(s) || 0;
+    });
+  }
+  // Fallback bintang jika latihanCompleted ada tapi latihanStars belum tercatat
+  (data.latihanCompleted || []).forEach((id) => {
+    if (!data.latihanStars || !data.latihanStars[id]) {
+      totalBintangLatihan += 3;
+    }
+  });
+  const maxBintangLatihan = totalLatihanTersedia * 3;
+
   const totalLatihan = data.latihanHistory.length;
   let totalSoalDijawab = 0;
   let totalSoalBenar = 0;
@@ -205,6 +319,13 @@ export const getFullStats = () => {
     materiSelesai,
     totalMateriTersedia,
     persenMateri,
+    totalBintangMateri,
+    maxBintangMateri,
+    latihanSelesai,
+    totalLatihanTersedia,
+    persenLatihan,
+    totalBintangLatihan,
+    maxBintangLatihan,
     totalLatihan,
     totalSoalDijawab,
     totalSoalBenar,

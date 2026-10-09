@@ -11241,22 +11241,22 @@ export const PUSMENDIK_LATIHAN = {
       },
       {
         "id": "mtk_lvl8_q16",
-        "type": "matching",
+        "type": "mcq",
         "level": 4,
         "kesulitan": "HOTS",
-        "pertanyaan": "Jodohkan bangun ruang berikut dengan jaring-jaringnya yang tepat.",
+        "pertanyaan": "Sebuah bangun ruang memiliki jaring-jaring yang tersusun atas dua buah lingkaran identik (alas dan tutup) serta sebuah persegi panjang sebagai selimutnya. Bangun ruang apakah yang dimaksud?",
         "stimulus": "",
-        "indicator": "Menjodohkan bangun ruang dengan representasi jaring-jaringnya.",
-        "pilihan": [],
-        "jawabanBenar": [
-          "a-1",
-          "b-3",
-          "c-2",
-          "d-4"
+        "indicator": "Mengidentifikasi representasi jaring-jaring bangun ruang sisi lengkung.",
+        "pilihan": [
+          "Tabung",
+          "Kerucut",
+          "Prisma Segitiga",
+          "Limas Segiempat"
         ],
-        "answerIndex": -1,
+        "jawabanBenar": "Tabung",
+        "answerIndex": 0,
         "statements": [],
-        "penjelasan": "",
+        "penjelasan": "Jaring-jaring tabung terdiri dari 2 bidang lingkaran yang sejajar dan kongruen (alas dan tutup) serta sebuah persegi panjang yang berfungsi sebagai selimut tabung.",
         "nomor": 16
       },
       {
@@ -11341,7 +11341,7 @@ export const PUSMENDIK_LATIHAN = {
         ],
         "jawabanBenar": [
           "Total jalan yang sudah selesai adalah 7 km.",
-          "Sisa pekerjaan adalah 8.000 m.",
+          "Sisa pekerjaan jalan adalah 8.000 m.",
           "Sisa pekerjaan kurang dari 900 dam."
         ],
         "answerIndex": -1,
@@ -12135,22 +12135,22 @@ export const PUSMENDIK_LATIHAN = {
       },
       {
         "id": "mtk_lvl10_q15",
-        "type": "matching",
+        "type": "mcq",
         "level": 5,
         "kesulitan": "HOTS",
-        "pertanyaan": "Jodohkan nama bangun ruang dengan deskripsi sifat-sifatnya.",
+        "pertanyaan": "Sebuah bangun ruang memiliki 5 sisi, 8 rusuk, dan 5 titik sudut. Sisi alasnya berbentuk segiempat dan 4 sisi tegaknya berbentuk segitiga. Bangun ruang tersebut adalah...",
         "stimulus": "",
-        "indicator": "Menjodohkan bangun ruang dengan deskripsi sifat-sifatnya secara akurat.",
-        "pilihan": [],
-        "jawabanBenar": [
-          "a-4",
-          "b-3",
-          "c-1",
-          "d-2"
+        "indicator": "Mengidentifikasi sifat-sifat bangun ruang berdasarkan jumlah sisi, rusuk, dan titik sudut.",
+        "pilihan": [
+          "Limas Segiempat",
+          "Prisma Segitiga",
+          "Balok",
+          "Kerucut"
         ],
-        "answerIndex": -1,
+        "jawabanBenar": "Limas Segiempat",
+        "answerIndex": 0,
         "statements": [],
-        "penjelasan": "",
+        "penjelasan": "Limas segiempat memiliki 1 sisi alas segiempat dan 4 sisi tegak segitiga (total 5 sisi), 8 rusuk, dan 5 titik sudut (4 di alas + 1 titik puncak).",
         "nomor": 15
       },
       {
@@ -17279,7 +17279,7 @@ export const PUSMENDIK_LATIHAN = {
             ],
             "jawabanBenar": [
               "Total jalan yang sudah selesai adalah 7 km.",
-              "Sisa pekerjaan adalah 8.000 m.",
+              "Sisa pekerjaan jalan adalah 8.000 m.",
               "Sisa pekerjaan kurang dari 900 dam."
             ],
             "answerIndex": -1,

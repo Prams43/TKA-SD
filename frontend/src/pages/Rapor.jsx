@@ -14,6 +14,7 @@ import {
   Target,
   ArrowLeft,
   LayoutDashboard,
+  Star,
 } from 'lucide-react';
 
 /**
@@ -123,16 +124,22 @@ const Rapor = () => {
               <>
                 {/* 4 Kartu Statistik Cepat */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm">
-                    <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-                      <span>Materi Tuntas</span>
-                      <BookOpen className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <div className="text-xl sm:text-2xl font-black text-slate-900">
-                      {stats.materiSelesai}{' '}
-                      <span className="text-xs text-slate-500 font-normal">
-                        / {stats.totalMateriTersedia} Bab
-                      </span>
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                        <span>Materi Tuntas</span>
+                        <BookOpen className="w-4 h-4 text-blue-600" />
+                      </div>
+                      <div className="text-xl sm:text-2xl font-black text-slate-900">
+                        {stats.materiSelesai}{' '}
+                        <span className="text-xs text-slate-500 font-normal">
+                          / {stats.totalMateriTersedia} Bab
+                        </span>
+                      </div>
+                      <div className="mt-1 flex items-center space-x-1 text-[11px] font-bold text-amber-600">
+                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                        <span>{stats.totalBintangMateri || 0} / {stats.maxBintangMateri || 99} Bintang</span>
+                      </div>
                     </div>
                     <div className="mt-2 w-full h-1.5 rounded-full bg-slate-200 overflow-hidden">
                       <div
@@ -142,17 +149,29 @@ const Rapor = () => {
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm">
-                    <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-                      <span>Akurasi Latihan</span>
-                      <Target className="w-4 h-4 text-emerald-600" />
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                        <span>Latihan Soal</span>
+                        <Target className="w-4 h-4 text-emerald-600" />
+                      </div>
+                      <div className="text-xl sm:text-2xl font-black text-slate-900">
+                        {stats.latihanSelesai || 0}{' '}
+                        <span className="text-xs text-slate-500 font-normal">
+                          / {stats.totalLatihanTersedia || 20} Level ({stats.akurasiLatihan}%)
+                        </span>
+                      </div>
+                      <div className="mt-1 flex items-center space-x-1 text-[11px] font-bold text-amber-600">
+                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                        <span>{stats.totalBintangLatihan || 0} / {stats.maxBintangLatihan || 60} Bintang</span>
+                      </div>
                     </div>
-                    <div className="text-xl sm:text-2xl font-black text-slate-900">
-                      {stats.akurasiLatihan}%
+                    <div className="mt-2 w-full h-1.5 rounded-full bg-slate-200 overflow-hidden">
+                      <div
+                        className="h-full bg-emerald-600 rounded-full"
+                        style={{ width: `${stats.persenLatihan || 0}%` }}
+                      />
                     </div>
-                    <span className="text-[11px] text-emerald-700 font-medium mt-1 block">
-                      {stats.totalSoalBenar} dari {stats.totalSoalDijawab} soal benar
-                    </span>
                   </div>
 
                   <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm">

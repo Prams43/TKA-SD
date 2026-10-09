@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { PUSMENDIK_MATERI } from '../data/pusmendikData';
@@ -56,7 +56,7 @@ const SUBJECTS_CONFIG = {
   bahasa_indonesia: {
     key: 'bahasa_indonesia',
     title: 'Bahasa Indonesia',
-    tagline: '21 Level Berjenjang Standar Pusmendik',
+    tagline: '21 Topik Materi Standar Pusmendik',
     deskripsi: 'Ejaan, huruf kapital, kata depan, tanda baca, kalimat efektif, sastra (puisi & prosa), hingga analisis teks.',
     icon: BookOpen,
     totalLevels: 21,
@@ -74,25 +74,25 @@ const SUBJECTS_CONFIG = {
       5: {
         title: 'Peti Bintang Ejaan & Tata Bahasa',
         requiredLevel: 5,
-        desc: 'Pencapaian menuntaskan 5 Level Pertama: Huruf Kapital, Kata Depan, Tanda Baca, Kata Berimbuhan, dan Frasa.',
+        desc: 'Pencapaian menuntaskan 5 Materi Pertama: Huruf Kapital, Kata Depan, Tanda Baca, Kata Berimbuhan, dan Frasa.',
         reward: '⭐ Medali Ahli Ejaan & Frasa TKA SD',
       },
       10: {
         title: 'Peti Perak Makna & Kalimat Efektif',
         requiredLevel: 10,
-        desc: 'Pencapaian menuntaskan 10 Level: Makna Kata, Ungkapan, Sinonim/Antonim, Diksi, dan Struktur Kalimat.',
+        desc: 'Pencapaian menuntaskan 10 Materi: Makna Kata, Ungkapan, Sinonim/Antonim, Diksi, dan Struktur Kalimat.',
         reward: '🥈 Medali Master Kalimat & Diksi',
       },
       15: {
         title: 'Peti Emas Sastra, Prosa & Puisi',
         requiredLevel: 15,
-        desc: 'Pencapaian menuntaskan 15 Level: Menyimak, Menulis, Puisi, Prosa, dan Kosakata Lanjutan.',
+        desc: 'Pencapaian menuntaskan 15 Materi: Menyimak, Menulis, Puisi, Prosa, dan Kosakata Lanjutan.',
         reward: '💎 Medali Maestro Sastra & Literasi',
       },
       21: {
         title: 'Piala Maestro Bahasa Indonesia TKA SD',
         requiredLevel: 21,
-        desc: 'Piala kebanggaan tertinggi setelah menuntaskan seluruh 21 Level Bahasa Indonesia Pusmendik Kemendikdasmen RI.',
+        desc: 'Piala kebanggaan tertinggi setelah menuntaskan seluruh 21 Materi Bahasa Indonesia Pusmendik Kemendikdasmen RI.',
         reward: '👑 Gelar Maestro Bahasa Indonesia TKA SD 100%',
       },
     },
@@ -100,7 +100,7 @@ const SUBJECTS_CONFIG = {
   matematika: {
     key: 'matematika',
     title: 'Matematika',
-    tagline: '12 Level Berjenjang Standar Pusmendik',
+    tagline: '12 Topik Materi Standar Pusmendik',
     deskripsi: 'Operasi hitung, skala, KPK/FPB, bilangan pangkat, kecepatan, geometri, sudut, dan pengolahan data.',
     icon: Calculator,
     totalLevels: 12,
@@ -118,19 +118,19 @@ const SUBJECTS_CONFIG = {
       4: {
         title: 'Peti Bintang Dasar Numerasi',
         requiredLevel: 4,
-        desc: 'Peti pencapaian untuk menuntaskan 4 Level Pertama: Operasi Hitung, Skala, KPK/FPB, dan Pangkat.',
+        desc: 'Peti pencapaian untuk menuntaskan 4 Materi Pertama: Operasi Hitung, Skala, KPK/FPB, dan Pangkat.',
         reward: '⭐ Medali Ahli Bilangan TKA SD',
       },
       8: {
         title: 'Peti Emas Geometri & Pengukuran',
         requiredLevel: 8,
-        desc: 'Peti pencapaian untuk menuntaskan 8 Level: Pengukuran, Jarak/Kecepatan, Bangun Datar, dan Bangun Ruang.',
+        desc: 'Peti pencapaian untuk menuntaskan 8 Materi: Pengukuran, Jarak/Kecepatan, Bangun Datar, dan Bangun Ruang.',
         reward: '🏆 Medali Master Spasial & Geometri',
       },
       12: {
         title: 'Piala Maestro Matematika TKA SD',
         requiredLevel: 12,
-        desc: 'Piala kebanggaan tertinggi setelah menuntaskan seluruh 12 Level Matematika Pusmendik Kemendikdasmen RI.',
+        desc: 'Piala kebanggaan tertinggi setelah menuntaskan seluruh 12 Materi Matematika Pusmendik Kemendikdasmen RI.',
         reward: '👑 Gelar Maestro Matematika TKA SD 100%',
       },
     },
@@ -172,6 +172,18 @@ const Materi = () => {
   const [activity, setActivity] = useState(() => getActivityData());
   const completedBabIds = activity?.materiCompleted || [];
   const unlockedBabIds = activity?.unlockedMateri || ['mtk_1', 'bi_1'];
+  const materiStars = activity?.materiStars || {};
+
+  // Helper dapatkan jumlah bintang yang diraih pada bab tertentu
+  const getLevelStars = (babId) => {
+    if (materiStars && materiStars[babId] !== undefined) {
+      return materiStars[babId];
+    }
+    if (completedBabIds.includes(babId)) {
+      return 3;
+    }
+    return 0;
+  };
 
   // State Navigasi & Modal
   const [activeBab, setActiveBab] = useState(null); // Sedang membaca materi di MaterialReader
@@ -188,7 +200,9 @@ const Materi = () => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [hasSubmittedAnswer, setHasSubmittedAnswer] = useState(false);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
+  const [showQuizHint, setShowQuizHint] = useState(false);
   const [quizFinished, setQuizFinished] = useState(false);
+  const [quizMistakes, setQuizMistakes] = useState(0);
 
   // State Mode Tantangan Lompat Level (Jump Challenge)
   const [jumpChallengeBab, setJumpChallengeBab] = useState(null);
@@ -196,7 +210,14 @@ const Materi = () => {
   const [jumpSelectedAnswer, setJumpSelectedAnswer] = useState(null);
   const [jumpHasSubmitted, setJumpHasSubmitted] = useState(false);
   const [jumpIsCorrect, setJumpIsCorrect] = useState(false);
+  const [showJumpHint, setShowJumpHint] = useState(false);
   const [jumpFinished, setJumpFinished] = useState(false);
+
+  // State Transisi Anti-Spam (Mencegah Klik Ganda/Spam Tombol Periksa Jawaban)
+  const isQuizTransitioningRef = useRef(false);
+  const [isQuizTransitioning, setIsQuizTransitioning] = useState(false);
+  const isJumpTransitioningRef = useRef(false);
+  const [isJumpTransitioning, setIsJumpTransitioning] = useState(false);
 
   // Refresh data aktivitas saat ada perubahan
   const refreshActivity = () => {
@@ -238,30 +259,50 @@ const Materi = () => {
     setSelectedAnswer(null);
     setHasSubmittedAnswer(false);
     setIsAnswerCorrect(false);
+    setShowQuizHint(false);
     setQuizFinished(false);
+    setQuizMistakes(0);
+    isQuizTransitioningRef.current = false;
+    setIsQuizTransitioning(false);
   };
 
   // Submit Kuis Normal (Setelah Membaca Materi)
   const handleCheckQuizAnswer = () => {
+    // Kunci langsung: cegah spam klik jika sedang transisi atau jawaban sudah terverifikasi benar
+    if (isQuizTransitioningRef.current || (hasSubmittedAnswer && isAnswerCorrect)) return;
     if (selectedAnswer === null) return;
+
     const currentQ = activeBab.soalLatihan[currentQuizIndex];
     const correct = selectedAnswer === currentQ.jawabanBenar;
 
     setHasSubmittedAnswer(true);
     setIsAnswerCorrect(correct);
 
-    if (correct) {
+    if (!correct) {
+      setQuizMistakes((prev) => prev + 1);
+      setShowQuizHint(true);
+    } else {
+      // Aktifkan kunci transisi agar spam klik tidak melompati soal
+      isQuizTransitioningRef.current = true;
+      setIsQuizTransitioning(true);
+      setShowQuizHint(false);
+
       if (currentQuizIndex < activeBab.soalLatihan.length - 1) {
         setTimeout(() => {
           setCurrentQuizIndex((prev) => prev + 1);
           setSelectedAnswer(null);
           setHasSubmittedAnswer(false);
           setIsAnswerCorrect(false);
+          setShowQuizHint(false);
+          isQuizTransitioningRef.current = false;
+          setIsQuizTransitioning(false);
         }, 1100);
       } else {
         // Tuntas seluruh 3 soal!
         setQuizFinished(true);
-        markMateriComplete(activeBab.id);
+        // Hitung bintang: 0 salah -> 3 bintang; 1 salah -> 2 bintang; >=2 salah -> 1 bintang
+        const earnedStars = quizMistakes === 0 ? 3 : quizMistakes === 1 ? 2 : 1;
+        markMateriComplete(activeBab.id, earnedStars);
 
         // Buka level berikutnya secara otomatis
         const currentIndex = currentLevels.findIndex((b) => b.id === activeBab.id);
@@ -275,9 +316,20 @@ const Materi = () => {
         setTimeout(() => {
           setActiveBab(null);
           setInQuizMode(false);
-        }, 2200);
+          isQuizTransitioningRef.current = false;
+          setIsQuizTransitioning(false);
+        }, 2600);
       }
     }
+  };
+
+  // Aksi Coba Lagi Soal Kuis Normal
+  const handleRetryQuizQuestion = () => {
+    if (isQuizTransitioningRef.current) return;
+    setSelectedAnswer(null);
+    setHasSubmittedAnswer(false);
+    setIsAnswerCorrect(false);
+    // Petunjuk (hint) tetap terlihat agar murid terbantu memilih jawaban yang tepat
   };
 
   // Mulai Tantangan Lompat Level
@@ -288,33 +340,59 @@ const Materi = () => {
     setJumpSelectedAnswer(null);
     setJumpHasSubmitted(false);
     setJumpIsCorrect(false);
+    setShowJumpHint(false);
     setJumpFinished(false);
+    isJumpTransitioningRef.current = false;
+    setIsJumpTransitioning(false);
   };
 
   // Submit Jawaban Tantangan Lompat Level
   const handleCheckJumpAnswer = () => {
+    // Kunci langsung: cegah spam klik tantangan lompat level
+    if (isJumpTransitioningRef.current || (jumpHasSubmitted && jumpIsCorrect)) return;
     if (jumpSelectedAnswer === null) return;
+
     const currentQ = jumpChallengeBab.soalLatihan[jumpQuizIndex];
     const correct = jumpSelectedAnswer === currentQ.jawabanBenar;
 
     setJumpHasSubmitted(true);
     setJumpIsCorrect(correct);
 
-    if (correct) {
+    if (!correct) {
+      setShowJumpHint(true);
+    } else {
+      // Aktifkan kunci transisi agar spam klik tidak melompati soal tantangan
+      isJumpTransitioningRef.current = true;
+      setIsJumpTransitioning(true);
+      setShowJumpHint(false);
+
       if (jumpQuizIndex < jumpChallengeBab.soalLatihan.length - 1) {
         setTimeout(() => {
           setJumpQuizIndex((prev) => prev + 1);
           setJumpSelectedAnswer(null);
           setJumpHasSubmitted(false);
           setJumpIsCorrect(false);
+          setShowJumpHint(false);
+          isJumpTransitioningRef.current = false;
+          setIsJumpTransitioning(false);
         }, 1100);
       } else {
         // Berhasil menyelesaikan kuis tantangan lompat level!
         setJumpFinished(true);
         unlockMateri(jumpChallengeBab.id);
         refreshActivity();
+        isJumpTransitioningRef.current = false;
+        setIsJumpTransitioning(false);
       }
     }
+  };
+
+  // Aksi Coba Lagi Tantangan Lompat Level
+  const handleRetryJumpQuestion = () => {
+    if (isJumpTransitioningRef.current) return;
+    setJumpSelectedAnswer(null);
+    setJumpHasSubmitted(false);
+    setJumpIsCorrect(false);
   };
 
   // Reset Progres
@@ -385,7 +463,7 @@ const Materi = () => {
               <>
                 <span>/</span>
                 <span className="text-blue-600 font-semibold truncate max-w-[150px] sm:max-w-xs">
-                  Level {activeBab.no}: {activeBab.judul}
+                  Materi {activeBab.no}: {activeBab.judul}
                 </span>
               </>
             )}
@@ -407,7 +485,7 @@ const Materi = () => {
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>
               {activeBab || jumpChallengeBab
-                ? 'Kembali ke Peta Level'
+                ? 'Kembali ke Peta Materi'
                 : selectedSubject
                 ? 'Ganti Mata Pelajaran'
                 : 'Dashboard'}
@@ -422,13 +500,13 @@ const Materi = () => {
             <div className="text-center space-y-2">
               <div className="inline-flex items-center space-x-1.5 px-3.5 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold border border-blue-200">
                 <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                <span>Petualangan Level Resmi Pusmendik Kemendikdasmen</span>
+                <span>Petualangan Materi Resmi Pusmendik Kemendikdasmen</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
                 Pilih Mata Pelajaran
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto leading-relaxed">
-                Setiap mata pelajaran memiliki peta level berjenjang dengan tantangan soal, buka gembok level berikutnya, dan kumpulkan piala penghargaan!
+                Setiap mata pelajaran memiliki peta materi terstruktur dengan tantangan soal, buka gembok materi berikutnya, dan kumpulkan piala penghargaan!
               </p>
             </div>
 
@@ -456,7 +534,7 @@ const Materi = () => {
                           <BookOpen className="w-7 h-7" />
                         </div>
                         <span className="px-3 py-1 rounded-full text-xs font-black bg-blue-100 text-blue-800 border border-blue-200">
-                          21 Level Berjenjang
+                          21 Topik Materi
                         </span>
                       </div>
 
@@ -470,7 +548,7 @@ const Materi = () => {
                       {/* Bar Progres */}
                       <div className="mt-4 pt-3 border-t border-blue-100">
                         <div className="flex items-center justify-between text-[11px] mb-1 font-semibold text-slate-600">
-                          <span>Progres: {biDone} dari 21 Level</span>
+                          <span>Progres: {biDone} dari 21 Materi</span>
                           <span className="text-blue-700 font-bold">{biPercent}%</span>
                         </div>
                         <div className="w-full bg-blue-100/70 rounded-full h-2 overflow-hidden">
@@ -483,7 +561,7 @@ const Materi = () => {
                     </div>
 
                     <div className="mt-5 pt-3 border-t border-blue-100 flex items-center justify-between text-xs text-blue-600 font-bold group-hover:translate-x-0.5 transition-transform">
-                      <span>Buka Peta 21 Level Bahasa Indonesia</span>
+                      <span>Buka Peta 21 Materi Bahasa Indonesia</span>
                       <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
@@ -512,7 +590,7 @@ const Materi = () => {
                           <Calculator className="w-7 h-7" />
                         </div>
                         <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
-                          12 Level Berjenjang
+                          12 Topik Materi
                         </span>
                       </div>
 
@@ -526,7 +604,7 @@ const Materi = () => {
                       {/* Bar Progres */}
                       <div className="mt-4 pt-3 border-t border-emerald-100">
                         <div className="flex items-center justify-between text-[11px] mb-1 font-semibold text-slate-600">
-                          <span>Progres: {mtkDone} dari 12 Level</span>
+                          <span>Progres: {mtkDone} dari 12 Materi</span>
                           <span className="text-emerald-700 font-bold">{mtkPercent}%</span>
                         </div>
                         <div className="w-full bg-emerald-100/70 rounded-full h-2 overflow-hidden">
@@ -539,7 +617,7 @@ const Materi = () => {
                     </div>
 
                     <div className="mt-5 pt-3 border-t border-emerald-100 flex items-center justify-between text-xs text-emerald-600 font-bold group-hover:translate-x-0.5 transition-transform">
-                      <span>Buka Peta 12 Level Matematika</span>
+                      <span>Buka Peta 12 Materi Matematika</span>
                       <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
@@ -565,7 +643,7 @@ const Materi = () => {
                 <div>
                   <div className="flex items-center space-x-2">
                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
-                      LEVEL {activeBab.no} DARI {currentLevels.length} • {currentSubject.title.toUpperCase()}
+                      MATERI {activeBab.no} DARI {currentLevels.length} • {currentSubject.title.toUpperCase()}
                     </span>
                     {isLevelCompleted(activeBab.id) && (
                       <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center space-x-1">
@@ -596,6 +674,9 @@ const Materi = () => {
                   setHasSubmittedAnswer(false);
                   setIsAnswerCorrect(false);
                   setQuizFinished(false);
+                  setQuizMistakes(0);
+                  isQuizTransitioningRef.current = false;
+                  setIsQuizTransitioning(false);
                 }}
               />
             ) : (
@@ -629,10 +710,45 @@ const Materi = () => {
                         <Trophy className="w-8 h-8" />
                       </div>
                       <h4 className="text-xl font-black text-slate-900">
-                        Level {activeBab.no} Tuntas! 🎉
+                        Materi {activeBab.no} Tuntas! 🎉
                       </h4>
+
+                      {/* Tampilan Bintang yang Didapatkan */}
+                      <div className="flex items-center justify-center space-x-2 py-1">
+                        {[1, 2, 3].map((starNum) => {
+                          const finalStars = quizMistakes === 0 ? 3 : quizMistakes === 1 ? 2 : 1;
+                          const isEarned = starNum <= finalStars;
+                          return (
+                            <div
+                              key={starNum}
+                              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${
+                                isEarned
+                                  ? 'bg-amber-100 border-2 border-amber-400 shadow-md scale-105'
+                                  : 'bg-slate-100 border border-slate-200 opacity-40'
+                              }`}
+                            >
+                              <Star
+                                className={`w-6 h-6 ${
+                                  isEarned
+                                    ? 'text-amber-500 fill-amber-400 drop-shadow-xs'
+                                    : 'text-slate-300 fill-slate-200'
+                                }`}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <p className="text-xs sm:text-sm font-bold text-amber-700">
+                        {quizMistakes === 0
+                          ? '⭐⭐⭐ Sempurna! Kamu meraih 3 Bintang Emas!'
+                          : quizMistakes === 1
+                          ? '⭐⭐☆ Hebat! Kamu meraih 2 Bintang Emas!'
+                          : '⭐☆☆ Bagus! Kamu berhasil meraih 1 Bintang!'}
+                      </p>
+
                       <p className="text-xs sm:text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
-                        Luar biasa! Kamu berhasil menjawab semua soal dengan tepat. Level berikutnya kini telah terbuka di peta petualangan!
+                        Luar biasa! Kamu berhasil menjawab semua soal dengan tepat. Materi berikutnya kini telah terbuka di peta petualangan!
                       </p>
                     </div>
                   ) : (
@@ -643,37 +759,50 @@ const Materi = () => {
 
                       {/* Pilihan Jawaban */}
                       <div className="space-y-2.5">
-                        {activeBab.soalLatihan[currentQuizIndex].pilihan.map((opt, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => {
-                              if (!hasSubmittedAnswer || !isAnswerCorrect) {
+                        {activeBab.soalLatihan[currentQuizIndex].pilihan.map((opt, idx) => {
+                          const isSelected = selectedAnswer === idx;
+                          const isWrongSubmitted = hasSubmittedAnswer && !isAnswerCorrect && selectedAnswer === idx;
+                          const isLocked = isQuizTransitioning || (hasSubmittedAnswer && isAnswerCorrect);
+
+                          return (
+                            <button
+                              key={idx}
+                              disabled={isLocked}
+                              onClick={() => {
+                                if (isLocked) return;
                                 setSelectedAnswer(idx);
                                 setHasSubmittedAnswer(false);
-                              }
-                            }}
-                            className={`w-full p-3.5 rounded-xl text-left text-xs sm:text-sm font-medium border transition-all flex items-center justify-between ${
-                              selectedAnswer === idx
-                                ? 'bg-blue-50 border-blue-500 text-blue-900 shadow-xs'
-                                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
-                            }`}
-                          >
-                            <span>{opt}</span>
-                            <div
-                              className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-bold ${
-                                selectedAnswer === idx
-                                  ? 'border-blue-500 bg-blue-600 text-white'
-                                  : 'border-slate-300 text-slate-400'
+                                setIsAnswerCorrect(false);
+                              }}
+                              className={`w-full p-3.5 rounded-xl text-left text-xs sm:text-sm font-medium border transition-all flex items-center justify-between ${
+                                isLocked ? 'cursor-not-allowed opacity-80' : 'cursor-pointer'
+                              } ${
+                                isWrongSubmitted
+                                  ? 'bg-rose-50 border-rose-400 text-rose-900 shadow-xs'
+                                  : isSelected
+                                  ? 'bg-blue-50 border-blue-500 text-blue-900 shadow-xs'
+                                  : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
                               }`}
                             >
-                              {String.fromCharCode(65 + idx)}
-                            </div>
-                          </button>
-                        ))}
+                              <span>{opt}</span>
+                              <div
+                                className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-bold ${
+                                  isWrongSubmitted
+                                    ? 'border-rose-500 bg-rose-600 text-white'
+                                    : isSelected
+                                    ? 'border-blue-500 bg-blue-600 text-white'
+                                    : 'border-slate-300 text-slate-400'
+                                }`}
+                              >
+                                {String.fromCharCode(65 + idx)}
+                              </div>
+                            </button>
+                          );
+                        })}
                       </div>
 
                       {/* Petunjuk jika salah */}
-                      {hasSubmittedAnswer && !isAnswerCorrect && (
+                      {(showQuizHint || (hasSubmittedAnswer && !isAnswerCorrect)) && (
                         <div className="mt-4 p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs animate-fade-in flex items-start space-x-2.5">
                           <HelpCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
                           <div>
@@ -704,15 +833,31 @@ const Materi = () => {
                         </button>
 
                         <button
-                          onClick={handleCheckQuizAnswer}
-                          disabled={selectedAnswer === null}
+                          onClick={
+                            hasSubmittedAnswer && !isAnswerCorrect
+                              ? handleRetryQuizQuestion
+                              : handleCheckQuizAnswer
+                          }
+                          disabled={
+                            isQuizTransitioning ||
+                            (hasSubmittedAnswer && isAnswerCorrect) ||
+                            (!hasSubmittedAnswer && selectedAnswer === null)
+                          }
                           className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md ${
-                            selectedAnswer !== null
+                            isQuizTransitioning || (hasSubmittedAnswer && isAnswerCorrect)
+                              ? 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
+                              : hasSubmittedAnswer && !isAnswerCorrect
+                              ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 font-black hover:scale-105 active:scale-95 cursor-pointer'
+                              : selectedAnswer !== null
                               ? 'bg-blue-600 hover:bg-blue-500 text-white hover:scale-105 active:scale-95 cursor-pointer'
                               : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                           }`}
                         >
-                          {hasSubmittedAnswer && !isAnswerCorrect ? 'Coba Lagi' : 'Periksa Jawaban'}
+                          {isQuizTransitioning || (hasSubmittedAnswer && isAnswerCorrect)
+                            ? 'Memproses...'
+                            : hasSubmittedAnswer && !isAnswerCorrect
+                            ? 'Coba Lagi'
+                            : 'Periksa Jawaban'}
                         </button>
                       </div>
                     </>
@@ -739,15 +884,15 @@ const Materi = () => {
                   <div>
                     <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-xs text-[11px] font-bold tracking-wider uppercase border border-white/20 mb-2">
                       <currentSubject.icon className="w-3.5 h-3.5" />
-                      <span>{currentSubject.title} • {currentLevels.length} Level Berjenjang</span>
+                      <span>{currentSubject.title} • {currentLevels.length} Topik Materi</span>
                     </div>
 
                     <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white drop-shadow-xs">
                       Peta Materi {currentSubject.title} TKA SD
                     </h1>
                     <p className="text-xs sm:text-sm text-white/90 max-w-xl mt-0.5 leading-relaxed">
-                      Selesaikan materi berurutan untuk membuka level berikutnya, atau buka lebih awal dengan{' '}
-                      <strong className="underline decoration-yellow-300 decoration-2">Tantangan Lompat Soal</strong>!
+                      Pelajari materi secara bertahap untuk membuka materi berikutnya, atau buka lebih awal dengan{' '}
+                      <strong className="underline decoration-yellow-300 decoration-2">Tantangan Lompat Materi</strong>!
                     </p>
                   </div>
 
@@ -799,7 +944,7 @@ const Materi = () => {
                     <div className="flex items-center justify-between mb-1 text-[11px] font-semibold text-white/90">
                       <span>Progres {currentSubject.title}</span>
                       <span className="font-bold text-white">
-                        {completedCount} dari {currentLevels.length} Level Tuntas ({progressPercent}%)
+                        {completedCount} dari {currentLevels.length} Materi Tuntas ({progressPercent}%)
                       </span>
                     </div>
                     <div className="w-full bg-black/25 rounded-full h-2.5 p-0.5 overflow-hidden border border-white/10">
@@ -814,10 +959,17 @@ const Materi = () => {
                     <span className="px-2.5 py-1 rounded-xl bg-white/15 border border-white/20 font-semibold text-white flex items-center space-x-1">
                       <Sparkles className="w-3 h-3 text-yellow-300" />
                       <span>
-                        Fokus: Level{' '}
+                        Fokus: Materi{' '}
                         {currentActiveLevelIndex !== -1
                           ? currentLevels[currentActiveLevelIndex].no
                           : currentLevels.length}
+                      </span>
+                    </span>
+
+                    <span className="px-2.5 py-1 rounded-xl bg-amber-400/25 border border-amber-300/40 font-bold text-amber-100 flex items-center space-x-1">
+                      <Star className="w-3 h-3 text-yellow-300 fill-yellow-300" />
+                      <span>
+                        {currentLevels.reduce((acc, bab) => acc + getLevelStars(bab.id), 0)}/{currentLevels.length * 3} Bintang
                       </span>
                     </span>
 
@@ -932,11 +1084,31 @@ const Materi = () => {
                         <p className="text-[11px] text-slate-500 mt-1 line-clamp-2 leading-relaxed">
                           {bab.ringkasan}
                         </p>
+
+                        {/* Capaian Bintang Level di Grid */}
+                        <div className="flex items-center space-x-1 mt-2.5">
+                          {[1, 2, 3].map((s) => {
+                            const stars = getLevelStars(bab.id);
+                            return (
+                              <Star
+                                key={s}
+                                className={`w-3.5 h-3.5 ${
+                                  s <= stars
+                                    ? 'text-amber-500 fill-amber-400 drop-shadow-xs'
+                                    : 'text-slate-300 fill-slate-100 stroke-slate-300'
+                                }`}
+                              />
+                            );
+                          })}
+                          <span className="text-[10px] font-bold text-slate-500 ml-1">
+                            {getLevelStars(bab.id) > 0 ? `${getLevelStars(bab.id)}/3 ⭐` : '0/3'}
+                          </span>
+                        </div>
                       </div>
 
                       <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold">
                         <span className={isUnlocked ? 'text-blue-600' : 'text-slate-400'}>
-                          {isUnlocked ? 'Buka Materi' : 'Lompat Soal ⚡'}
+                          {isUnlocked ? 'Buka Materi' : 'Lompat Materi ⚡'}
                         </span>
                         <ChevronRight className="w-3.5 h-3.5" />
                       </div>
@@ -952,10 +1124,10 @@ const Materi = () => {
                 {/* Subtitle Alur */}
                 <div className="text-center mb-6">
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                    Peta Berjenjang {currentLevels.length} Level • {currentSubject.title}
+                    Peta Belajar {currentLevels.length} Materi • {currentSubject.title}
                   </span>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Klik lingkaran level untuk belajar, atau ikuti tantangan lompat level
+                    Klik lingkaran materi untuk belajar slide per slide, atau raih 3 bintang di setiap kuis pemahaman!
                   </p>
                 </div>
 
@@ -966,6 +1138,7 @@ const Materi = () => {
                     const isUnlocked = isLevelUnlocked(index, bab, currentLevels);
                     const isCurrent = index === currentActiveLevelIndex;
                     const offsetClass = getPathOffset(index);
+                    const starsEarned = getLevelStars(bab.id);
 
                     // Cek Milestone Peti
                     const milestoneItem = currentSubject.milestones[bab.no];
@@ -998,7 +1171,7 @@ const Materi = () => {
                                 ? 'bg-gradient-to-b from-sky-400 to-blue-500 border-b-[6px] border-blue-700 text-white shadow-md hover:scale-105 active:translate-y-1 active:border-b-2'
                                 : 'bg-slate-200 border-b-[6px] border-slate-300 text-slate-400 hover:bg-slate-300/90 hover:text-slate-600 shadow-2xs hover:scale-105 active:translate-y-1 active:border-b-2'
                             }`}
-                            title={`Level ${bab.no}: ${bab.judul} (${
+                            title={`Materi ${bab.no}: ${bab.judul} (${
                               isCompleted ? 'Tuntas' : isUnlocked ? 'Terbuka' : 'Terkunci - Klik untuk Lompat'
                             })`}
                           >
@@ -1010,7 +1183,7 @@ const Materi = () => {
                             ) : isUnlocked ? (
                               <div className="flex flex-col items-center">
                                 <span className="text-xl sm:text-2xl font-black leading-none">{bab.no}</span>
-                                <span className="text-[9px] font-bold uppercase opacity-85 mt-0.5">Level</span>
+                                <span className="text-[9px] font-bold uppercase opacity-85 mt-0.5">Materi</span>
                               </div>
                             ) : (
                               <div className="flex flex-col items-center">
@@ -1041,33 +1214,33 @@ const Materi = () => {
                             }`}
                           >
                             <span className="block text-[10px] font-bold uppercase tracking-wider opacity-75">
-                              Level {bab.no}
+                              Materi {bab.no}
                             </span>
                             <span className="block text-xs font-semibold truncate">
                               {bab.judul}
                             </span>
                           </div>
 
-                          {/* Stepping Connector Dots */}
-                          {index < currentLevels.length - 1 && (
-                            <div className="flex flex-col items-center space-y-1 my-1.5 opacity-60">
-                              <span
-                                className={`w-2 h-2 rounded-full ${
-                                  isCompleted ? 'bg-emerald-400' : 'bg-slate-300'
-                                }`}
-                              />
-                              <span
-                                className={`w-2 h-2 rounded-full ${
-                                  isCompleted ? 'bg-emerald-400' : 'bg-slate-300'
-                                }`}
-                              />
-                              <span
-                                className={`w-2 h-2 rounded-full ${
-                                  isCompleted ? 'bg-emerald-400' : 'bg-slate-300'
-                                }`}
-                              />
-                            </div>
-                          )}
+                          {/* 3 Bintang Horizontal Capaian Materi (Pengganti 3 Titik Vertikal) */}
+                          <div
+                            onClick={() => setSelectedLevelModal(bab)}
+                            className="flex items-center justify-center space-x-1.5 mt-2 cursor-pointer transition-transform hover:scale-110 select-none py-1 px-2.5 rounded-full bg-white/80 backdrop-blur-2xs border border-slate-200/80 shadow-2xs hover:shadow-xs"
+                            title={`Materi ${bab.no}: Meraih ${starsEarned} dari 3 Bintang`}
+                          >
+                            {[1, 2, 3].map((starIdx) => {
+                              const isFilled = starIdx <= starsEarned;
+                              return (
+                                <Star
+                                  key={starIdx}
+                                  className={`w-4 h-4 transition-all duration-300 ${
+                                    isFilled
+                                      ? 'text-amber-500 fill-amber-400 drop-shadow-[0_1px_2px_rgba(245,158,11,0.5)] scale-105'
+                                      : 'text-slate-300 fill-slate-200/40 stroke-slate-300'
+                                  }`}
+                                />
+                              );
+                            })}
+                          </div>
                         </div>
 
                         {/* --- MILESTONE PETI BONUS (Jika ada di level ini) --- */}
@@ -1096,11 +1269,7 @@ const Materi = () => {
                             <div className="mt-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-[10px] font-bold text-slate-600">
                               {completedCount >= milestoneItem.requiredLevel
                                 ? '🎁 Peti Terbuka!'
-                                : `🔒 Peti Level ${milestoneItem.requiredLevel}`}
-                            </div>
-                            <div className="flex flex-col items-center space-y-1 my-1.5 opacity-60">
-                              <span className="w-2 h-2 rounded-full bg-slate-300" />
-                              <span className="w-2 h-2 rounded-full bg-slate-300" />
+                                : `🔒 Peti Materi ${milestoneItem.requiredLevel}`}
                             </div>
                           </div>
                         )}
@@ -1111,7 +1280,7 @@ const Materi = () => {
                             onClick={() =>
                               setMilestoneModal({
                                 title: milestoneItem?.title || `Piala Juara ${currentSubject.title}`,
-                                desc: milestoneItem?.desc || `Piala kebanggaan setelah menuntaskan seluruh ${currentLevels.length} Level ${currentSubject.title}.`,
+                                desc: milestoneItem?.desc || `Piala kebanggaan setelah menuntaskan seluruh ${currentLevels.length} Materi ${currentSubject.title}.`,
                                 requiredLevel: currentLevels.length,
                                 unlocked: completedCount === currentLevels.length,
                                 reward: milestoneItem?.reward || `👑 Gelar Maestro ${currentSubject.title} TKA SD 100%`,
@@ -1138,7 +1307,7 @@ const Materi = () => {
                               >
                                 {completedCount === currentLevels.length
                                   ? `👑 MAESTRO ${currentSubject.title.toUpperCase()}`
-                                  : `Piala Puncak (Level ${currentLevels.length} Selesai)`}
+                                  : `Piala Puncak (Materi ${currentLevels.length} Selesai)`}
                               </span>
                             </div>
                           </div>
@@ -1182,11 +1351,13 @@ const Materi = () => {
 
                 <div className="flex items-center space-x-2 mb-1.5">
                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-white/20">
-                    LEVEL {selectedLevelModal.no} DARI {currentLevels.length} • {currentSubject?.title.toUpperCase()}
+                    MATERI {selectedLevelModal.no} DARI {currentLevels.length} • {currentSubject?.title.toUpperCase()}
                   </span>
                   {isCompleted ? (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-400 text-emerald-950">
-                      ✓ Sudah Tuntas
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-400 text-emerald-950 flex items-center space-x-1">
+                      <span>✓ Tuntas</span>
+                      <span>•</span>
+                      <span>{getLevelStars(selectedLevelModal.id)}/3 ⭐</span>
                     </span>
                   ) : isUnlocked ? (
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-200 text-blue-900">
@@ -1204,6 +1375,45 @@ const Materi = () => {
 
               {/* Body Modal */}
               <div className="p-5 space-y-4">
+                {/* Capaian Bintang Materi */}
+                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                  <div>
+                    <span className="text-[11px] text-slate-500 font-semibold block uppercase tracking-wider">
+                      Capaian Kuis Pemahaman
+                    </span>
+                    <span className="text-xs font-bold text-slate-800">
+                      {isCompleted
+                        ? `${getLevelStars(selectedLevelModal.id)} dari 3 Bintang Terkumpul`
+                        : isUnlocked
+                        ? 'Belum dikerjakan (0/3 Bintang)'
+                        : 'Materi masih terkunci'}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    {[1, 2, 3].map((starIdx) => {
+                      const isFilled = starIdx <= getLevelStars(selectedLevelModal.id);
+                      return (
+                        <div
+                          key={starIdx}
+                          className={`w-7 h-7 rounded-xl flex items-center justify-center transition-all ${
+                            isFilled
+                              ? 'bg-amber-100 border border-amber-300 shadow-2xs'
+                              : 'bg-slate-200/60 border border-slate-200'
+                          }`}
+                        >
+                          <Star
+                            className={`w-4 h-4 ${
+                              isFilled
+                                ? 'text-amber-500 fill-amber-400 drop-shadow-xs'
+                                : 'text-slate-300 fill-slate-200/50 stroke-slate-300'
+                            }`}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 <div>
                   <h5 className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
                     Ringkasan Materi
@@ -1227,12 +1437,12 @@ const Materi = () => {
                       <Lock className="w-4 h-4 text-slate-500 flex-shrink-0 mt-0.5" />
                       <div>
                         <strong className="block font-bold text-slate-800">
-                          Level ini masih terkunci!
+                          Materi ini masih terkunci!
                         </strong>
                         <p className="mt-0.5 text-slate-600 leading-relaxed">
-                          Selesaikan Level {prevBab?.no} ({prevBab?.judul}) terlebih dahulu,{' '}
+                          Selesaikan Materi {prevBab?.no} ({prevBab?.judul}) terlebih dahulu,{' '}
                           <strong className="text-blue-700">ATAU kamu dapat langsung melompat</strong>{' '}
-                          ke level ini dengan menjawab soal tantangan pemahaman materi!
+                          ke materi ini dengan menjawab soal tantangan pemahaman materi!
                         </p>
                       </div>
                     </div>
@@ -1250,13 +1460,13 @@ const Materi = () => {
                       <span>{isCompleted ? 'Pelajari Ulang Materi' : 'Mulai Belajar Materi'}</span>
                     </button>
                   ) : (
-                    /* Opsi Lompat Level */
+                    /* Opsi Lompat Materi */
                     <button
                       onClick={() => handleStartJumpChallenge(selectedLevelModal)}
                       className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-xs sm:text-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2 cursor-pointer active:scale-98"
                     >
                       <Zap className="w-4 h-4 fill-current" />
-                      <span>Lompat ke Level Ini (Tantangan Kuis)</span>
+                      <span>Lompat ke Materi Ini (Tantangan Kuis)</span>
                     </button>
                   )}
 
@@ -1273,7 +1483,7 @@ const Materi = () => {
         );
       })()}
 
-      {/* --- MODAL 2: TANTANGAN LOMPAT LEVEL (JUMP CHALLENGE) --- */}
+      {/* --- MODAL 2: TANTANGAN LOMPAT MATERI (JUMP CHALLENGE) --- */}
       {jumpChallengeBab && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/70 backdrop-blur-xs animate-fade-in overflow-y-auto">
           <div className="bg-white rounded-3xl border border-amber-300 shadow-2xl max-w-lg w-full overflow-hidden relative animate-fade-in my-auto">
@@ -1288,13 +1498,13 @@ const Materi = () => {
 
               <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-xs text-[10px] font-black uppercase tracking-wider mb-2">
                 <Zap className="w-3 h-3 fill-current text-yellow-200" />
-                <span>Tantangan Lompat Level • {currentSubject?.title}</span>
+                <span>Tantangan Lompat Materi • {currentSubject?.title}</span>
               </div>
               <h3 className="text-lg sm:text-xl font-black">
-                Uji Pemahaman: Level {jumpChallengeBab.no} ({jumpChallengeBab.judul})
+                Uji Pemahaman: Materi {jumpChallengeBab.no} ({jumpChallengeBab.judul})
               </h3>
               <p className="text-xs text-amber-100 mt-1">
-                Jawab soal materi ini untuk langsung membuka Level {jumpChallengeBab.no} lebih awal!
+                Jawab soal materi ini untuk langsung membuka Materi {jumpChallengeBab.no} lebih awal!
               </p>
             </div>
 
@@ -1310,7 +1520,7 @@ const Materi = () => {
                       Tantangan Berhasil Dituntaskan! 🎉
                     </h4>
                     <p className="text-xs sm:text-sm text-slate-600 max-w-sm mx-auto mt-1 leading-relaxed">
-                      Hebat! Kamu telah membuktikan kemampuanmu. <strong>Level {jumpChallengeBab.no} ({jumpChallengeBab.judul})</strong> kini resmi <strong>TERBUKA</strong> untukmu!
+                      Hebat! Kamu telah membuktikan kemampuanmu. <strong>Materi {jumpChallengeBab.no} ({jumpChallengeBab.judul})</strong> kini resmi <strong>TERBUKA</strong> untukmu!
                     </p>
                   </div>
 
@@ -1329,7 +1539,7 @@ const Materi = () => {
                       onClick={() => setJumpChallengeBab(null)}
                       className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
                     >
-                      🗺️ Kembali ke Peta Level
+                      🗺️ Kembali ke Peta Materi
                     </button>
                   </div>
                 </div>
@@ -1361,37 +1571,50 @@ const Materi = () => {
 
                   {/* Opsi Jawaban */}
                   <div className="space-y-2">
-                    {jumpChallengeBab.soalLatihan[jumpQuizIndex].pilihan.map((opt, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => {
-                          if (!jumpHasSubmitted || !jumpIsCorrect) {
+                    {jumpChallengeBab.soalLatihan[jumpQuizIndex].pilihan.map((opt, idx) => {
+                      const isSelected = jumpSelectedAnswer === idx;
+                      const isWrongSubmitted = jumpHasSubmitted && !jumpIsCorrect && jumpSelectedAnswer === idx;
+                      const isLocked = isJumpTransitioning || (jumpHasSubmitted && jumpIsCorrect);
+
+                      return (
+                        <button
+                          key={idx}
+                          disabled={isLocked}
+                          onClick={() => {
+                            if (isLocked) return;
                             setJumpSelectedAnswer(idx);
                             setJumpHasSubmitted(false);
-                          }
-                        }}
-                        className={`w-full p-3 rounded-xl text-left text-xs sm:text-sm font-medium border transition-all flex items-center justify-between cursor-pointer ${
-                          jumpSelectedAnswer === idx
-                            ? 'bg-amber-50 border-amber-500 text-amber-900 shadow-2xs'
-                            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
-                        }`}
-                      >
-                        <span>{opt}</span>
-                        <div
-                          className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-bold ${
-                            jumpSelectedAnswer === idx
-                              ? 'border-amber-500 bg-amber-500 text-white'
-                              : 'border-slate-300 text-slate-400'
+                            setJumpIsCorrect(false);
+                          }}
+                          className={`w-full p-3 rounded-xl text-left text-xs sm:text-sm font-medium border transition-all flex items-center justify-between ${
+                            isLocked ? 'cursor-not-allowed opacity-80' : 'cursor-pointer'
+                          } ${
+                            isWrongSubmitted
+                              ? 'bg-rose-50 border-rose-400 text-rose-900 shadow-2xs'
+                              : isSelected
+                              ? 'bg-amber-50 border-amber-500 text-amber-900 shadow-2xs'
+                              : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
                           }`}
                         >
-                          {String.fromCharCode(65 + idx)}
-                        </div>
-                      </button>
-                    ))}
+                          <span>{opt}</span>
+                          <div
+                            className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-bold ${
+                              isWrongSubmitted
+                                ? 'border-rose-500 bg-rose-600 text-white'
+                                : isSelected
+                                ? 'border-amber-500 bg-amber-500 text-white'
+                                : 'border-slate-300 text-slate-400'
+                            }`}
+                          >
+                            {String.fromCharCode(65 + idx)}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
 
                   {/* Hint jika salah */}
-                  {jumpHasSubmitted && !jumpIsCorrect && (
+                  {(showJumpHint || (jumpHasSubmitted && !jumpIsCorrect)) && (
                     <div className="p-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs animate-fade-in flex items-start space-x-2">
                       <HelpCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
                       <div>
@@ -1420,15 +1643,31 @@ const Materi = () => {
                       Batal
                     </button>
                     <button
-                      onClick={handleCheckJumpAnswer}
-                      disabled={jumpSelectedAnswer === null}
+                      onClick={
+                        jumpHasSubmitted && !jumpIsCorrect
+                          ? handleRetryJumpQuestion
+                          : handleCheckJumpAnswer
+                      }
+                      disabled={
+                        isJumpTransitioning ||
+                        (jumpHasSubmitted && jumpIsCorrect) ||
+                        (!jumpHasSubmitted && jumpSelectedAnswer === null)
+                      }
                       className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md ${
-                        jumpSelectedAnswer !== null
-                          ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 font-black cursor-pointer'
+                        isJumpTransitioning || (jumpHasSubmitted && jumpIsCorrect)
+                          ? 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
+                          : jumpHasSubmitted && !jumpIsCorrect
+                          ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 font-black cursor-pointer hover:scale-105 active:scale-95'
+                          : jumpSelectedAnswer !== null
+                          ? 'bg-blue-600 hover:bg-blue-500 text-white font-bold cursor-pointer'
                           : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                       }`}
                     >
-                      {jumpHasSubmitted && !jumpIsCorrect ? 'Coba Lagi' : 'Periksa Jawaban'}
+                      {isJumpTransitioning || (jumpHasSubmitted && jumpIsCorrect)
+                        ? 'Memproses...'
+                        : jumpHasSubmitted && !jumpIsCorrect
+                        ? 'Coba Lagi'
+                        : 'Periksa Jawaban'}
                     </button>
                   </div>
                 </div>
@@ -1455,10 +1694,10 @@ const Materi = () => {
               </button>
               <h3 className="text-lg font-black flex items-center space-x-2">
                 <BookOpen className="w-5 h-5" />
-                <span>Buku Panduan Petualangan Level</span>
+                <span>Buku Panduan Petualangan Materi</span>
               </h3>
               <p className="text-xs text-white/90 mt-1">
-                Aturan & Cara Menaklukkan Level Pembelajaran TKA SD
+                Aturan & Cara Menuntaskan Materi Pembelajaran TKA SD
               </p>
             </div>
 
@@ -1469,7 +1708,7 @@ const Materi = () => {
                 </span>
                 <div>
                   <strong className="block text-slate-900 font-bold">Posisi Awal Belajar</strong>
-                  Hanya <strong>Level 1</strong> pada masing-masing mata pelajaran yang terbuka di awal petualangan. Level selanjutnya masih terkunci.
+                  Hanya <strong>Materi 1</strong> pada masing-masing mata pelajaran yang terbuka di awal petualangan. Materi selanjutnya masih terkunci.
                 </div>
               </div>
 
@@ -1478,8 +1717,8 @@ const Materi = () => {
                   2
                 </span>
                 <div>
-                  <strong className="block text-slate-900 font-bold">Membuka Level Berurutan</strong>
-                  Untuk membuka level berikutnya secara normal, baca materi pelajaran dan jawab 3 soal latihan pemahaman di akhir materi hingga benar.
+                  <strong className="block text-slate-900 font-bold">Membuka Materi Berurutan</strong>
+                  Untuk membuka materi berikutnya secara bertahap, pelajari slide materi dan selesaikan 3 soal kuis pemahaman di akhir materi hingga benar.
                 </div>
               </div>
 
@@ -1488,8 +1727,8 @@ const Materi = () => {
                   3
                 </span>
                 <div>
-                  <strong className="block text-slate-900 font-bold">Fitur Tantangan Lompat Soal</strong>
-                  Ingin langsung belajar materi di level tertentu? Kamu bisa melompat materi kapan saja dengan menyelesaikan <strong>Tantangan Kuis</strong> dari materi yang dituju!
+                  <strong className="block text-slate-900 font-bold">Fitur Tantangan Lompat Materi</strong>
+                  Ingin langsung belajar topik di materi tertentu? Kamu bisa membuka materi lebih awal dengan menyelesaikan <strong>Tantangan Kuis</strong> dari materi yang dituju!
                 </div>
               </div>
 
@@ -1499,7 +1738,7 @@ const Materi = () => {
                 </span>
                 <div>
                   <strong className="block text-slate-900 font-bold">Milestone Peti & Piala Puncak</strong>
-                  Kumpulkan bintang dan buka peti bonus di setiap tahapan, hingga Piala Maestro di puncak level terakhir!
+                  Kumpulkan 3 bintang di setiap materi dan buka peti bonus di setiap tahapan, hingga Piala Maestro di puncak materi terakhir!
                 </div>
               </div>
 
@@ -1546,8 +1785,8 @@ const Materi = () => {
                 </div>
               ) : (
                 <div className="text-slate-500">
-                  <span>Perlu menyelesaikan minimal <strong>{milestoneModal.requiredLevel} Level</strong> untuk membuka!</span>
-                  <div className="text-[11px] text-slate-400 mt-0.5">Saat ini: {completedCount} / {milestoneModal.requiredLevel} Level</div>
+                  <span>Perlu menyelesaikan minimal <strong>{milestoneModal.requiredLevel} Materi</strong> untuk membuka!</span>
+                  <div className="text-[11px] text-slate-400 mt-0.5">Saat ini: {completedCount} / {milestoneModal.requiredLevel} Materi</div>
                 </div>
               )}
             </div>
@@ -1575,7 +1814,7 @@ const Materi = () => {
                 Reset Progres {currentSubject?.title || 'Belajar'}?
               </h4>
               <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                Tindakan ini akan mengunci kembali Level 2 sampai {currentLevels.length} pada mata pelajaran ini, dan mengembalikan status ke Level 1 awal.
+                Tindakan ini akan mengunci kembali Materi 2 sampai {currentLevels.length} pada mata pelajaran ini, dan mengembalikan status ke Materi 1 awal.
               </p>
             </div>
 
