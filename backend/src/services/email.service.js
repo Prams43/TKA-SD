@@ -124,7 +124,7 @@ export const sendMailInternal = async ({ to, subject, text, html }) => {
 
   try {
     await transporter.sendMail({
-      from: `"TKA SD" <${process.env.SMTP_USER}>`,
+      from: `"Portal Belajar TKA SD" <${process.env.SMTP_USER}>`,
       replyTo: process.env.SMTP_USER,
       to,
       subject,
@@ -134,6 +134,7 @@ export const sendMailInternal = async ({ to, subject, text, html }) => {
         'X-Priority': '3',
         'X-MSMail-Priority': 'Normal',
         Importance: 'Normal',
+        'X-Entity-Ref-ID': `tka-${Date.now()}`,
       },
     });
     console.log(`[EMAIL/SMTP] Email berhasil dikirim ke: ${to}`);
@@ -153,7 +154,7 @@ export const sendMailInternal = async ({ to, subject, text, html }) => {
  * @returns {Promise<{ sent: boolean }>}
  */
 export const sendOtpEmail = async (to, otpCode, username = 'Siswa') => {
-  const subject = `Kode Verifikasi Pendaftaran TKA SD: ${otpCode}`;
+  const subject = '[TKA SD] Verifikasi Pendaftaran Akun Baru Anda';
   const text = `Halo ${username},\n\nKode verifikasi akun TKA SD Anda adalah: ${otpCode}\n\nKode ini berlaku selama 10 menit. Jangan berikan kode ini kepada siapapun demi keamanan akun Anda.\n\nSalam,\nTim Portal TKA SD`;
 
   const html = `
@@ -233,7 +234,7 @@ export const sendOtpEmail = async (to, otpCode, username = 'Siswa') => {
  * @returns {Promise<{ sent: boolean }>}
  */
 export const sendResetPasswordEmail = async (to, otpCode, username = 'Pengguna') => {
-  const subject = `Kode Reset Password TKA SD: ${otpCode}`;
+  const subject = '[TKA SD] Permintaan Reset Kata Sandi Akun';
   const text = `Halo ${username},\n\nKami menerima permintaan untuk mereset kata sandi (password) akun Anda di Portal TKA SD.\n\nKode verifikasi reset password Anda adalah: ${otpCode}\n\nKode ini berlaku selama 10 menit. Jangan berikan kode ini kepada siapapun demi keamanan akun Anda.\n\nJika Anda tidak merasa meminta reset password, akun Anda tetap aman dan Anda dapat mengabaikan email ini.\n\nSalam,\nTim Portal TKA SD`;
 
   const html = `

@@ -10,19 +10,22 @@ import Dashboard from './pages/Dashboard';
 import Materi from './pages/Materi';
 import LatihanSoal from './pages/LatihanSoal';
 import Tryout from './pages/Tryout';
-import Rapor from './pages/Rapor';
 import NavyBackground from './components/NavyBackground';
+import RewardModal from './components/RewardModal';
 
 function App() {
   return (
     <AuthProvider>
       <div className="relative min-h-screen text-[#1E293B] antialiased">
-        {/* Latar Belakang Navy Gelembung Lembut Universal */}
+        {/* Latar Belakang Navy/Teal Gelembung Lembut Universal */}
         <NavyBackground />
 
         {/* Konten Rute Aplikasi */}
         <div className="relative z-10">
           <HashRouter>
+            {/* Modal Selebrasi EXP & Level Up ala Duolingo Global */}
+            <RewardModal />
+
             <Routes>
           {/* Route Publik (Pengguna yang sudah login akan otomatis dialihkan ke /dashboard) */}
           <Route element={<PublicRoute />}>

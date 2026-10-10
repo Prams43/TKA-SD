@@ -340,6 +340,19 @@ const ForgotPassword = () => {
                 </div>
               </div>
 
+              {/* Petunjuk Folder Spam/Promosi */}
+              <div className="mb-5 p-3 rounded-lg bg-[#FEF7EE] border border-[#FCD9BD] text-left">
+                <div className="flex items-start space-x-2.5">
+                  <span className="text-base flex-shrink-0">💡</span>
+                  <div className="text-xs text-[#261C14] leading-relaxed">
+                    <p className="font-bold text-[#D97E26]">Email belum masuk ke Kotak Masuk?</p>
+                    <p className="text-[#6E6258] mt-0.5">
+                      Periksa folder <strong className="text-[#261C14]">Spam</strong> atau <strong className="text-[#261C14]">Promosi</strong> di email Anda. Tandai sebagai <em>"Bukan Spam"</em> agar email berikutnya langsung masuk ke Kotak Masuk utama.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <form onSubmit={handleVerifyOtpSubmit} noValidate>
                 {/* 6 Kotak Input OTP */}
                 <div className="flex justify-between items-center gap-2 mb-6" onPaste={handleOtpPaste}>

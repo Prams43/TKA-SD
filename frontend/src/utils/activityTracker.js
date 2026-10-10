@@ -120,8 +120,8 @@ export const AVAILABLE_TITLES = [
     color: 'purple',
     badgeColor: 'bg-purple-50 text-purple-700 border-purple-300',
     desc: 'Mencapai Level 5 ke atas dari dedikasi belajar konsisten.',
-    requirement: 'Capai Level 5 (kumpulkan minimal 400 EXP)',
-    isUnlocked: (data) => (data.exp || 0) >= 400,
+    requirement: 'Capai Level 5 (kumpulkan minimal 1.400 EXP)',
+    isUnlocked: (data) => calculateLevelInfo(data.exp || 0).level >= 5,
   },
   {
     id: 'legenda_sd',
@@ -130,27 +130,69 @@ export const AVAILABLE_TITLES = [
     color: 'rose',
     badgeColor: 'bg-rose-50 text-rose-700 border-rose-300',
     desc: 'Pencapaian master tertinggi di seluruh penjuru Nusantara.',
-    requirement: 'Capai Level 10 (kumpulkan minimal 900 EXP)',
-    isUnlocked: (data) => (data.exp || 0) >= 900,
+    requirement: 'Capai Level 10 (kumpulkan minimal 9.200 EXP)',
+    isUnlocked: (data) => calculateLevelInfo(data.exp || 0).level >= 10,
   },
 ];
 
 /**
- * Menghitung detail level berdasarkan total EXP
- * Setiap 100 EXP = 1 Level
+ * Tabel ambang batas kumulatif EXP untuk setiap level.
+ * EXP yang dibutuhkan untuk naik level meningkat secara bertahap
+ * agar seimbang dengan total materi (33 bab), drill soal (20 level), dan tryout nasional.
+ */
+export const LEVEL_EXP_TABLE = [
+  { level: 1, requiredExp: 0, nextLevelExp: 150 },      // Level 1: butuh 150 EXP menuju Lv 2
+  { level: 2, requiredExp: 150, nextLevelExp: 250 },    // Level 2: butuh 250 EXP menuju Lv 3 (total 400)
+  { level: 3, requiredExp: 400, nextLevelExp: 400 },    // Level 3: butuh 400 EXP menuju Lv 4 (total 800)
+  { level: 4, requiredExp: 800, nextLevelExp: 600 },    // Level 4: butuh 600 EXP menuju Lv 5 (total 1.400)
+  { level: 5, requiredExp: 1400, nextLevelExp: 850 },   // Level 5: butuh 850 EXP menuju Lv 6 (total 2.250)
+  { level: 6, requiredExp: 2250, nextLevelExp: 1150 },  // Level 6: butuh 1.150 EXP menuju Lv 7 (total 3.400)
+  { level: 7, requiredExp: 3400, nextLevelExp: 1500 },  // Level 7: butuh 1.500 EXP menuju Lv 8 (total 4.900)
+  { level: 8, requiredExp: 4900, nextLevelExp: 1900 },  // Level 8: butuh 1.900 EXP menuju Lv 9 (total 6.800)
+  { level: 9, requiredExp: 6800, nextLevelExp: 2400 },  // Level 9: butuh 2.400 EXP menuju Lv 10 (total 9.200)
+  { level: 10, requiredExp: 9200, nextLevelExp: 3000 }, // Level 10: master tertinggi (butuh 3.000 EXP per level)
+];
+
+/**
+ * Menghitung detail level dan progres EXP secara dinamis (Scaling Curve)
  */
 export const calculateLevelInfo = (exp = 0) => {
   const currentExp = Math.max(0, Number(exp) || 0);
-  const level = Math.floor(currentExp / 100) + 1;
-  const currentLevelExp = currentExp % 100;
-  const nextLevelExp = 100;
-  const progressPercent = Math.min(100, Math.round((currentLevelExp / nextLevelExp) * 100));
+
+  let currentLevel = 1;
+  let levelBaseExp = 0;
+  let nextLevelExp = 150;
+
+  for (let i = LEVEL_EXP_TABLE.length - 1; i >= 0; i--) {
+    if (currentExp >= LEVEL_EXP_TABLE[i].requiredExp) {
+      currentLevel = LEVEL_EXP_TABLE[i].level;
+      levelBaseExp = LEVEL_EXP_TABLE[i].requiredExp;
+      nextLevelExp = LEVEL_EXP_TABLE[i].nextLevelExp;
+      break;
+    }
+  }
+
+  // Jika melebihi Level 10 (Endgame mastery)
+  if (currentExp >= 9200) {
+    const extraExp = currentExp - 9200;
+    const extraLevels = Math.floor(extraExp / 3000);
+    currentLevel = 10 + extraLevels;
+    levelBaseExp = 9200 + extraLevels * 3000;
+    nextLevelExp = 3000;
+  }
+
+  const currentLevelExp = currentExp - levelBaseExp;
+  const progressPercent = Math.min(
+    100,
+    Math.max(0, Math.round((currentLevelExp / nextLevelExp) * 100))
+  );
 
   return {
-    level,
+    level: currentLevel,
     totalExp: currentExp,
     currentLevelExp,
     nextLevelExp,
+    expRemaining: Math.max(0, nextLevelExp - currentLevelExp),
     progressPercent,
   };
 };
@@ -414,8 +456,22 @@ export const resetMateriProgress = (subject = null) => {
   return data;
 };
 
+/**
+ * Memicu pop-up reward perolehan EXP dan Level Up Duolingo-style
+ */
+export const triggerRewardCelebration = (detail) => {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('tka_reward_earned', { detail }));
+  }
+};
+
 export const recordUserActivity = (actionType = 'general', expEarned = 50) => {
   const data = getActivityData();
+  const prevExp = data.exp || 0;
+  const prevLevelInfo = calculateLevelInfo(prevExp);
+  const prevLevel = prevLevelInfo.level;
+  const prevUnlocked = [...(data.unlockedTitles || ['pemula'])];
+
   const today = getTodayDateStr();
   const yesterday = getYesterdayDateStr();
 
@@ -438,13 +494,33 @@ export const recordUserActivity = (actionType = 'general', expEarned = 50) => {
 
   // 2. Tambah EXP
   data.exp = (data.exp || 0) + expEarned;
+  const newLevelInfo = calculateLevelInfo(data.exp);
+  const leveledUp = newLevelInfo.level > prevLevel;
 
   // 3. Cek gelar baru
   checkAndUnlockTitles(data);
+  const newTitlesUnlocked = (data.unlockedTitles || [])
+    .filter((id) => !prevUnlocked.includes(id))
+    .map((id) => AVAILABLE_TITLES.find((t) => t.id === id))
+    .filter(Boolean);
 
   saveActivityData(data);
   notifyProfileUpdate();
-  return data;
+
+  // 4. Memicu Event Pop-up Duolingo Reward
+  triggerRewardCelebration({
+    expEarned,
+    prevExp,
+    newExp: data.exp,
+    prevLevelInfo,
+    newLevelInfo,
+    leveledUp,
+    streak: data.streak,
+    actionType,
+    newTitlesUnlocked,
+  });
+
+  return { data, leveledUp, expEarned, newLevelInfo };
 };
 
 export const setActiveTitle = (titleId) => {
