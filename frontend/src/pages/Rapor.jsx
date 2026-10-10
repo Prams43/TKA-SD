@@ -341,7 +341,6 @@ const Rapor = () => {
                         ))}
                     </div>
                   </div>
-                  </div>
                 </div>
 
                 {/* 3. Rekomendasi Belajar Ringkas (Bukan Wall-of-Text) */}
