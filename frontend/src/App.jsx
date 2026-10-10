@@ -11,11 +11,15 @@ import Materi from './pages/Materi';
 import LatihanSoal from './pages/LatihanSoal';
 import Tryout from './pages/Tryout';
 import Rapor from './pages/Rapor';
+import RewardModal from './components/RewardModal';
 
 function App() {
   return (
     <AuthProvider>
       <HashRouter>
+        {/* Modal Selebrasi EXP & Level Up ala Duolingo Global */}
+        <RewardModal />
+
         <Routes>
           {/* Route Publik (Pengguna yang sudah login akan otomatis dialihkan ke /dashboard) */}
           <Route element={<PublicRoute />}>

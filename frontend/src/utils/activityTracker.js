@@ -414,8 +414,22 @@ export const resetMateriProgress = (subject = null) => {
   return data;
 };
 
+/**
+ * Memicu pop-up reward perolehan EXP dan Level Up Duolingo-style
+ */
+export const triggerRewardCelebration = (detail) => {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('tka_reward_earned', { detail }));
+  }
+};
+
 export const recordUserActivity = (actionType = 'general', expEarned = 50) => {
   const data = getActivityData();
+  const prevExp = data.exp || 0;
+  const prevLevelInfo = calculateLevelInfo(prevExp);
+  const prevLevel = prevLevelInfo.level;
+  const prevUnlocked = [...(data.unlockedTitles || ['pemula'])];
+
   const today = getTodayDateStr();
   const yesterday = getYesterdayDateStr();
 
@@ -438,13 +452,33 @@ export const recordUserActivity = (actionType = 'general', expEarned = 50) => {
 
   // 2. Tambah EXP
   data.exp = (data.exp || 0) + expEarned;
+  const newLevelInfo = calculateLevelInfo(data.exp);
+  const leveledUp = newLevelInfo.level > prevLevel;
 
   // 3. Cek gelar baru
   checkAndUnlockTitles(data);
+  const newTitlesUnlocked = (data.unlockedTitles || [])
+    .filter((id) => !prevUnlocked.includes(id))
+    .map((id) => AVAILABLE_TITLES.find((t) => t.id === id))
+    .filter(Boolean);
 
   saveActivityData(data);
   notifyProfileUpdate();
-  return data;
+
+  // 4. Memicu Event Pop-up Duolingo Reward
+  triggerRewardCelebration({
+    expEarned,
+    prevExp,
+    newExp: data.exp,
+    prevLevelInfo,
+    newLevelInfo,
+    leveledUp,
+    streak: data.streak,
+    actionType,
+    newTitlesUnlocked,
+  });
+
+  return { data, leveledUp, expEarned, newLevelInfo };
 };
 
 export const setActiveTitle = (titleId) => {
