@@ -1,5 +1,11 @@
--- Schema Tabel Cloudflare D1 untuk Aplikasi TKA SD
+-- ==============================================================================
+-- SCHEMA CLOUDFLARE D1: TABEL USER & GAMIFIKASI PROFIL LENGKAP
+-- ==============================================================================
+-- File ini dapat dicopy-paste langsung ke Cloudflare D1 Console (Dashboard Cloudflare)
+-- Masuk ke Cloudflare Dashboard -> Storage & Databases -> D1 -> Pilih Database Anda -> Tab "Console"
+-- ==============================================================================
 
+-- 1. TABEL PENGGUNA (USERS)
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE NOT NULL,
@@ -12,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Schema Tabel Profil & Gamifikasi (EXP, Level, Gelar, Streak, Aktivitas)
+-- 2. TABEL PROFIL & GAMIFIKASI (EXP, LEVEL, GELAR, STREAK, AKTIVITAS BELAJAR)
 CREATE TABLE IF NOT EXISTS user_profiles (
   user_id INTEGER PRIMARY KEY,
   exp INTEGER DEFAULT 0,
@@ -27,6 +33,8 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- 3. INDEX UNTUK PERFORMA QUERY LEADERBOARD & PENCARIAN
 CREATE INDEX IF NOT EXISTS idx_user_profiles_exp ON user_profiles(exp DESC);
 CREATE INDEX IF NOT EXISTS idx_user_profiles_level ON user_profiles(level DESC);
-
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);

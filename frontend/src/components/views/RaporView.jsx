@@ -174,39 +174,83 @@ const RaporView = ({ isOpen, onClose }) => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                  {stats.kompetensi.map((k, idx) => (
-                    <div
-                      key={idx}
-                      className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-sm space-y-2"
-                    >
-                      <div className="flex items-center justify-between text-xs">
-                        <div>
-                          <strong className="text-slate-900 block">{k.nama}</strong>
-                          <span className="text-[10px] text-slate-500">{k.mapel}</span>
-                        </div>
-                        <span className="font-bold text-blue-600">{k.nilai}%</span>
-                      </div>
-
-                      <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                  {/* Kolom Kiri: Seluruh Kompetensi Bahasa Indonesia */}
+                  <div className="space-y-3.5">
+                    {stats.kompetensi
+                      .filter((k) => k.mapel === 'Bahasa Indonesia')
+                      .map((k, idx) => (
                         <div
-                          className={`h-full rounded-full ${
-                            k.nilai >= 90
-                              ? 'bg-emerald-500'
-                              : k.nilai >= 80
-                              ? 'bg-blue-500'
-                              : 'bg-amber-500'
-                          }`}
-                          style={{ width: `${k.nilai}%` }}
-                        />
-                      </div>
+                          key={`bi-${idx}`}
+                          className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-sm space-y-2"
+                        >
+                          <div className="flex items-center justify-between text-xs">
+                            <div>
+                              <strong className="text-slate-900 block">{k.nama}</strong>
+                              <span className="text-[10px] text-slate-500">{k.mapel}</span>
+                            </div>
+                            <span className="font-bold text-blue-600">{k.nilai}%</span>
+                          </div>
 
-                      <div className="flex justify-end">
-                        <span className="text-[10px] text-slate-500 font-medium">
-                          Status: <strong className="text-slate-800">{k.status}</strong>
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                          <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${
+                                k.nilai >= 90
+                                  ? 'bg-emerald-500'
+                                  : k.nilai >= 80
+                                  ? 'bg-blue-500'
+                                  : 'bg-amber-500'
+                              }`}
+                              style={{ width: `${k.nilai}%` }}
+                            />
+                          </div>
+
+                          <div className="flex justify-end">
+                            <span className="text-[10px] text-slate-500 font-medium">
+                              Status: <strong className="text-slate-800">{k.status}</strong>
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+
+                  {/* Kolom Kanan: Seluruh Kompetensi Matematika */}
+                  <div className="space-y-3.5">
+                    {stats.kompetensi
+                      .filter((k) => k.mapel === 'Matematika')
+                      .map((k, idx) => (
+                        <div
+                          key={`mtk-${idx}`}
+                          className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-sm space-y-2"
+                        >
+                          <div className="flex items-center justify-between text-xs">
+                            <div>
+                              <strong className="text-slate-900 block">{k.nama}</strong>
+                              <span className="text-[10px] text-slate-500">{k.mapel}</span>
+                            </div>
+                            <span className="font-bold text-blue-600">{k.nilai}%</span>
+                          </div>
+
+                          <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${
+                                k.nilai >= 90
+                                  ? 'bg-emerald-500'
+                                  : k.nilai >= 80
+                                  ? 'bg-blue-500'
+                                  : 'bg-amber-500'
+                              }`}
+                              style={{ width: `${k.nilai}%` }}
+                            />
+                          </div>
+
+                          <div className="flex justify-end">
+                            <span className="text-[10px] text-slate-500 font-medium">
+                              Status: <strong className="text-slate-800">{k.status}</strong>
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
                 </div>
               </div>
 

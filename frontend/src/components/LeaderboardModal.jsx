@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Trophy, Medal, Flame, Star, Sparkles, User, Award, Shield, Search } from 'lucide-react';
-import { getLeaderboardData } from '../utils/leaderboardData';
+import { getLeaderboardData, syncLeaderboardFromDatabase } from '../utils/leaderboardData';
 
 /**
  * Komponen Modal / Tampilan Papan Peringkat (Leaderboard) TKA SD
@@ -9,6 +9,15 @@ import { getLeaderboardData } from '../utils/leaderboardData';
 const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'top3'
+  const [, setRefreshTick] = useState(0);
+
+  useEffect(() => {
+    if (isOpen) {
+      syncLeaderboardFromDatabase().then((res) => {
+        if (res) setRefreshTick((t) => t + 1);
+      });
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

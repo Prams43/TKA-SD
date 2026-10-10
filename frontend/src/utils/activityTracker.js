@@ -1,10 +1,19 @@
+import { profileService } from '../services/profileService';
+
 /**
  * Activity Tracker TKA SD
- * Menyimpan dan mengelola statistik aktivitas belajar murid secara persisten (localStorage)
- * untuk disajikan pada halaman Rapor.
+ * Menyimpan dan mengelola statistik aktivitas belajar murid secara persisten (localStorage + Cloudflare D1)
+ * untuk disajikan pada halaman Rapor dan Profil.
  */
 
-const STORAGE_KEY = 'tka_sd_user_activity_v1';
+const STORAGE_KEY = 'tka_sd_user_activity_v2';
+
+// Bersihkan cache lama jika ada di browser
+if (typeof window !== 'undefined') {
+  try {
+    localStorage.removeItem('tka_sd_user_activity_v1');
+  } catch (_) {}
+}
 
 export const getTodayDateStr = () => {
   const now = new Date();
@@ -182,107 +191,60 @@ export const getActivityData = () => {
 
   if (!data) {
     data = {
-      materiCompleted: [], // Posisi awal belum ada yang selesai, hanya level 1 tiap mapel yang terbuka
-      unlockedMateri: ['mtk_1', 'bi_1'], // Level 1 MTK & Level 1 BI terbuka default
-      latihanHistory: [
-        {
-          id: 'lat_sample_1',
-          subject: 'bahasa_indonesia',
-          level: 1,
-          score: 100,
-          correct: 5,
-          total: 5,
-          date: '28 Sep 2026',
-        },
-        {
-          id: 'lat_sample_2',
-          subject: 'matematika',
-          level: 1,
-          score: 80,
-          correct: 4,
-          total: 5,
-          date: '29 Sep 2026',
-        },
-      ],
-      tryoutHistory: [
-        {
-          id: 'to_sample_1',
-          subject: 'bahasa_indonesia',
-          packageNum: 1,
-          score: 86.7,
-          correct: 26,
-          total: 30,
-          date: '25 Sep 2026',
-        },
-        {
-          id: 'to_sample_2',
-          subject: 'matematika',
-          packageNum: 1,
-          score: 93.3,
-          correct: 28,
-          total: 30,
-          date: '29 Sep 2026',
-        },
-      ],
+      materiCompleted: [],
+      unlockedMateri: ['mtk_1', 'bi_1'],
+      materiStars: {},
+      latihanCompleted: [],
+      unlockedLatihan: ['mtk_lat_1', 'bi_lat_1'],
+      latihanStars: {},
+      latihanHistory: [],
+      tryoutHistory: [],
+      streak: {
+        count: 0,
+        lastActiveDate: null,
+        activeToday: false,
+      },
+      exp: 0,
+      unlockedTitles: ['pemula'],
+      activeTitle: 'pemula',
     };
   }
 
-  // Bersihkan data mock lama jika hanya berisi ['mtk_1', 'bi_1'] sebagai materi selesai
-  if (
-    data.materiCompleted &&
-    data.materiCompleted.length === 2 &&
-    data.materiCompleted.includes('mtk_1') &&
-    data.materiCompleted.includes('bi_1')
-  ) {
-    data.materiCompleted = [];
-  }
+  // Pastikan properti dasar selalu tersedia
+  if (!data.materiCompleted) data.materiCompleted = [];
+  if (!data.unlockedMateri) data.unlockedMateri = ['mtk_1', 'bi_1'];
+  if (!data.materiStars) data.materiStars = {};
+  if (!data.latihanCompleted) data.latihanCompleted = [];
+  if (!data.unlockedLatihan) data.unlockedLatihan = ['mtk_lat_1', 'bi_lat_1'];
+  if (!data.latihanStars) data.latihanStars = {};
+  if (!data.latihanHistory) data.latihanHistory = [];
+  if (!data.tryoutHistory) data.tryoutHistory = [];
 
-  if (!data.unlockedMateri) {
-    data.unlockedMateri = ['mtk_1', 'bi_1'];
-  } else {
-    if (!data.unlockedMateri.includes('mtk_1')) data.unlockedMateri.push('mtk_1');
-    if (!data.unlockedMateri.includes('bi_1')) data.unlockedMateri.push('bi_1');
-  }
-
-  if (!data.materiStars) {
-    data.materiStars = {};
-  }
-
-  if (!data.unlockedLatihan) {
-    data.unlockedLatihan = ['mtk_lat_1', 'bi_lat_1'];
-  } else {
-    if (!data.unlockedLatihan.includes('mtk_lat_1')) data.unlockedLatihan.push('mtk_lat_1');
-    if (!data.unlockedLatihan.includes('bi_lat_1')) data.unlockedLatihan.push('bi_lat_1');
-  }
-
-  if (!data.latihanCompleted) {
-    data.latihanCompleted = [];
-  }
-
-  if (!data.latihanStars) {
-    data.latihanStars = {};
-  }
+  // Filter sample dummy jika pernah tersimpan di cache
+  data.latihanHistory = (data.latihanHistory || []).filter(
+    (l) => !l.id?.startsWith('lat_sample_')
+  );
+  data.tryoutHistory = (data.tryoutHistory || []).filter(
+    (t) => !t.id?.startsWith('to_sample_')
+  );
 
   // Inisialisasi Fitur Streak (Reset otomatis pada jam 12 malam)
   const today = getTodayDateStr();
   const yesterday = getYesterdayDateStr();
 
   if (!data.streak) {
-    // Inisialisasi awal dengan default streak 1 hari aktif jika ada riwayat belajar sebelumnya
-    const hasHistory = (data.latihanHistory && data.latihanHistory.length > 0) || (data.tryoutHistory && data.tryoutHistory.length > 0);
     data.streak = {
-      count: hasHistory ? 2 : 0,
-      lastActiveDate: hasHistory ? yesterday : null,
+      count: 0,
+      lastActiveDate: null,
       activeToday: false,
     };
   } else {
     if (data.streak.lastActiveDate === today) {
       data.streak.activeToday = true;
     } else if (data.streak.lastActiveDate === yesterday) {
-      // Belum aktif hari ini tapi streak belum hangus
       data.streak.activeToday = false;
     } else {
-      // Sudah lewat jam 12 malam (melebihi 1 hari tanpa aktivitas) -> streak reset ke 0
+      // Sudah lewat jam 12 malam -> streak reset ke 0
       data.streak.count = 0;
       data.streak.activeToday = false;
     }
@@ -315,9 +277,103 @@ export const getActivityData = () => {
   return data;
 };
 
-export const saveActivityData = (data) => {
+let syncTimeout = null;
+
+/**
+ * Menyinkronkan data profil dan statistik belajar ke Cloudflare D1 (debounced)
+ */
+export const syncProfileToDatabase = (data) => {
+  if (typeof window === 'undefined') return;
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  if (syncTimeout) clearTimeout(syncTimeout);
+  syncTimeout = setTimeout(async () => {
+    try {
+      const payload = {
+        exp: data.exp || 0,
+        level: calculateLevelInfo(data.exp || 0).level,
+        activeTitle: data.activeTitle || 'pemula',
+        unlockedTitles: data.unlockedTitles || ['pemula'],
+        streak: data.streak || { count: 0, lastActiveDate: null, activeToday: false },
+        activityData: {
+          materiCompleted: data.materiCompleted || [],
+          unlockedMateri: data.unlockedMateri || ['mtk_1', 'bi_1'],
+          materiStars: data.materiStars || {},
+          latihanCompleted: data.latihanCompleted || [],
+          unlockedLatihan: data.unlockedLatihan || ['mtk_lat_1', 'bi_lat_1'],
+          latihanStars: data.latihanStars || {},
+          latihanHistory: data.latihanHistory || [],
+          tryoutHistory: data.tryoutHistory || [],
+        },
+      };
+      await profileService.saveProfile(payload);
+    } catch (err) {
+      console.warn('Sinkronisasi ke Cloudflare D1 tertunda:', err?.message || err);
+    }
+  }, 600);
+};
+
+/**
+ * Mengambil dan menggabungkan data profil dari Cloudflare D1 ke penyimpanan lokal
+ */
+export const syncProfileFromDatabase = async () => {
+  if (typeof window === 'undefined') return null;
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+
+  try {
+    const dbProfile = await profileService.getProfile();
+    if (!dbProfile) return null;
+
+    const data = getActivityData();
+
+    if (dbProfile.exp !== undefined && dbProfile.exp !== null) {
+      data.exp = dbProfile.exp;
+    }
+    if (dbProfile.activeTitle) {
+      data.activeTitle = dbProfile.activeTitle;
+    }
+    if (Array.isArray(dbProfile.unlockedTitles) && dbProfile.unlockedTitles.length > 0) {
+      data.unlockedTitles = dbProfile.unlockedTitles;
+    }
+    if (dbProfile.streak) {
+      data.streak = {
+        ...data.streak,
+        ...dbProfile.streak,
+      };
+    }
+    if (dbProfile.activityData && typeof dbProfile.activityData === 'object') {
+      const act = dbProfile.activityData;
+      if (Array.isArray(act.materiCompleted)) data.materiCompleted = act.materiCompleted;
+      if (Array.isArray(act.unlockedMateri)) data.unlockedMateri = act.unlockedMateri;
+      if (act.materiStars) data.materiStars = act.materiStars;
+      if (Array.isArray(act.latihanCompleted)) data.latihanCompleted = act.latihanCompleted;
+      if (Array.isArray(act.unlockedLatihan)) data.unlockedLatihan = act.unlockedLatihan;
+      if (act.latihanStars) data.latihanStars = act.latihanStars;
+      if (Array.isArray(act.latihanHistory)) data.latihanHistory = act.latihanHistory;
+      if (Array.isArray(act.tryoutHistory)) data.tryoutHistory = act.tryoutHistory;
+    }
+
+    checkAndUnlockTitles(data);
+    saveActivityData(data, false);
+    notifyProfileUpdate();
+    return data;
+  } catch (err) {
+    console.warn('Gagal memuat profil dari Cloudflare D1:', err?.message || err);
+    return null;
+  }
+};
+
+/**
+ * Menyimpan data aktivitas ke localStorage dan menyinkronkannya ke Cloudflare D1
+ */
+export const saveActivityData = (data, shouldSync = true) => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    if (shouldSync) {
+      syncProfileToDatabase(data);
+    }
   } catch (e) {
     console.error('Gagal menyimpan aktivitas:', e);
   }

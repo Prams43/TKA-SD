@@ -72,7 +72,15 @@ const Navbar = () => {
                     : `Streak ${profileStats.streak.count} hari`
                 }
               >
-                <span>🔥</span>
+                <span
+                  className={
+                    profileStats.streak.activeToday
+                      ? 'text-sm'
+                      : 'grayscale opacity-60 text-sm'
+                  }
+                >
+                  🔥
+                </span>
                 <span className="font-semibold">{profileStats.streak.count} Hari</span>
               </div>
 

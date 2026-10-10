@@ -6,6 +6,7 @@ import {
   TrendingUp,
   Award,
   BookOpen,
+  Calculator,
   Trophy,
   CheckCircle2,
   Calendar,
@@ -241,60 +242,105 @@ const Rapor = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {stats.kompetensi.map((k, idx) => (
-                      <div
-                        key={idx}
-                        className="p-3.5 sm:p-4 rounded-xl bg-white border border-[#E6DFD5] hover:border-[#D8CDC2] transition-colors space-y-2.5 shadow-xs"
-                      >
-                        <div className="flex items-center justify-between text-xs">
-                          <div>
-                            <span
-                              className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold mb-1 border ${
-                                k.mapel === 'Bahasa Indonesia'
-                                  ? 'bg-[#E8F2EF] text-[#286657] border-[#C5DDD6]'
-                                  : 'bg-[#FAECE6] text-[#C25E38] border-[#F4D3C4]'
-                              }`}
-                            >
-                              {k.mapel}
-                            </span>
-                            <h3 className="text-sm font-bold text-[#261C14]">{k.nama}</h3>
-                          </div>
-                          <div className="text-right">
-                            <span className="text-base font-extrabold text-[#261C14]">
-                              {k.nilai}%
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="w-full h-2 rounded-full bg-[#F2ECE4] overflow-hidden">
-                          <div
-                            className={`h-full rounded-full transition-all duration-300 ${
-                              k.nilai >= 90
-                                ? 'bg-[#286657]'
-                                : k.nilai >= 80
-                                ? 'bg-[#C25E38]'
-                                : 'bg-[#D97E26]'
-                            }`}
-                            style={{ width: `${k.nilai}%` }}
-                          />
-                        </div>
-
-                        <div className="flex justify-end">
-                          <span
-                            className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
-                              k.nilai >= 90
-                                ? 'bg-[#E8F2EF] text-[#286657] border-[#C5DDD6]'
-                                : k.nilai >= 80
-                                ? 'bg-[#FAECE6] text-[#C25E38] border-[#F4D3C4]'
-                                : 'bg-[#FEF7EE] text-[#D97E26] border-[#FCD9BD]'
-                            }`}
-                          >
-                            {k.status}
-                          </span>
-                        </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                    {/* Kolom Kiri: Seluruh Topik Bahasa Indonesia */}
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-1.5 px-1 text-xs font-semibold text-[#286657]">
+                        <BookOpen className="w-3.5 h-3.5 text-[#286657]" />
+                        <span>Bahasa Indonesia</span>
                       </div>
-                    ))}
+                      {stats.kompetensi
+                        .filter((k) => k.mapel === 'Bahasa Indonesia')
+                        .map((k, idx) => (
+                          <div
+                            key={`bi-${idx}`}
+                            className="p-3.5 rounded-xl bg-white border border-[#E6DFD5] hover:border-[#D8CDC2] transition-colors space-y-2 shadow-xs"
+                          >
+                            <div className="flex items-center justify-between text-xs">
+                              <div>
+                                <h3 className="text-sm font-bold text-[#261C14]">{k.nama}</h3>
+                                <span className="text-[10px] text-[#6E6258] font-medium">{k.mapel}</span>
+                              </div>
+                              <span className="text-base font-extrabold text-[#286657]">{k.nilai}%</span>
+                            </div>
+
+                            <div className="w-full h-2 rounded-full bg-[#F2ECE4] overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all duration-300 ${
+                                  k.nilai >= 90
+                                    ? 'bg-[#286657]'
+                                    : k.nilai >= 80
+                                    ? 'bg-[#C25E38]'
+                                    : 'bg-[#D97E26]'
+                                }`}
+                                style={{ width: `${k.nilai}%` }}
+                              />
+                            </div>
+
+                            <div className="flex justify-end">
+                              <span
+                                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+                                  k.nilai >= 90
+                                    ? 'bg-[#E8F2EF] text-[#286657] border-[#C5DDD6]'
+                                    : 'bg-[#FAECE6] text-[#C25E38] border-[#F4D3C4]'
+                                }`}
+                              >
+                                {k.status}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+
+                    {/* Kolom Kanan: Seluruh Topik Matematika */}
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-1.5 px-1 text-xs font-semibold text-[#C25E38]">
+                        <Calculator className="w-3.5 h-3.5 text-[#C25E38]" />
+                        <span>Matematika</span>
+                      </div>
+                      {stats.kompetensi
+                        .filter((k) => k.mapel === 'Matematika')
+                        .map((k, idx) => (
+                          <div
+                            key={`mtk-${idx}`}
+                            className="p-3.5 rounded-xl bg-white border border-[#E6DFD5] hover:border-[#D8CDC2] transition-colors space-y-2 shadow-xs"
+                          >
+                            <div className="flex items-center justify-between text-xs">
+                              <div>
+                                <h3 className="text-sm font-bold text-[#261C14]">{k.nama}</h3>
+                                <span className="text-[10px] text-[#6E6258] font-medium">{k.mapel}</span>
+                              </div>
+                              <span className="text-base font-extrabold text-[#C25E38]">{k.nilai}%</span>
+                            </div>
+
+                            <div className="w-full h-2 rounded-full bg-[#F2ECE4] overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all duration-300 ${
+                                  k.nilai >= 90
+                                    ? 'bg-[#286657]'
+                                    : k.nilai >= 80
+                                    ? 'bg-[#C25E38]'
+                                    : 'bg-[#D97E26]'
+                                }`}
+                                style={{ width: `${k.nilai}%` }}
+                              />
+                            </div>
+
+                            <div className="flex justify-end">
+                              <span
+                                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+                                  k.nilai >= 90
+                                    ? 'bg-[#E8F2EF] text-[#286657] border-[#C5DDD6]'
+                                    : 'bg-[#FAECE6] text-[#C25E38] border-[#F4D3C4]'
+                                }`}
+                              >
+                                {k.status}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
                   </div>
                 </div>
 
