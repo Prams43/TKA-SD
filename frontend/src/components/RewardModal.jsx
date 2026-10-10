@@ -308,19 +308,15 @@ const RewardModal = () => {
         </div>
 
         {/* ============================================================== */}
-        {/* TOMBOL TINDAKAN LANJUTKAN                                      */}
+        {/* TOMBOL TINDAKAN LANJUTKAN (LEBAR & DI TENGAH)                 */}
         {/* ============================================================== */}
-        <div className="mt-3.5 flex items-center justify-between pt-1">
-          <span className="text-[10px] text-slate-400 font-medium">
-            {isPaused ? 'Otomatis dijeda saat cursor di atas' : `Menutup dalam ${dismissCountdown}s`}
-          </span>
-
+        <div className="mt-4 pt-1 flex justify-center">
           <button
             onClick={handleClose}
-            className={`py-1.5 px-4 rounded-xl font-bold text-xs uppercase tracking-wider text-white shadow-sm active:scale-95 transition-all cursor-pointer ${
+            className={`w-full py-2.5 px-6 rounded-xl font-black text-xs sm:text-sm uppercase tracking-wider text-white shadow-md active:scale-95 transition-all cursor-pointer ${
               leveledUp
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400'
-                : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500'
+                ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 shadow-amber-500/20'
+                : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 shadow-teal-500/20'
             }`}
           >
             {leveledUp ? 'Lanjutkan Perjuangan 🚀' : 'Keren, Lanjutkan! 👍'}
