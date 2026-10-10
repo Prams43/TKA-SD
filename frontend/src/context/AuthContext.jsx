@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService } from '../services/authService';
 import { syncLeaderboardUser } from '../utils/leaderboardData';
+import { syncProfileFromDatabase } from '../utils/activityTracker';
 
 const AuthContext = createContext(null);
 
@@ -22,6 +23,8 @@ export const AuthProvider = ({ children }) => {
           if (data && data.user) {
             setUser(data.user);
             localStorage.setItem('user', JSON.stringify(data.user));
+            // Sinkronkan data EXP, level, gelar & aktivitas dari Cloudflare D1
+            await syncProfileFromDatabase();
             syncLeaderboardUser(data.user);
           }
         } catch (error) {
@@ -45,10 +48,13 @@ export const AuthProvider = ({ children }) => {
       setUser(data.user);
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+      // Sinkronkan data EXP, level, gelar & aktivitas dari Cloudflare D1
+      await syncProfileFromDatabase();
       syncLeaderboardUser(data.user);
     }
     return data;
   };
+
 
   /**
    * Fungsi Registrasi (dengan Username, Gmail, dan Password)
@@ -100,6 +106,10 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('tka_sd_user_activity_v1');
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('tka_profile_updated'));
+    }
   };
 
   const value = {

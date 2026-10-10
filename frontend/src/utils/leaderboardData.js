@@ -1,6 +1,33 @@
 import { AVAILABLE_TITLES, getUserProfileStats } from './activityTracker';
+import { profileService } from '../services/profileService';
 
 const LEADERBOARD_STORAGE_KEY = 'tka_leaderboard_registry_v1';
+
+/**
+ * Mengambil data leaderboard langsung dari Cloudflare D1
+ */
+export const syncLeaderboardFromDatabase = async () => {
+  try {
+    const list = await profileService.getLeaderboard(100);
+    if (Array.isArray(list) && list.length > 0) {
+      const mapped = list.map((item) => ({
+        id: `user_${item.id}`,
+        name: item.username,
+        level: item.level || 1,
+        exp: item.exp || 0,
+        titleId: item.active_title || 'pemula',
+        streak: item.streak_count || 0,
+        avatar: item.active_title === 'pemula' ? '🌱' : '🦁',
+        updatedAt: Date.now(),
+      }));
+      saveLeaderboardRegistry(mapped);
+      return mapped;
+    }
+  } catch (e) {
+    console.warn('Gagal sinkron leaderboard dari database:', e);
+  }
+  return null;
+};
 
 /**
  * Mengambil daftar seluruh user terdaftar di papan peringkat dari localStorage.

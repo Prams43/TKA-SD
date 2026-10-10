@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { env } from './config/env.js';
 import authRoutes from './routes/auth.routes.js';
+import profileRoutes from './routes/profile.routes.js';
 import { notFoundHandler, errorHandler } from './middlewares/error.middleware.js';
 
 const app = express();
@@ -61,8 +62,10 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Pendaftaran route autentikasi
+// Pendaftaran route autentikasi dan profil
 app.use('/api', authRoutes);
+app.use('/api', profileRoutes);
+
 
 // Middleware penanganan 404
 app.use(notFoundHandler);

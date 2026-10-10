@@ -1,7 +1,9 @@
+import { profileService } from '../services/profileService';
+
 /**
  * Activity Tracker TKA SD
- * Menyimpan dan mengelola statistik aktivitas belajar murid secara persisten (localStorage)
- * untuk disajikan pada halaman Rapor.
+ * Menyimpan dan mengelola statistik aktivitas belajar murid secara persisten (localStorage + Cloudflare D1)
+ * untuk disajikan pada halaman Rapor dan Profil.
  */
 
 const STORAGE_KEY = 'tka_sd_user_activity_v1';
@@ -311,9 +313,103 @@ export const getActivityData = () => {
   return data;
 };
 
-export const saveActivityData = (data) => {
+let syncTimeout = null;
+
+/**
+ * Menyinkronkan data profil dan statistik belajar ke Cloudflare D1 (debounced)
+ */
+export const syncProfileToDatabase = (data) => {
+  if (typeof window === 'undefined') return;
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  if (syncTimeout) clearTimeout(syncTimeout);
+  syncTimeout = setTimeout(async () => {
+    try {
+      const payload = {
+        exp: data.exp || 0,
+        level: calculateLevelInfo(data.exp || 0).level,
+        activeTitle: data.activeTitle || 'pemula',
+        unlockedTitles: data.unlockedTitles || ['pemula'],
+        streak: data.streak || { count: 0, lastActiveDate: null, activeToday: false },
+        activityData: {
+          materiCompleted: data.materiCompleted || [],
+          unlockedMateri: data.unlockedMateri || ['mtk_1', 'bi_1'],
+          materiStars: data.materiStars || {},
+          latihanCompleted: data.latihanCompleted || [],
+          unlockedLatihan: data.unlockedLatihan || ['mtk_lat_1', 'bi_lat_1'],
+          latihanStars: data.latihanStars || {},
+          latihanHistory: data.latihanHistory || [],
+          tryoutHistory: data.tryoutHistory || [],
+        },
+      };
+      await profileService.saveProfile(payload);
+    } catch (err) {
+      console.warn('Sinkronisasi ke Cloudflare D1 tertunda:', err?.message || err);
+    }
+  }, 600);
+};
+
+/**
+ * Mengambil dan menggabungkan data profil dari Cloudflare D1 ke penyimpanan lokal
+ */
+export const syncProfileFromDatabase = async () => {
+  if (typeof window === 'undefined') return null;
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+
+  try {
+    const dbProfile = await profileService.getProfile();
+    if (!dbProfile) return null;
+
+    const data = getActivityData();
+
+    if (dbProfile.exp !== undefined && dbProfile.exp !== null) {
+      data.exp = dbProfile.exp;
+    }
+    if (dbProfile.activeTitle) {
+      data.activeTitle = dbProfile.activeTitle;
+    }
+    if (Array.isArray(dbProfile.unlockedTitles) && dbProfile.unlockedTitles.length > 0) {
+      data.unlockedTitles = dbProfile.unlockedTitles;
+    }
+    if (dbProfile.streak) {
+      data.streak = {
+        ...data.streak,
+        ...dbProfile.streak,
+      };
+    }
+    if (dbProfile.activityData && typeof dbProfile.activityData === 'object') {
+      const act = dbProfile.activityData;
+      if (Array.isArray(act.materiCompleted)) data.materiCompleted = act.materiCompleted;
+      if (Array.isArray(act.unlockedMateri)) data.unlockedMateri = act.unlockedMateri;
+      if (act.materiStars) data.materiStars = act.materiStars;
+      if (Array.isArray(act.latihanCompleted)) data.latihanCompleted = act.latihanCompleted;
+      if (Array.isArray(act.unlockedLatihan)) data.unlockedLatihan = act.unlockedLatihan;
+      if (act.latihanStars) data.latihanStars = act.latihanStars;
+      if (Array.isArray(act.latihanHistory)) data.latihanHistory = act.latihanHistory;
+      if (Array.isArray(act.tryoutHistory)) data.tryoutHistory = act.tryoutHistory;
+    }
+
+    checkAndUnlockTitles(data);
+    saveActivityData(data, false);
+    notifyProfileUpdate();
+    return data;
+  } catch (err) {
+    console.warn('Gagal memuat profil dari Cloudflare D1:', err?.message || err);
+    return null;
+  }
+};
+
+/**
+ * Menyimpan data aktivitas ke localStorage dan menyinkronkannya ke Cloudflare D1
+ */
+export const saveActivityData = (data, shouldSync = true) => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    if (shouldSync) {
+      syncProfileToDatabase(data);
+    }
   } catch (e) {
     console.error('Gagal menyimpan aktivitas:', e);
   }
