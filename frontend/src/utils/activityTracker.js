@@ -6,6 +6,171 @@
 
 const STORAGE_KEY = 'tka_sd_user_activity_v1';
 
+export const getTodayDateStr = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+export const getYesterdayDateStr = () => {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+/**
+ * Daftar Gelar Pembelajaran TKA SD yang bisa didapatkan siswa
+ */
+export const AVAILABLE_TITLES = [
+  {
+    id: 'pemula',
+    name: 'Siswa Penjelajah',
+    icon: '🌱',
+    color: 'emerald',
+    badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-300',
+    desc: 'Gelar kehormatan untuk murid yang siap menaklukkan Asesmen TKA SD.',
+    requirement: 'Terbuka otomatis untuk seluruh siswa',
+    isUnlocked: () => true,
+  },
+  {
+    id: 'literasi_fondasi',
+    name: 'Penjelajah Literasi',
+    icon: '📖',
+    color: 'blue',
+    badgeColor: 'bg-blue-50 text-blue-700 border-blue-300',
+    desc: 'Menguasai konsep dasar pemahaman teks Bahasa Indonesia.',
+    requirement: 'Selesaikan minimal 1 materi atau latihan Bahasa Indonesia',
+    isUnlocked: (data) =>
+      (data.materiCompleted || []).some((id) => id.startsWith('bi_')) ||
+      (data.latihanCompleted || []).some((id) => id.startsWith('bi_')),
+  },
+  {
+    id: 'numerasi_dasar',
+    name: 'Pakar Hitung Cepat',
+    icon: '🔢',
+    color: 'teal',
+    badgeColor: 'bg-teal-50 text-teal-700 border-teal-300',
+    desc: 'Mahir dalam operasi hitung bilangan dan logika Matematika.',
+    requirement: 'Selesaikan minimal 1 materi atau latihan Matematika',
+    isUnlocked: (data) =>
+      (data.materiCompleted || []).some((id) => id.startsWith('mtk_')) ||
+      (data.latihanCompleted || []).some((id) => id.startsWith('mtk_')),
+  },
+  {
+    id: 'pejuang_latihan',
+    name: 'Pejuang Latihan Tangguh',
+    icon: '🛡️',
+    color: 'indigo',
+    badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-300',
+    desc: 'Menuntaskan banyak variasi butir soal latihan Pusmendik.',
+    requirement: 'Selesaikan minimal 3 sesi Latihan Soal',
+    isUnlocked: (data) =>
+      (data.latihanCompleted || []).length >= 3 || (data.latihanHistory || []).length >= 3,
+  },
+  {
+    id: 'bintang_tryout',
+    name: 'Bintang Asesmen Pusmendik',
+    icon: '⭐',
+    color: 'amber',
+    badgeColor: 'bg-amber-50 text-amber-700 border-amber-300',
+    desc: 'Menuntaskan simulasi Tryout Asesmen Berstandar Pusmendik.',
+    requirement: 'Selesaikan minimal 1 sesi paket Tryout',
+    isUnlocked: (data) => (data.tryoutHistory || []).length >= 1,
+  },
+  {
+    id: 'streak_master',
+    name: 'Sang Penjaga Api Belajar',
+    icon: '🔥',
+    color: 'orange',
+    badgeColor: 'bg-orange-50 text-orange-700 border-orange-300',
+    desc: 'Konsisten belajar setiap hari berturut-turut tanpa putus.',
+    requirement: 'Capai streak belajar minimal 3 hari',
+    isUnlocked: (data) => (data.streak?.count || 0) >= 3,
+  },
+  {
+    id: 'juara_skor',
+    name: 'Maestro Nilai Sempurna',
+    icon: '👑',
+    color: 'yellow',
+    badgeColor: 'bg-yellow-50 text-yellow-800 border-yellow-300',
+    desc: 'Meraih skor sempurna 100 pada Latihan Soal atau Tryout.',
+    requirement: 'Raih nilai 100 pada Latihan Soal atau Tryout',
+    isUnlocked: (data) =>
+      (data.latihanHistory || []).some((l) => (l.score || 0) >= 100) ||
+      (data.tryoutHistory || []).some((t) => (t.score || 0) >= 95),
+  },
+  {
+    id: 'cendekiawan_muda',
+    name: 'Cendekiawan Muda TKA',
+    icon: '🎓',
+    color: 'purple',
+    badgeColor: 'bg-purple-50 text-purple-700 border-purple-300',
+    desc: 'Mencapai Level 5 ke atas dari dedikasi belajar konsisten.',
+    requirement: 'Capai Level 5 (kumpulkan minimal 400 EXP)',
+    isUnlocked: (data) => (data.exp || 0) >= 400,
+  },
+  {
+    id: 'legenda_sd',
+    name: 'Legenda Juara Nusantara',
+    icon: '🏆',
+    color: 'rose',
+    badgeColor: 'bg-rose-50 text-rose-700 border-rose-300',
+    desc: 'Pencapaian master tertinggi di seluruh penjuru Nusantara.',
+    requirement: 'Capai Level 10 (kumpulkan minimal 900 EXP)',
+    isUnlocked: (data) => (data.exp || 0) >= 900,
+  },
+];
+
+/**
+ * Menghitung detail level berdasarkan total EXP
+ * Setiap 100 EXP = 1 Level
+ */
+export const calculateLevelInfo = (exp = 0) => {
+  const currentExp = Math.max(0, Number(exp) || 0);
+  const level = Math.floor(currentExp / 100) + 1;
+  const currentLevelExp = currentExp % 100;
+  const nextLevelExp = 100;
+  const progressPercent = Math.min(100, Math.round((currentLevelExp / nextLevelExp) * 100));
+
+  return {
+    level,
+    totalExp: currentExp,
+    currentLevelExp,
+    nextLevelExp,
+    progressPercent,
+  };
+};
+
+export const notifyProfileUpdate = () => {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('tka_profile_updated'));
+  }
+};
+
+/**
+ * Cek dan tambahkan gelar baru yang terbuka ke data pengguna
+ */
+export const checkAndUnlockTitles = (data) => {
+  if (!data.unlockedTitles) data.unlockedTitles = ['pemula'];
+  let hasNew = false;
+
+  AVAILABLE_TITLES.forEach((title) => {
+    if (!data.unlockedTitles.includes(title.id)) {
+      if (title.isUnlocked(data)) {
+        data.unlockedTitles.push(title.id);
+        hasNew = true;
+      }
+    }
+  });
+
+  return hasNew;
+};
+
 export const getActivityData = () => {
   let data = null;
   try {
@@ -98,6 +263,51 @@ export const getActivityData = () => {
     data.latihanStars = {};
   }
 
+  // Inisialisasi Fitur Streak (Reset otomatis pada jam 12 malam)
+  const today = getTodayDateStr();
+  const yesterday = getYesterdayDateStr();
+
+  if (!data.streak) {
+    // Inisialisasi awal dengan default streak 1 hari aktif jika ada riwayat belajar sebelumnya
+    const hasHistory = (data.latihanHistory && data.latihanHistory.length > 0) || (data.tryoutHistory && data.tryoutHistory.length > 0);
+    data.streak = {
+      count: hasHistory ? 2 : 0,
+      lastActiveDate: hasHistory ? yesterday : null,
+      activeToday: false,
+    };
+  } else {
+    if (data.streak.lastActiveDate === today) {
+      data.streak.activeToday = true;
+    } else if (data.streak.lastActiveDate === yesterday) {
+      // Belum aktif hari ini tapi streak belum hangus
+      data.streak.activeToday = false;
+    } else {
+      // Sudah lewat jam 12 malam (melebihi 1 hari tanpa aktivitas) -> streak reset ke 0
+      data.streak.count = 0;
+      data.streak.activeToday = false;
+    }
+  }
+
+  // Inisialisasi Total EXP
+  if (data.exp === undefined || data.exp === null) {
+    // Hitung baseline EXP dari riwayat aktivitas yang ada
+    const materiExp = (data.materiCompleted || []).length * 60;
+    const latihanExp = (data.latihanHistory || []).length * 80;
+    const tryoutExp = (data.tryoutHistory || []).length * 150;
+    data.exp = Math.max(120, materiExp + latihanExp + tryoutExp);
+  }
+
+  // Inisialisasi Gelar (Titles)
+  if (!data.unlockedTitles || !Array.isArray(data.unlockedTitles)) {
+    data.unlockedTitles = ['pemula'];
+  }
+  if (!data.activeTitle) {
+    data.activeTitle = 'pemula';
+  }
+
+  // Cek apakah ada gelar baru yang memenuhi syarat
+  checkAndUnlockTitles(data);
+
   return data;
 };
 
@@ -144,6 +354,70 @@ export const resetMateriProgress = (subject = null) => {
   return data;
 };
 
+export const recordUserActivity = (actionType = 'general', expEarned = 50) => {
+  const data = getActivityData();
+  const today = getTodayDateStr();
+  const yesterday = getYesterdayDateStr();
+
+  // 1. Update streak
+  if (!data.streak) {
+    data.streak = { count: 1, lastActiveDate: today, activeToday: true };
+  } else {
+    if (data.streak.lastActiveDate === today) {
+      data.streak.activeToday = true;
+    } else if (data.streak.lastActiveDate === yesterday) {
+      data.streak.count = (data.streak.count || 0) + 1;
+      data.streak.lastActiveDate = today;
+      data.streak.activeToday = true;
+    } else {
+      data.streak.count = 1;
+      data.streak.lastActiveDate = today;
+      data.streak.activeToday = true;
+    }
+  }
+
+  // 2. Tambah EXP
+  data.exp = (data.exp || 0) + expEarned;
+
+  // 3. Cek gelar baru
+  checkAndUnlockTitles(data);
+
+  saveActivityData(data);
+  notifyProfileUpdate();
+  return data;
+};
+
+export const setActiveTitle = (titleId) => {
+  const data = getActivityData();
+  const valid = AVAILABLE_TITLES.find((t) => t.id === titleId);
+  if (valid && (data.unlockedTitles || []).includes(titleId)) {
+    data.activeTitle = titleId;
+    saveActivityData(data);
+    notifyProfileUpdate();
+    return true;
+  }
+  return false;
+};
+
+export const getUserProfileStats = () => {
+  const data = getActivityData();
+  const levelInfo = calculateLevelInfo(data.exp || 0);
+  const activeTitleObj =
+    AVAILABLE_TITLES.find((t) => t.id === data.activeTitle) || AVAILABLE_TITLES[0];
+
+  return {
+    ...levelInfo,
+    streak: data.streak || { count: 0, lastActiveDate: null, activeToday: false },
+    activeTitle: activeTitleObj,
+    unlockedTitles: data.unlockedTitles || ['pemula'],
+    allTitles: AVAILABLE_TITLES.map((t) => ({
+      ...t,
+      unlocked: (data.unlockedTitles || []).includes(t.id),
+      isActive: (data.activeTitle || 'pemula') === t.id,
+    })),
+  };
+};
+
 export const markMateriComplete = (babId, stars = 3) => {
   const data = getActivityData();
   if (!data.materiCompleted) data.materiCompleted = [];
@@ -158,6 +432,9 @@ export const markMateriComplete = (babId, stars = 3) => {
   const prevStars = data.materiStars[babId] || 0;
   data.materiStars[babId] = Math.max(prevStars, Math.max(1, Math.min(3, stars)));
   saveActivityData(data);
+
+  // Berikan EXP dan nyalakan/tambah streak aktivitas belajar materi
+  recordUserActivity('materi', 60 + stars * 10);
 };
 
 export const unlockLatihan = (latihanId) => {
@@ -183,6 +460,9 @@ export const markLatihanComplete = (latihanId, stars = 3) => {
   const prevStars = data.latihanStars[latihanId] || 0;
   data.latihanStars[latihanId] = Math.max(prevStars, Math.max(1, Math.min(3, stars)));
   saveActivityData(data);
+
+  // Berikan EXP dan nyalakan/tambah streak aktivitas latihan soal
+  recordUserActivity('latihan', 80 + stars * 15);
 };
 
 export const resetLatihanProgress = (subject = null) => {
@@ -224,6 +504,11 @@ export const recordLatihan = ({ subject, level, score, correct, total }) => {
   };
   data.latihanHistory.unshift(newRecord);
   saveActivityData(data);
+
+  // Catat aktivitas dan bonus EXP berdasarkan perolehan nilai latihan
+  const bonusExp = Math.round((score || 0) * 0.5);
+  recordUserActivity('latihan', Math.max(50, 40 + bonusExp));
+
   return newRecord;
 };
 
@@ -241,6 +526,11 @@ export const recordTryout = ({ subject, packageNum, score, correct, total, userA
   };
   data.tryoutHistory.unshift(newRecord);
   saveActivityData(data);
+
+  // Berikan EXP besar untuk penyelesaian simulasi Tryout dan nyalakan streak
+  const tryoutExp = Math.round(150 + (score || 0));
+  recordUserActivity('tryout', tryoutExp);
+
   return newRecord;
 };
 

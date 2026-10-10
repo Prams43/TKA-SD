@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { validateRegisterForm } from '../utils/validation';
+import { registerUserToLeaderboard } from '../utils/leaderboardData';
 import InputField from '../components/InputField';
 import Button from '../components/Button';
 import {
@@ -89,6 +90,9 @@ const Register = () => {
     setIsLoading(true);
     try {
       await register(formData.username, formData.email, formData.password);
+      if (formData.username) {
+        registerUserToLeaderboard(formData.username);
+      }
 
       setRegisteredEmail(formData.email);
       setResendCountdown(60);
@@ -173,6 +177,11 @@ const Register = () => {
     setIsVerifying(true);
     try {
       const response = await verifyOtp(registeredEmail, fullOtp);
+
+      // Daftarkan username ke leaderboard
+      if (formData.username) {
+        registerUserToLeaderboard(formData.username);
+      }
 
       // Alur penting: setelah verifikasi berhasil, arahkan ke halaman Login dengan pesan sukses
       navigate('/', {

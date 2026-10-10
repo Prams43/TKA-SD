@@ -28,6 +28,11 @@ const PillMenuButton = ({ label, icon: Icon, onClick, accentColor = 'blue', badg
       iconBg: 'bg-purple-500/25 text-purple-300 border border-purple-400/30',
       badge: 'bg-purple-500/20 text-purple-200 border-purple-400/40',
     },
+    yellow: {
+      glow: 'hover:shadow-[0_12px_30px_rgba(234,179,8,0.5)] hover:border-yellow-400',
+      iconBg: 'bg-yellow-500/25 text-yellow-300 border border-yellow-400/40',
+      badge: 'bg-yellow-500/20 text-yellow-200 border-yellow-400/40',
+    },
   };
 
   const currentStyle = colorStyles[accentColor] || colorStyles.blue;

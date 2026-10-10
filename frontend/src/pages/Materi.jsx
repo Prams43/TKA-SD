@@ -7,6 +7,7 @@ import {
   unlockMateri,
   resetMateriProgress,
   getActivityData,
+  recordUserActivity,
 } from '../utils/activityTracker';
 import MaterialReader from '../components/views/MaterialReader';
 import {
@@ -264,6 +265,10 @@ const Materi = () => {
     setQuizMistakes(0);
     isQuizTransitioningRef.current = false;
     setIsQuizTransitioning(false);
+
+    // Nyalakan streak harian dan berikan EXP awal membaca materi
+    recordUserActivity('materi_read', 25);
+    refreshActivity();
   };
 
   // Submit Kuis Normal (Setelah Membaca Materi)
@@ -992,11 +997,7 @@ const Materi = () => {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={`Cari topik materi ${currentSubject.title} (contoh: ${
-                  selectedSubject === 'matematika'
-                    ? 'Operasi Hitung, KPK, Skala, Sudut'
-                    : 'Huruf Kapital, Tanda Baca, Kalimat, Puisi'
-                })...`}
+                placeholder="Cari topik..."
                 className="w-full pl-11 pr-10 py-3 rounded-2xl bg-white border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-hidden focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-xs transition-all"
               />
               {searchQuery && (

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService } from '../services/authService';
+import { syncLeaderboardUser } from '../utils/leaderboardData';
 
 const AuthContext = createContext(null);
 
@@ -21,6 +22,7 @@ export const AuthProvider = ({ children }) => {
           if (data && data.user) {
             setUser(data.user);
             localStorage.setItem('user', JSON.stringify(data.user));
+            syncLeaderboardUser(data.user);
           }
         } catch (error) {
           console.warn('Sesi login kedaluwarsa atau token tidak valid.');
@@ -43,6 +45,7 @@ export const AuthProvider = ({ children }) => {
       setUser(data.user);
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+      syncLeaderboardUser(data.user);
     }
     return data;
   };
