@@ -49,9 +49,9 @@ const playCelebrationChime = (isLevelUp) => {
 };
 
 /**
- * Komponen Notifikasi Floating Perayaan EXP & Naik Level.
- * Tidak menutupi seluruh layar (tanpa overlay gelap yang memblokir),
- * melainkan melayang di sudut atas sebagai toast notifikasi interaktif yang elegan.
+ * Komponen Notifikasi Pop-up Perayaan EXP & Naik Level.
+ * Berada di tengah layar (centered), tidak menutupi seluruh layar (compact card),
+ * dengan latar belakang transparan lembut yang bisa diklik untuk menutup, serta fitur auto-dismiss.
  */
 const RewardModal = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -75,15 +75,15 @@ const RewardModal = () => {
       // Mainkan suara perayaan ala Duolingo
       playCelebrationChime(data.leveledUp);
 
-      // Partikel konfeti halus di sekitar toast notifikasi
+      // Partikel konfeti halus di latar belakang
       const colors = ['#58CC02', '#FFC800', '#1CB0F6', '#FF4B4B', '#CE82FF', '#FF9600'];
-      const pieces = Array.from({ length: 24 }).map((_, i) => ({
+      const pieces = Array.from({ length: 30 }).map((_, i) => ({
         id: i,
         left: Math.random() * 100,
-        delay: Math.random() * 0.4,
-        duration: 1.2 + Math.random() * 0.8,
+        delay: Math.random() * 0.5,
+        duration: 1.5 + Math.random() * 1.0,
         color: colors[Math.floor(Math.random() * colors.length)],
-        size: 6 + Math.random() * 7,
+        size: 7 + Math.random() * 8,
         rotation: Math.random() * 360,
       }));
       setConfettiPieces(pieces);
@@ -140,16 +140,19 @@ const RewardModal = () => {
     Math.max(0, (newLevelInfo?.nextLevelExp || 150) - (newLevelInfo?.currentLevelExp || 0));
 
   return (
-    <div className="fixed top-4 right-4 sm:top-5 sm:right-6 z-[100] max-w-sm sm:max-w-md w-[calc(100%-2rem)] sm:w-full pointer-events-none select-none transition-all">
-      {/* Konfeti Halus Meluncur di Sekitar Notifikasi */}
-      <div className="absolute -inset-4 pointer-events-none overflow-hidden rounded-3xl">
+    <div
+      onClick={handleClose}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/30 backdrop-blur-xs select-none transition-all animate-fade-in"
+    >
+      {/* Konfeti Halus Meluncur di Latar Belakang */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {confettiPieces.map((piece) => (
           <div
             key={piece.id}
             className="absolute rounded-xs opacity-90"
             style={{
               left: `${piece.left}%`,
-              top: '-10px',
+              top: '-15px',
               width: `${piece.size}px`,
               height: `${piece.size * 0.65}px`,
               backgroundColor: piece.color,
@@ -167,17 +170,18 @@ const RewardModal = () => {
             opacity: 1;
           }
           100% {
-            transform: translateY(220px) rotate(360deg) scale(0.9);
+            transform: translateY(105vh) rotate(540deg) scale(0.9);
             opacity: 0;
           }
         }
       `}</style>
 
-      {/* Kartu Notifikasi Mengambang (Floating Toast) */}
+      {/* Kartu Pop-up Notifikasi di Tengah (Centered) */}
       <div
+        onClick={(e) => e.stopPropagation()}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
-        className={`pointer-events-auto relative w-full bg-white/95 backdrop-blur-md rounded-2xl border-2 shadow-[0_14px_45px_-8px_rgba(0,0,0,0.24)] overflow-hidden p-4 sm:p-5 animate-slide-in-down transition-all ${
+        className={`relative max-w-sm sm:max-w-md w-full bg-white/95 backdrop-blur-md rounded-2xl border-2 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden p-5 sm:p-6 animate-scale-up transition-all ${
           leveledUp
             ? 'border-amber-400 bg-gradient-to-br from-amber-50/95 via-white/95 to-white/95'
             : 'border-teal-400 bg-gradient-to-br from-teal-50/95 via-white/95 to-white/95'
@@ -202,7 +206,7 @@ const RewardModal = () => {
               <div className="relative w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-orange-500 text-white shadow-md border-2 border-white animate-bounce-slow">
                 <Trophy className="w-6 h-6 text-slate-950 drop-shadow-xs" />
               </div>
-              <div>
+              <div className="text-left">
                 <div className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-black uppercase tracking-wider border border-amber-300">
                   <Sparkles className="w-3 h-3 text-amber-600" />
                   <span>PENCAPAIAN BARU!</span>
@@ -239,7 +243,7 @@ const RewardModal = () => {
               <div className="w-11 h-11 flex-shrink-0 flex items-center justify-center rounded-2xl bg-gradient-to-tr from-teal-500 to-emerald-400 text-white shadow-md border-2 border-white">
                 <Zap className="w-6 h-6 text-white drop-shadow-xs" />
               </div>
-              <div>
+              <div className="text-left">
                 <div className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] font-black uppercase tracking-wider border border-teal-300">
                   <span>+{expEarned} EXP DITAMBAHKAN</span>
                 </div>
@@ -254,7 +258,7 @@ const RewardModal = () => {
         {/* ============================================================== */}
         {/* BAR PROGRES EXP DINAMIS SESUAI KURVA LEVEL                     */}
         {/* ============================================================== */}
-        <div className="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200/90 space-y-1.5 text-left">
+        <div className="mt-3.5 p-3 rounded-xl bg-slate-50 border border-slate-200/90 space-y-1.5 text-left">
           <div className="flex items-center justify-between text-xs">
             <span className="font-bold text-slate-800">
               Level {newLevelInfo?.level}
@@ -306,7 +310,7 @@ const RewardModal = () => {
         {/* ============================================================== */}
         {/* TOMBOL TINDAKAN LANJUTKAN                                      */}
         {/* ============================================================== */}
-        <div className="mt-3 flex items-center justify-between pt-1">
+        <div className="mt-3.5 flex items-center justify-between pt-1">
           <span className="text-[10px] text-slate-400 font-medium">
             {isPaused ? 'Otomatis dijeda saat cursor di atas' : `Menutup dalam ${dismissCountdown}s`}
           </span>
