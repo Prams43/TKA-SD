@@ -312,10 +312,10 @@ const ForgotPassword = () => {
               </form>
 
               {/* Kembali ke Login */}
-              <div className="mt-6 pt-5 border-t border-[#E6DFD5] text-center">
+              <div className="mt-6 pt-5 border-t border-slate-200 text-center">
                 <Link
                   to="/"
-                  className="inline-flex items-center space-x-1.5 text-xs font-medium text-[#6E6258] hover:text-[#C25E38] transition-colors"
+                  className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-600 hover:text-[#1E3A8A] transition-colors"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Kembali ke Halaman Masuk</span>
@@ -328,26 +328,26 @@ const ForgotPassword = () => {
           {step === 'otp' && (
             <div>
               <div className="text-center mb-6">
-                <div className="w-12 h-12 rounded-lg bg-[#FAECE6] border border-[#F2D2C4] text-[#C25E38] flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 text-[#1E3A8A] flex items-center justify-center mx-auto mb-3 shadow-xs">
                   <Mail className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-[#261C14]">Periksa Email Anda</h3>
-                <p className="text-xs text-[#6E6258] mt-1 max-w-xs mx-auto">
+                <h3 className="text-base font-bold text-slate-800">Periksa Email Anda</h3>
+                <p className="text-xs text-slate-600 mt-1 max-w-xs mx-auto">
                   Kami telah mengirimkan 6 digit kode keamanan ke:
                 </p>
-                <div className="inline-flex items-center space-x-1 px-2.5 py-0.5 bg-[#F2ECE4] rounded text-[#261C14] font-medium text-xs mt-2 border border-[#E6DFD5]">
+                <div className="inline-flex items-center space-x-1 px-3 py-1 bg-blue-50/80 rounded-full text-slate-800 font-semibold text-xs mt-2 border border-blue-200">
                   <span>{maskedEmail}</span>
                 </div>
               </div>
 
               {/* Petunjuk Folder Spam/Promosi */}
-              <div className="mb-5 p-3 rounded-lg bg-[#FEF7EE] border border-[#FCD9BD] text-left">
+              <div className="mb-5 p-3 rounded-lg bg-blue-50/60 border border-blue-200/80 text-left">
                 <div className="flex items-start space-x-2.5">
                   <span className="text-base flex-shrink-0">💡</span>
-                  <div className="text-xs text-[#261C14] leading-relaxed">
-                    <p className="font-bold text-[#D97E26]">Email belum masuk ke Kotak Masuk?</p>
-                    <p className="text-[#6E6258] mt-0.5">
-                      Periksa folder <strong className="text-[#261C14]">Spam</strong> atau <strong className="text-[#261C14]">Promosi</strong> di email Anda. Tandai sebagai <em>"Bukan Spam"</em> agar email berikutnya langsung masuk ke Kotak Masuk utama.
+                  <div className="text-xs text-slate-800 leading-relaxed">
+                    <p className="font-bold text-[#1E3A8A]">Email belum masuk ke Kotak Masuk?</p>
+                    <p className="text-slate-600 mt-0.5">
+                      Periksa folder <strong className="text-slate-800">Spam</strong> atau <strong className="text-slate-800">Promosi</strong> di email Anda. Tandai sebagai <em>"Bukan Spam"</em> agar email berikutnya langsung masuk ke Kotak Masuk utama.
                     </p>
                   </div>
                 </div>
@@ -368,8 +368,8 @@ const ForgotPassword = () => {
                       onKeyDown={(e) => handleOtpKeyDown(index, e)}
                       className={`w-11 h-13 sm:w-12 sm:h-14 text-center text-xl font-bold rounded-lg border outline-none transition-colors ${
                         digit
-                          ? 'border-[#C25E38] bg-white text-[#261C14]'
-                          : 'border-[#E6DFD5] bg-white text-[#261C14] focus:border-[#C25E38] focus:ring-1 focus:ring-[#C25E38]'
+                          ? 'border-[#1E3A8A] bg-blue-50/30 text-slate-900 ring-1 ring-[#1E3A8A]'
+                          : 'border-slate-300 bg-white text-slate-800 focus:border-[#1E3A8A] focus:ring-2 focus:ring-[#1E3A8A]/20'
                       }`}
                     />
                   ))}
@@ -388,15 +388,15 @@ const ForgotPassword = () => {
 
                 {/* Kirim Ulang Kode OTP */}
                 <div className="mt-4 text-center">
-                  <p className="text-xs text-[#6E6258] mb-1.5">Tidak menerima kode OTP?</p>
+                  <p className="text-xs text-slate-500 mb-1.5">Tidak menerima kode OTP?</p>
                   <button
                     type="button"
                     onClick={handleResendOtp}
                     disabled={resendCountdown > 0 || isResending}
-                    className={`inline-flex items-center space-x-1.5 text-xs font-medium cursor-pointer ${
+                    className={`inline-flex items-center space-x-1.5 text-xs font-semibold cursor-pointer ${
                       resendCountdown > 0
-                        ? 'text-[#8C7E72] cursor-not-allowed'
-                        : 'text-[#C25E38] hover:text-[#A94D2B] hover:underline'
+                        ? 'text-slate-400 cursor-not-allowed'
+                        : 'text-[#1E3A8A] hover:text-[#172554] hover:underline'
                     }`}
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${isResending ? 'animate-spin' : ''}`} />
@@ -410,7 +410,7 @@ const ForgotPassword = () => {
               </form>
 
               {/* Kembali ke Step 1 */}
-              <div className="mt-6 pt-5 border-t border-[#E6DFD5] text-center">
+              <div className="mt-6 pt-5 border-t border-slate-200 text-center">
                 <button
                   type="button"
                   onClick={() => {
@@ -418,7 +418,7 @@ const ForgotPassword = () => {
                     setServerError('');
                     setErrors({});
                   }}
-                  className="inline-flex items-center space-x-1.5 text-xs font-medium text-[#6E6258] hover:text-[#261C14] transition-colors cursor-pointer"
+                  className="inline-flex items-center space-x-1.5 text-xs font-medium text-slate-600 hover:text-[#1E3A8A] transition-colors cursor-pointer"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Ubah data akun / input ulang</span>
@@ -431,14 +431,14 @@ const ForgotPassword = () => {
           {step === 'new-password' && (
             <div>
               <div className="text-center mb-6">
-                <div className="w-12 h-12 rounded-lg bg-[#FAECE6] border border-[#F2D2C4] text-[#C25E38] flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 text-[#1E3A8A] flex items-center justify-center mx-auto mb-3 shadow-xs">
                   <Lock className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-[#261C14]">Kata Sandi Baru</h3>
-                <p className="text-xs text-[#6E6258] mt-1 max-w-xs mx-auto">
+                <h3 className="text-base font-bold text-slate-800">Kata Sandi Baru</h3>
+                <p className="text-xs text-slate-600 mt-1 max-w-xs mx-auto">
                   Untuk akun terverifikasi:
                 </p>
-                <div className="inline-flex items-center space-x-1.5 px-3 py-1 bg-[#F2ECE4] rounded-full text-[#261C14] font-semibold text-xs mt-2 border border-[#E6DFD5]">
+                <div className="inline-flex items-center space-x-1.5 px-3 py-1 bg-blue-50/80 rounded-full text-slate-800 font-semibold text-xs mt-2 border border-blue-200">
                   <span>{maskedEmail}</span>
                 </div>
               </div>
@@ -497,10 +497,10 @@ const ForgotPassword = () => {
               </form>
 
               {/* Kembali ke Login */}
-              <div className="mt-6 pt-5 border-t border-[#E6DFD5] text-center">
+              <div className="mt-6 pt-5 border-t border-slate-200 text-center">
                 <Link
                   to="/"
-                  className="inline-flex items-center space-x-1.5 text-xs font-semibold text-[#6E6258] hover:text-[#C25E38] transition-colors"
+                  className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-600 hover:text-[#1E3A8A] transition-colors"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Kembali ke Halaman Masuk</span>

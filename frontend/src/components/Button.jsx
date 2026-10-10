@@ -20,13 +20,13 @@ const Button = ({
 
   const variants = {
     primary:
-      'bg-[#C25E38] hover:bg-[#A94D2B] text-white focus:ring-[#C25E38]/30 disabled:bg-[#F5D7CC]',
+      'bg-[#0B1A34] hover:bg-[#1E3A8A] text-white border border-[#1E3A8A] focus:ring-[#1E3A8A]/30 disabled:bg-[#1E293B] shadow-sm active:scale-[0.99]',
     secondary:
-      'bg-[#F2ECE4] hover:bg-[#EAE2D8] text-[#261C14] border border-[#E6DFD5] focus:ring-[#C25E38]/20 disabled:bg-[#FAF7F2] disabled:text-[#A89F95]',
+      'bg-blue-50/80 hover:bg-blue-100/90 text-[#0B1A34] border-2 border-[#1E3A8A]/30 hover:border-[#1E3A8A] focus:ring-[#1E3A8A]/20 disabled:bg-slate-50 disabled:text-slate-400 font-semibold shadow-xs active:scale-[0.99]',
     danger:
       'bg-[#C93B3B] hover:bg-[#B32D2D] text-white focus:ring-[#C93B3B]/30 disabled:bg-[#FCD8D8]',
     outline:
-      'border border-[#E6DFD5] hover:bg-[#FAF7F2] text-[#261C14] focus:ring-[#C25E38]/20 disabled:opacity-50',
+      'border-2 border-[#1E3A8A] hover:bg-blue-50 text-[#1E3A8A] focus:ring-[#1E3A8A]/20 disabled:opacity-50 font-semibold',
     sage:
       'bg-[#286657] hover:bg-[#1E5044] text-white focus:ring-[#286657]/30 disabled:bg-[#C5DDD6]',
   };

@@ -51,9 +51,9 @@ const InputField = ({
             ${
               error
                 ? 'border-[#C93B3B] bg-white text-[#C93B3B] placeholder-red-300 focus:border-[#C93B3B] focus:ring-1 focus:ring-[#C93B3B]'
-                : 'border-[#E6DFD5] bg-white text-[#261C14] placeholder-[#A89F95] focus:border-[#C25E38] focus:ring-1 focus:ring-[#C25E38]'
+                : 'border-slate-300 bg-white text-slate-800 placeholder-slate-400 focus:border-[#1E3A8A] focus:ring-2 focus:ring-[#1E3A8A]/20'
             }
-            ${disabled ? 'bg-[#F2ECE4] cursor-not-allowed text-[#A89F95]' : ''}
+            ${disabled ? 'bg-slate-100 cursor-not-allowed text-slate-400' : ''}
             ${showPasswordToggle ? 'pr-11' : ''}
           `}
         />

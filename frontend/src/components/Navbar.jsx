@@ -102,13 +102,13 @@ const Navbar = () => {
                 <ChevronDown className="w-3.5 h-3.5 text-blue-200 flex-shrink-0" />
               </button>
 
-              {/* 3. Tombol Keluar (Logout) */}
+              {/* 3. Tombol Keluar (Logout - Dominan Navy) */}
               <button
                 onClick={handleLogout}
-                className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:text-red-600 bg-slate-200 hover:bg-slate-300 border border-slate-300 hover:border-red-300 transition-colors cursor-pointer"
+                className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#0B1A34] hover:bg-[#1E3A8A] border border-[#1E3A8A] transition-all cursor-pointer shadow-sm active:scale-95"
                 title="Keluar dari akun"
               >
-                <LogOut className="w-3.5 h-3.5" />
+                <LogOut className="w-3.5 h-3.5 text-blue-200" />
                 <span className="hidden sm:inline">Keluar</span>
               </button>
             </div>

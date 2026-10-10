@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import Materi from './pages/Materi';
 import LatihanSoal from './pages/LatihanSoal';
 import Tryout from './pages/Tryout';
+import Rapor from './pages/Rapor';
 import NavyBackground from './components/NavyBackground';
 import RewardModal from './components/RewardModal';
 

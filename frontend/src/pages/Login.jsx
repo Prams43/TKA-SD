@@ -200,21 +200,21 @@ const Login = () => {
           {/* TAMPILAN 1: PERTANYAAN TETAP LOGIN MENGGUNAKAN AKUN TERSIMPAN */}
           {isPromptingSavedUser ? (
             <div>
-              {/* Header Kartu Akun Tersimpan */}
+              {/* Header Kartu Akun Tersimpan (Dominan Navy) */}
               <div className="flex flex-col items-center text-center mb-5">
-                <div className="w-14 h-14 rounded-lg bg-[#2A211A] text-white flex items-center justify-center text-xl font-bold mb-3">
+                <div className="w-14 h-14 rounded-2xl bg-[#0B1A34] border-2 border-blue-400 text-white flex items-center justify-center text-xl font-bold mb-3 shadow-md">
                   {savedUser.username ? savedUser.username.charAt(0).toUpperCase() : 'U'}
                 </div>
-                <span className="text-[11px] font-medium text-[#6E6258] bg-[#F2ECE4] px-2 py-0.5 rounded border border-[#E6DFD5] mb-1.5">
+                <span className="text-[11px] font-semibold text-[#1E3A8A] bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200 mb-1.5">
                   Akun Tersimpan
                 </span>
-                <h2 className="text-lg font-bold text-[#261C14]">
+                <h2 className="text-lg font-bold text-slate-800">
                   {savedUser.username || savedUser.identifier}
                 </h2>
                 {savedUser.email && savedUser.email !== savedUser.username && (
-                  <p className="text-xs text-[#6E6258] mt-0.5">{savedUser.email}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{savedUser.email}</p>
                 )}
-                <p className="text-sm text-[#6E6258] mt-2.5">
+                <p className="text-sm text-slate-600 mt-2.5">
                   Tetap login menggunakan akun ini?
                 </p>
               </div>
@@ -247,22 +247,22 @@ const Login = () => {
                       id="saved-remember-me"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
-                      className="w-4 h-4 text-[#C25E38] border-[#E6DFD5] rounded focus:ring-[#C25E38] focus:ring-1 cursor-pointer"
+                      className="w-4 h-4 text-[#1E3A8A] border-slate-300 rounded focus:ring-[#1E3A8A] focus:ring-1 cursor-pointer"
                     />
-                    <span className="text-sm text-[#6E6258]">
+                    <span className="text-sm text-slate-700">
                       Ingat akun ini
                     </span>
                   </label>
 
                   <Link
                     to="/forgot-password"
-                    className="text-xs font-medium text-[#C25E38] hover:text-[#A94D2B] hover:underline"
+                    className="text-xs font-semibold text-[#1E3A8A] hover:text-[#172554] hover:underline"
                   >
                     Lupa password?
                   </Link>
                 </div>
 
-                {/* Tombol Utama: Login */}
+                {/* Tombol Utama: Login (Dominan Navy via Button primary) */}
                 <Button
                   type="submit"
                   variant="primary"
@@ -274,7 +274,7 @@ const Login = () => {
                   Login
                 </Button>
 
-                {/* Tombol Kedua: Login Akun Lain */}
+                {/* Tombol Kedua: Login Akun Lain (Navy Accent) */}
                 <button
                   type="button"
                   onClick={() => {
@@ -282,19 +282,19 @@ const Login = () => {
                     setServerError('');
                     setErrors({});
                   }}
-                  className="w-full mt-2.5 py-2.5 px-4 text-sm font-medium text-[#261C14] bg-[#F2ECE4] hover:bg-[#EAE2D8] rounded-lg transition-colors border border-[#E6DFD5] flex items-center justify-center space-x-2 cursor-pointer"
+                  className="w-full mt-2.5 py-2.5 px-4 text-sm font-semibold text-[#0B1A34] bg-blue-50/70 hover:bg-blue-100/90 rounded-lg transition-all border-2 border-[#1E3A8A]/30 hover:border-[#1E3A8A] flex items-center justify-center space-x-2 cursor-pointer shadow-xs active:scale-[0.99]"
                 >
-                  <UserPlus className="w-4 h-4 text-[#6E6258]" />
+                  <UserPlus className="w-4 h-4 text-[#1E3A8A]" />
                   <span>Login Akun Lain</span>
                 </button>
               </form>
 
               {/* Opsi Hapus Akun dari Perangkat */}
-              <div className="mt-6 pt-5 border-t border-[#E6DFD5] text-center flex items-center justify-center">
+              <div className="mt-6 pt-5 border-t border-slate-200 text-center flex items-center justify-center">
                 <button
                   type="button"
                   onClick={handleForgetSavedAccount}
-                  className="text-xs text-[#A89F95] hover:text-[#C93B3B] transition-colors inline-flex items-center space-x-1.5 cursor-pointer"
+                  className="text-xs text-slate-500 hover:text-red-600 transition-colors inline-flex items-center space-x-1.5 cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Hapus akun tersimpan dari perangkat ini</span>
@@ -312,7 +312,7 @@ const Login = () => {
                     setServerError('');
                     setErrors({});
                   }}
-                  className="mb-4 inline-flex items-center space-x-1.5 text-xs font-semibold text-[#C25E38] hover:text-[#A94D2B] hover:underline transition-colors cursor-pointer"
+                  className="mb-4 inline-flex items-center space-x-1.5 text-xs font-semibold text-[#1E3A8A] hover:text-[#172554] hover:underline transition-colors cursor-pointer"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Kembali ke akun {savedUser.username || savedUser.identifier}</span>
@@ -359,16 +359,16 @@ const Login = () => {
                       name="rememberMe"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
-                      className="w-4 h-4 text-[#C25E38] border-[#E6DFD5] rounded focus:ring-[#C25E38] focus:ring-1 cursor-pointer transition-colors"
+                      className="w-4 h-4 text-[#1E3A8A] border-slate-300 rounded focus:ring-[#1E3A8A] focus:ring-1 cursor-pointer transition-colors"
                     />
-                    <span className="text-sm font-medium text-[#6E6258] group-hover:text-[#261C14] transition-colors">
+                    <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900 transition-colors">
                       Ingat saya
                     </span>
                   </label>
 
                   <Link
                     to="/forgot-password"
-                    className="text-xs font-semibold text-[#C25E38] hover:text-[#A94D2B] hover:underline transition-colors"
+                    className="text-xs font-semibold text-[#1E3A8A] hover:text-[#172554] hover:underline transition-colors"
                   >
                     Lupa password?
                   </Link>
@@ -388,12 +388,12 @@ const Login = () => {
               </form>
 
               {/* Link ke Registrasi */}
-              <div className="mt-6 pt-6 border-t border-[#E6DFD5] text-center">
-                <p className="text-sm text-[#6E6258]">
+              <div className="mt-6 pt-6 border-t border-slate-200 text-center">
+                <p className="text-sm text-slate-600">
                   Belum punya akun?{' '}
                   <Link
                     to="/register"
-                    className="font-semibold text-[#C25E38] hover:text-[#A94D2B] hover:underline transition-colors"
+                    className="font-bold text-[#1E3A8A] hover:text-[#172554] hover:underline transition-colors"
                   >
                     Daftar di sini
                   </Link>
