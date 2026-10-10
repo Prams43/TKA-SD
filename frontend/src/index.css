@@ -2,36 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* OPSI 1: Warm Editorial & Terracotta */
+  --bg-main: #FAF7F2;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #F2ECE4;
+
+  --text-main: #261C14;
+  --text-muted: #6E6258;
+
+  --accent-main: #C25E38;
+  --accent-main-hover: #A94D2B;
+  --accent-main-tint: #FAECE6;
+
+  --accent-sec: #286657;
+  --accent-sec-hover: #1E5044;
+  --accent-sec-tint: #E8F2EF;
+
+  --status-success: #287A54;
+  --status-success-tint: #EBF7F0;
+
+  --status-error: #C93B3B;
+  --status-error-tint: #FDF1F1;
+
+  --status-warning: #D97E26;
+  --status-warning-tint: #FEF7EE;
+
+  --status-info: #2C6E8F;
+  --status-info-tint: #EFF6F9;
+
+  --border-color: #E6DFD5;
+}
+
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-800 font-poppins selection:bg-blue-200 selection:text-blue-900;
-    background-color: #f8fafc;
-    background-image: 
-      linear-gradient(135deg, rgba(240, 249, 255, 0.85) 0%, rgba(255, 255, 255, 0.80) 50%, rgba(224, 242, 254, 0.88) 100%),
-      url('./assets/bg.jpg');
-    background-repeat: repeat;
-    background-size: 420px auto;
-    background-attachment: fixed;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Poppins', sans-serif;
+  }
+
+  ::selection {
+    background-color: #F5D7CC;
+    color: #261C14;
   }
 }
 
 .bg-doodle-pattern {
-  background-color: #f8fafc;
-  background-image: 
-    linear-gradient(135deg, rgba(240, 249, 255, 0.85) 0%, rgba(255, 255, 255, 0.78) 50%, rgba(224, 242, 254, 0.88) 100%),
-    url('./assets/bg.jpg');
-  background-repeat: repeat;
-  background-size: 420px auto;
-  background-attachment: fixed;
-}
-
-/* Versi dark / night mode untuk dashboard jika ingin doodles tampil halus */
-.bg-doodle-dark {
-  background-image: 
-    linear-gradient(180deg, rgba(10, 30, 74, 0.94) 0%, rgba(7, 21, 52, 0.96) 50%, rgba(3, 9, 20, 0.98) 100%),
-    url('./assets/bg.jpg');
-  background-repeat: repeat;
-  background-size: 420px auto;
+  background-color: var(--bg-main);
 }
 
 /* Custom animation utils */
@@ -48,70 +65,6 @@
 
 .animate-fade-in {
   animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-12px);
-  }
-}
-
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 0.4;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.08);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    transform: translateX(-150%);
-  }
-  100% {
-    transform: translateX(150%);
-  }
-}
-
-.animate-float {
-  animation: float 4s ease-in-out infinite;
-}
-
-.animate-pulse-glow {
-  animation: pulseGlow 5s ease-in-out infinite;
-}
-
-.animate-shimmer {
-  animation: shimmer 2.5s infinite;
-}
-
-@keyframes bounceSubtle {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-6px);
-  }
-}
-
-.animate-bounce-subtle {
-  animation: bounceSubtle 2.2s ease-in-out infinite;
-}
-
-@keyframes wiggle {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-5deg); }
-  75% { transform: rotate(5deg); }
-}
-
-.animate-wiggle {
-  animation: wiggle 2.5s ease-in-out infinite;
 }
 
 /* Sembunyikan ikon intip password bawaan Microsoft Edge agar tidak dobel */

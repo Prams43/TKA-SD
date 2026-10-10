@@ -66,13 +66,13 @@ const SUBJECTS_CONFIG = {
       no: lvl.level,
     })),
     theme: {
-      gradient: 'from-blue-600 via-indigo-600 to-blue-700',
-      border: 'border-blue-400/30',
-      badgeBg: 'bg-blue-100 text-blue-800 border-blue-200',
-      activeRing: 'ring-blue-300/80',
-      activeBtn: 'from-blue-500 to-indigo-600 border-indigo-800',
-      pillCompleted: 'bg-emerald-50 border-emerald-200 text-emerald-900',
-      pillActive: 'bg-blue-50 border-blue-300 text-blue-900',
+      gradient: 'from-slate-900 to-slate-900',
+      border: 'border-[#33261D]',
+      badgeBg: 'bg-[#E8F2EF] text-[#286657] border-[#BCD9D0]',
+      activeRing: 'ring-[#286657]/20',
+      activeBtn: 'from-[#286657] to-[#286657] border-[#1E5044]',
+      pillCompleted: 'bg-[#E8F2EF] border-[#BCD9D0] text-[#286657]',
+      pillActive: 'bg-[#E8F2EF] border-[#BCD9D0] text-[#286657]',
     },
     milestones: {
       4: {
@@ -108,13 +108,13 @@ const SUBJECTS_CONFIG = {
       no: lvl.level,
     })),
     theme: {
-      gradient: 'from-emerald-600 via-teal-600 to-emerald-700',
-      border: 'border-emerald-400/30',
-      badgeBg: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-      activeRing: 'ring-emerald-300/80',
-      activeBtn: 'from-emerald-500 to-teal-600 border-teal-800',
-      pillCompleted: 'bg-emerald-50 border-emerald-200 text-emerald-900',
-      pillActive: 'bg-emerald-50 border-emerald-300 text-emerald-900',
+      gradient: 'from-slate-900 to-slate-900',
+      border: 'border-[#33261D]',
+      badgeBg: 'bg-[#FAECE6] text-[#C25E38] border-[#F2D2C4]',
+      activeRing: 'ring-[#C25E38]/20',
+      activeBtn: 'from-[#C25E38] to-[#C25E38] border-[#A94D2B]',
+      pillCompleted: 'bg-[#FAECE6] border-[#F2D2C4] text-[#C25E38]',
+      pillActive: 'bg-[#FAECE6] border-[#F2D2C4] text-[#C25E38]',
     },
     milestones: {
       4: {
@@ -309,7 +309,14 @@ const LatihanSoal = () => {
     const qType = q?.type || 'mcq';
     if (qType === 'mcq') return String(ans).trim() !== '';
     if (qType === 'mcma') return Array.isArray(ans) && ans.length > 0;
-    if (qType === 'category') return typeof ans === 'object' && Object.keys(ans).length > 0;
+    if (qType === 'category') {
+      if (typeof ans !== 'object' || ans === null) return false;
+      if (Array.isArray(q.statements) && q.statements.length > 0) {
+        return q.statements.every((_, sIdx) => ans[sIdx] !== undefined);
+      }
+      return Object.keys(ans).length > 0;
+    }
+    if (qType === 'isian') return typeof ans === 'string' && ans.trim().length > 0;
     return true;
   };
 
@@ -346,6 +353,9 @@ const LatihanSoal = () => {
       }
     });
 
+    const isCompletedAll = questions.every((q, idx) => isQuestionAnswered(q, userAnswers[idx]));
+    const answeredCount = questions.filter((q, idx) => isQuestionAnswered(q, userAnswers[idx])).length;
+
     // Hitung persentase skor akhir (0 - 100)
     const score = Math.round((totalScorePoints / questions.length) * 100);
 
@@ -362,29 +372,37 @@ const LatihanSoal = () => {
       starsEarned = 1;
     }
 
+    // EXP HANYA DIBERIKAN JIKA MENYELESAIKAN SEMUA SOAL LATIHAN
+    const expEarned = isCompletedAll ? (80 + starsEarned * 15) : 0;
+
     const result = {
       score,
       correctCount,
       totalCount: questions.length,
       wrongCount: questions.length - correctCount,
       starsEarned,
+      isCompletedAll,
+      answeredCount,
+      expEarned,
     };
 
     setLatestScoreResult(result);
     setIsFinished(true);
 
-    // Rekam aktivitas ke tracker untuk riwayat latihan
+    // Rekam aktivitas ke tracker untuk riwayat latihan (EXP hanya diberikan jika isCompletedAll === true)
     recordLatihan({
       subject: selectedSubject,
       level: `Latihan ${activeLatihan.level}`,
       score,
       correct: correctCount,
       total: questions.length,
+      isCompletedAll,
+      expEarned,
     });
 
-    // Tandai tuntas & berikan bintang jika ada yang benar (minimal 1 bintang)
-    if (starsEarned >= 1) {
-      markLatihanComplete(activeLatihan.id, starsEarned);
+    // Tandai tuntas & berikan bintang jika ada yang benar (minimal 1 bintang) dan semua soal dijawab
+    if (starsEarned >= 1 && isCompletedAll) {
+      markLatihanComplete(activeLatihan.id, starsEarned, false); // false = jangan tambah EXP dobel karena sudah tercatat di recordLatihan
 
       // Otomatis buka latihan berikutnya jika ada
       const currentIndex = currentLevels.findIndex((l) => l.id === activeLatihan.id);
@@ -492,18 +510,18 @@ const LatihanSoal = () => {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-doodle-pattern text-slate-800 selection:bg-emerald-200 selection:text-emerald-900 pb-12">
+    <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#261C14] selection:bg-[#FAECE6] selection:text-[#C25E38] pb-12">
       {/* 1. Navbar Utama */}
       <Navbar />
 
       {/* 2. Konten Utama */}
       <main className="flex-1 max-w-4xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 flex flex-col animate-fade-in">
         {/* Navigasi Breadcrumb */}
-        <div className="mb-3 flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-xs text-slate-600">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center space-x-2 text-xs text-[#6E6258]">
             <button
               onClick={() => navigate('/dashboard')}
-              className="hover:text-emerald-600 font-semibold flex items-center space-x-1 transition-colors"
+              className="hover:text-[#C25E38] font-medium flex items-center space-x-1 transition-colors"
             >
               <LayoutDashboard className="w-3.5 h-3.5" />
               <span>Dashboard</span>
@@ -515,8 +533,8 @@ const LatihanSoal = () => {
                 setJumpChallengeLevel(null);
                 setSelectedSubject(null);
               }}
-              className={`font-semibold hover:text-emerald-600 transition-colors ${
-                !selectedSubject ? 'text-[#0a1e4a] font-bold' : ''
+              className={`font-medium hover:text-[#C25E38] transition-colors ${
+                !selectedSubject ? 'text-[#261C14] font-semibold' : ''
               }`}
             >
               Bank Latihan Soal
@@ -524,7 +542,7 @@ const LatihanSoal = () => {
             {selectedSubject && (
               <>
                 <span>/</span>
-                <span className="text-[#0a1e4a] font-bold">
+                <span className="text-[#261C14] font-semibold">
                   {currentSubject?.title}
                 </span>
               </>
@@ -532,7 +550,7 @@ const LatihanSoal = () => {
             {activeLatihan && (
               <>
                 <span>/</span>
-                <span className="text-emerald-600 font-semibold truncate max-w-[150px] sm:max-w-xs">
+                <span className="text-[#C25E38] font-medium truncate max-w-[150px] sm:max-w-xs">
                   Latihan {activeLatihan.level}: {activeLatihan.subjudul}
                 </span>
               </>
@@ -559,7 +577,7 @@ const LatihanSoal = () => {
                 navigate('/dashboard');
               }
             }}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 shadow-xs text-slate-700 hover:text-emerald-700 text-xs font-semibold transition-all cursor-pointer"
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#F2ECE4] border border-[#E6DFD5] text-[#261C14] hover:text-[#C25E38] text-xs font-medium transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>
@@ -577,15 +595,11 @@ const LatihanSoal = () => {
           <div className="max-w-3xl mx-auto w-full py-4 sm:py-8 space-y-6 animate-fade-in">
             {/* Header Pilihan */}
             <div className="text-center space-y-2">
-              <div className="inline-flex items-center space-x-1.5 px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Petualangan Latihan Soal Resmi Pusmendik Kemendikdasmen</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                Pilih Mata Pelajaran Latihan
+              <h2 className="text-2xl font-bold text-[#261C14] tracking-tight">
+                Pilih Mata Pelajaran
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto leading-relaxed">
-                Setiap mata pelajaran memiliki alur latihan berjenjang dengan tantangan soal, buka gembok latihan berikutnya, dan kumpulkan piala penghargaan!
+              <p className="text-xs sm:text-sm text-[#6E6258] max-w-md mx-auto">
+                Pilih mata pelajaran untuk melihat peta latihan berjenjang dan raih bintang.
               </p>
             </div>
 
@@ -603,49 +617,47 @@ const LatihanSoal = () => {
                       setSelectedSubject('bahasa_indonesia');
                       setSearchQuery('');
                     }}
-                    className="p-6 rounded-3xl bg-gradient-to-br from-blue-50/80 via-white to-indigo-50/50 border-2 border-blue-200 hover:border-blue-500 shadow-md hover:shadow-xl transition-all cursor-pointer group hover:scale-[1.02] flex flex-col justify-between relative overflow-hidden"
+                    className="p-6 rounded-lg bg-white border border-[#E6DFD5] hover:border-[#286657] shadow-sm transition-colors cursor-pointer flex flex-col justify-between"
                   >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
-
                     <div>
                       <div className="flex items-center justify-between mb-4">
-                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                          <BookOpen className="w-7 h-7" />
+                        <div className="w-12 h-12 rounded-lg bg-[#E8F2EF] text-[#286657] border border-[#BCD9D0] flex items-center justify-center">
+                          <BookOpen className="w-6 h-6" />
                         </div>
-                        <span className="px-3 py-1 rounded-full text-xs font-black bg-blue-100 text-blue-800 border border-blue-200">
+                        <span className="px-2.5 py-0.5 rounded text-xs font-semibold bg-[#E8F2EF] text-[#286657] border border-[#BCD9D0]">
                           10 Latihan Soal
                         </span>
                       </div>
 
-                      <h3 className="text-xl font-black text-slate-900 group-hover:text-blue-700 transition-colors">
+                      <h3 className="text-lg font-bold text-[#261C14]">
                         Bahasa Indonesia
                       </h3>
-                      <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                      <p className="text-xs text-[#6E6258] mt-2 leading-relaxed">
                         Latihan berjenjang dari Fondasi Dasar hingga Penalaran HOTS Nasional: makna kata, kalimat efektif, sastra, dan teks inferensial.
                       </p>
 
                       {/* Bar Progres & Bintang */}
-                      <div className="mt-4 pt-3 border-t border-blue-100 space-y-2">
-                        <div className="flex items-center justify-between text-[11px] font-semibold text-slate-600">
+                      <div className="mt-4 pt-3 border-t border-[#E6DFD5] space-y-2">
+                        <div className="flex items-center justify-between text-[11px] font-medium text-[#6E6258]">
                           <span>Progres: {biDone} dari 10 Latihan</span>
-                          <span className="text-blue-700 font-bold">{biPercent}%</span>
+                          <span className="text-[#286657] font-semibold">{biPercent}%</span>
                         </div>
-                        <div className="w-full bg-blue-100/70 rounded-full h-2 overflow-hidden">
+                        <div className="w-full bg-[#F2ECE4] rounded-full h-2 overflow-hidden">
                           <div
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+                            className="bg-[#286657] h-2 rounded-full transition-all duration-300"
                             style={{ width: `${Math.max(4, biPercent)}%` }}
                           />
                         </div>
-                        <div className="flex items-center space-x-1.5 text-[11px] font-bold text-amber-600">
-                          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                        <div className="flex items-center space-x-1.5 text-[11px] font-semibold text-[#D97E26]">
+                          <Star className="w-3.5 h-3.5 fill-[#E5A875] text-[#D97E26]" />
                           <span>{biLevels.reduce((acc, l) => acc + getLevelStars(l.id), 0)} / {biLevels.length * 3} Bintang</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="mt-5 pt-3 border-t border-blue-100 flex items-center justify-between text-xs text-blue-600 font-bold group-hover:translate-x-0.5 transition-transform">
+                    <div className="mt-5 pt-3 border-t border-[#E6DFD5] flex items-center justify-between text-xs text-[#286657] font-medium">
                       <span>Buka Peta 10 Latihan Bahasa Indonesia</span>
-                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      <ChevronRight className="w-4 h-4" />
                     </div>
                   </div>
                 );
@@ -663,49 +675,47 @@ const LatihanSoal = () => {
                       setSelectedSubject('matematika');
                       setSearchQuery('');
                     }}
-                    className="p-6 rounded-3xl bg-gradient-to-br from-emerald-50/80 via-white to-teal-50/50 border-2 border-emerald-200 hover:border-emerald-500 shadow-md hover:shadow-xl transition-all cursor-pointer group hover:scale-[1.02] flex flex-col justify-between relative overflow-hidden"
+                    className="p-6 rounded-lg bg-white border border-[#E6DFD5] hover:border-[#C25E38] shadow-sm transition-colors cursor-pointer flex flex-col justify-between"
                   >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
-
                     <div>
                       <div className="flex items-center justify-between mb-4">
-                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                          <Calculator className="w-7 h-7" />
+                        <div className="w-12 h-12 rounded-lg bg-[#FAECE6] text-[#C25E38] border border-[#F2D2C4] flex items-center justify-center">
+                          <Calculator className="w-6 h-6" />
                         </div>
-                        <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        <span className="px-2.5 py-0.5 rounded text-xs font-semibold bg-[#FAECE6] text-[#C25E38] border border-[#F2D2C4]">
                           10 Latihan Soal
                         </span>
                       </div>
 
-                      <h3 className="text-xl font-black text-slate-900 group-hover:text-emerald-700 transition-colors">
+                      <h3 className="text-lg font-bold text-[#261C14]">
                         Matematika
                       </h3>
-                      <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                      <p className="text-xs text-[#6E6258] mt-2 leading-relaxed">
                         Latihan berjenjang dari Fondasi Dasar hingga Penalaran HOTS: operasi hitung, KPK/FPB, skala, pecahan, geometri, dan statistika.
                       </p>
 
                       {/* Bar Progres & Bintang */}
-                      <div className="mt-4 pt-3 border-t border-emerald-100 space-y-2">
-                        <div className="flex items-center justify-between text-[11px] font-semibold text-slate-600">
+                      <div className="mt-4 pt-3 border-t border-[#E6DFD5] space-y-2">
+                        <div className="flex items-center justify-between text-[11px] font-medium text-[#6E6258]">
                           <span>Progres: {mtkDone} dari 10 Latihan</span>
-                          <span className="text-emerald-700 font-bold">{mtkPercent}%</span>
+                          <span className="text-[#C25E38] font-semibold">{mtkPercent}%</span>
                         </div>
-                        <div className="w-full bg-emerald-100/70 rounded-full h-2 overflow-hidden">
+                        <div className="w-full bg-[#F2ECE4] rounded-full h-2 overflow-hidden">
                           <div
-                            className="bg-emerald-600 h-2 rounded-full transition-all duration-500"
+                            className="bg-[#C25E38] h-2 rounded-full transition-all duration-300"
                             style={{ width: `${Math.max(4, mtkPercent)}%` }}
                           />
                         </div>
-                        <div className="flex items-center space-x-1.5 text-[11px] font-bold text-amber-600">
-                          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                        <div className="flex items-center space-x-1.5 text-[11px] font-semibold text-[#D97E26]">
+                          <Star className="w-3.5 h-3.5 fill-[#E5A875] text-[#D97E26]" />
                           <span>{mtkLevels.reduce((acc, l) => acc + getLevelStars(l.id), 0)} / {mtkLevels.length * 3} Bintang</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="mt-5 pt-3 border-t border-emerald-100 flex items-center justify-between text-xs text-emerald-600 font-bold group-hover:translate-x-0.5 transition-transform">
+                    <div className="mt-5 pt-3 border-t border-[#E6DFD5] flex items-center justify-between text-xs text-[#C25E38] font-medium">
                       <span>Buka Peta 10 Latihan Matematika</span>
-                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      <ChevronRight className="w-4 h-4" />
                     </div>
                   </div>
                 );
@@ -716,9 +726,9 @@ const LatihanSoal = () => {
 
         {/* --- TAHAP 2: PENGERJAAN SOAL LATIHAN PADA LEVEL TERPILIH --- */}
         {selectedSubject && activeLatihan && (
-          <div className="bg-white border border-slate-200 rounded-3xl w-full shadow-xl overflow-hidden p-4 sm:p-6 animate-fade-in">
+          <div className="bg-white border border-[#E6DFD5] rounded-xl w-full shadow-xs overflow-hidden p-4 sm:p-6 animate-fade-in">
             {/* Header Pengerjaan Latihan */}
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200 mb-6">
+            <div className="flex items-center justify-between pb-4 border-b border-[#E6DFD5] mb-6">
               <div className="flex items-center space-x-3">
                 <button
                   onClick={() => {
@@ -732,31 +742,31 @@ const LatihanSoal = () => {
                     setActiveLatihan(null);
                     refreshActivity();
                   }}
-                  className="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors cursor-pointer"
-                  title="Kembali ke Peta Petualangan"
+                  className="w-8 h-8 rounded-lg bg-[#F2ECE4] hover:bg-[#E6DFD5] text-[#261C14] flex items-center justify-center transition-colors cursor-pointer"
+                  title="Kembali ke Peta Latihan"
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </button>
                 <div>
                   <div className="flex items-center space-x-2">
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FAECE6] text-[#C25E38] border border-[#F4D3C4]">
                       LATIHAN {activeLatihan.level} DARI {currentLevels.length} • {currentSubject.title.toUpperCase()}
                     </span>
                     {isLevelCompleted(activeLatihan.id) && (
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center space-x-1">
-                        <Check className="w-3 h-3 stroke-[3]" />
+                      <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#E8F2EF] text-[#286657] border border-[#C5DDD6] flex items-center space-x-1">
+                        <Check className="w-3 h-3 stroke-[2.5]" />
                         <span>Tuntas</span>
                       </span>
                     )}
                   </div>
-                  <h2 className="text-base sm:text-lg font-bold text-slate-900 mt-0.5">
+                  <h2 className="text-base sm:text-lg font-bold text-[#261C14] mt-0.5">
                     {activeLatihan.subjudul}
                   </h2>
                 </div>
               </div>
 
               <div className="text-right hidden sm:block">
-                <span className="text-xs text-slate-500">
+                <span className="text-xs text-[#6E6258]">
                   {activeLatihan.targetSoal} Soal Standar Pusmendik
                 </span>
               </div>
@@ -776,12 +786,12 @@ const LatihanSoal = () => {
                   return (
                     <>
                       {/* Header Progress & Navigasi */}
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-500 pb-2 border-b border-slate-200 gap-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-[#6E6258] pb-2 border-b border-[#E6DFD5] gap-2">
                         <div className="flex items-center space-x-2">
-                          <span className="font-bold text-slate-900 text-sm">
+                          <span className="font-bold text-[#261C14] text-sm">
                             Soal {currentQuestionIndex + 1} dari {activeLatihan.soal.length}
                           </span>
-                          <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-semibold text-[10px]">
+                          <span className="px-2 py-0.5 rounded bg-[#F2ECE4] text-[#261C14] font-medium text-[10px] border border-[#E6DFD5]">
                             {activeLatihan.soal[currentQuestionIndex]?.type === 'mcma'
                               ? 'PG Kompleks'
                               : activeLatihan.soal[currentQuestionIndex]?.type === 'category'
@@ -790,21 +800,21 @@ const LatihanSoal = () => {
                           </span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <span className="text-[11px] font-semibold text-slate-600">
+                          <span className="text-[11px] font-medium text-[#6E6258]">
                             Terjawab:{' '}
-                            <strong className="text-emerald-700 font-bold">{answeredCount}</strong> /{' '}
+                            <strong className="text-[#C25E38] font-semibold">{answeredCount}</strong> /{' '}
                             {activeLatihan.soal.length}
                           </span>
-                          <span className="text-[10px] text-slate-400 font-bold">
+                          <span className="text-[10px] text-[#8C7E72] font-medium">
                             ({answeredPercent}%)
                           </span>
                         </div>
                       </div>
 
                       {/* Bar Progres Visual Lembar Soal */}
-                      <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200 shadow-inner">
+                      <div className="w-full bg-[#F2ECE4] rounded-full h-1.5 overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-300 shadow-sm"
+                          className="h-full bg-[#C25E38] rounded-full transition-all duration-300"
                           style={{ width: `${Math.max(3, answeredPercent)}%` }}
                         />
                       </div>
@@ -818,18 +828,18 @@ const LatihanSoal = () => {
                             <button
                               key={idx}
                               onClick={() => setCurrentQuestionIndex(idx)}
-                              className={`w-8 h-8 rounded-xl text-xs font-bold transition-all flex-shrink-0 cursor-pointer flex items-center justify-center relative ${
+                              className={`w-8 h-8 rounded-lg text-xs font-semibold transition-colors flex-shrink-0 cursor-pointer flex items-center justify-center relative ${
                                 isCurrent
-                                  ? 'bg-emerald-600 text-white shadow-md ring-2 ring-emerald-400 ring-offset-1 scale-105'
+                                  ? 'bg-[#C25E38] text-white ring-2 ring-[#FAECE6]'
                                   : answered
-                                  ? 'bg-emerald-500 text-white shadow-xs hover:bg-emerald-600'
-                                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
+                                  ? 'bg-[#FAECE6] text-[#C25E38] border border-[#F4D3C4] hover:bg-[#F4D3C4]'
+                                  : 'bg-[#FAF7F2] hover:bg-[#F2ECE4] text-[#6E6258] border border-[#E6DFD5]'
                               }`}
                               title={`Soal ${idx + 1} (${answered ? 'Sudah Terjawab' : 'Belum Dijawab'})`}
                             >
                               <span>{idx + 1}</span>
                               {answered && !isCurrent && (
-                                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-400 border border-white" />
+                                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#C25E38] border border-white" />
                               )}
                             </button>
                           );
@@ -848,11 +858,11 @@ const LatihanSoal = () => {
                   if (!currentQ) return null;
 
                   return (
-                    <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-md space-y-4">
+                    <div className="p-5 sm:p-6 rounded-lg bg-white border border-[#E6DFD5] shadow-xs space-y-4">
                       {/* Indikator Kurikulum */}
                       {currentQ.indicator && (
-                        <div className="p-2.5 rounded-xl bg-blue-50/70 border border-blue-200 text-blue-900 text-xs font-medium flex items-center space-x-2">
-                          <HelpCircle className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                        <div className="p-2.5 rounded-lg bg-[#FAECE6] border border-[#F4D3C4] text-[#C25E38] text-xs font-medium flex items-center space-x-2">
+                          <HelpCircle className="w-4 h-4 text-[#C25E38] flex-shrink-0" />
                           <span>
                             <strong>Indikator:</strong> {currentQ.indicator}
                           </span>
@@ -861,21 +871,21 @@ const LatihanSoal = () => {
 
                       {/* Stimulus Bacaan (jika ada) */}
                       {currentQ.stimulus && (
-                        <div className="p-4 rounded-xl bg-amber-50/50 border-l-4 border-amber-500 text-slate-800 text-xs sm:text-sm leading-relaxed space-y-1">
-                          <span className="font-bold text-amber-900 block text-xs">Konteks Stimulus:</span>
+                        <div className="p-4 rounded-lg bg-[#FEF7EE] border-l-4 border-[#D97E26] text-[#261C14] text-xs sm:text-sm leading-relaxed space-y-1">
+                          <span className="font-semibold text-[#D97E26] block text-xs">Konteks Stimulus:</span>
                           <div dangerouslySetInnerHTML={{ __html: formatMath(currentQ.stimulus) }} />
                         </div>
                       )}
 
                       {/* Pertanyaan */}
                       <h4
-                        className="text-sm sm:text-base font-bold text-slate-900 leading-relaxed"
+                        className="text-sm sm:text-base font-semibold text-[#261C14] leading-relaxed"
                         dangerouslySetInnerHTML={{ __html: formatMath(currentQ.pertanyaan) }}
                       />
 
                       {/* Opsi 1: MCQ (Single Choice) */}
                       {qType === 'mcq' && (
-                        <div className="space-y-2.5 pt-2">
+                        <div className="space-y-2 pt-2">
                           {currentQ.pilihan?.map((opt, oIdx) => {
                             const isSelected =
                               currentAns === opt ||
@@ -885,18 +895,18 @@ const LatihanSoal = () => {
                               <button
                                 key={oIdx}
                                 onClick={() => handleAnswerChange(opt)}
-                                className={`w-full p-3.5 rounded-xl text-left text-xs sm:text-sm font-medium border transition-all flex items-center justify-between cursor-pointer ${
+                                className={`w-full p-3 rounded-lg text-left text-xs sm:text-sm font-medium border transition-colors flex items-center justify-between cursor-pointer ${
                                   isSelected
-                                    ? 'bg-emerald-50 border-2 border-emerald-500 text-emerald-900 shadow-sm font-semibold'
-                                    : 'bg-slate-50/70 border-slate-200 text-slate-700 hover:bg-slate-100'
+                                    ? 'bg-[#FAECE6] border border-[#C25E38] text-[#261C14] font-semibold'
+                                    : 'bg-white border-[#E6DFD5] text-[#261C14] hover:bg-[#FAF7F2]'
                                 }`}
                               >
                                 <span dangerouslySetInnerHTML={{ __html: formatMath(opt) }} />
                                 <div
-                                  className={`w-6 h-6 rounded-full border flex items-center justify-center text-xs font-bold flex-shrink-0 ml-2 ${
+                                  className={`w-6 h-6 rounded-full border flex items-center justify-center text-xs font-semibold flex-shrink-0 ml-2 ${
                                     isSelected
-                                      ? 'border-emerald-500 bg-emerald-600 text-white'
-                                      : 'border-slate-300 text-slate-500 bg-white'
+                                      ? 'border-[#C25E38] bg-[#C25E38] text-white'
+                                      : 'border-[#E6DFD5] text-[#6E6258] bg-[#FAF7F2]'
                                   }`}
                                 >
                                   {String.fromCharCode(65 + oIdx)}
@@ -909,9 +919,9 @@ const LatihanSoal = () => {
 
                       {/* Opsi 2: MCMA (Multi-select) */}
                       {qType === 'mcma' && (
-                        <div className="space-y-2.5 pt-2">
-                          <div className="p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-800 font-medium flex items-center space-x-2">
-                            <CheckCircle2 className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                        <div className="space-y-2 pt-2">
+                          <div className="p-2.5 rounded-lg bg-[#FAECE6] border border-[#F4D3C4] text-xs text-[#C25E38] font-medium flex items-center space-x-2">
+                            <CheckCircle2 className="w-4 h-4 text-[#C25E38] flex-shrink-0" />
                             <span>Pilihan Ganda Kompleks: Anda dapat memilih lebih dari satu jawaban.</span>
                           </div>
                           {currentQ.pilihan?.map((opt, oIdx) => {
@@ -926,21 +936,21 @@ const LatihanSoal = () => {
                                     : [...list, opt];
                                   handleAnswerChange(nextList);
                                 }}
-                                className={`w-full p-3.5 rounded-xl text-left text-xs sm:text-sm font-medium border transition-all flex items-center justify-between cursor-pointer ${
+                                className={`w-full p-3 rounded-lg text-left text-xs sm:text-sm font-medium border transition-colors flex items-center justify-between cursor-pointer ${
                                   isSelected
-                                    ? 'bg-blue-50 border-2 border-blue-500 text-blue-900 shadow-sm font-semibold'
-                                    : 'bg-slate-50/70 border-slate-200 text-slate-700 hover:bg-slate-100'
+                                    ? 'bg-[#FAECE6] border border-[#C25E38] text-[#261C14] font-semibold'
+                                    : 'bg-white border-[#E6DFD5] text-[#261C14] hover:bg-[#FAF7F2]'
                                 }`}
                               >
                                 <span dangerouslySetInnerHTML={{ __html: formatMath(opt) }} />
                                 <div
-                                  className={`w-5 h-5 rounded-md border flex items-center justify-center text-xs font-bold flex-shrink-0 ml-2 ${
+                                  className={`w-5 h-5 rounded border flex items-center justify-center text-xs font-bold flex-shrink-0 ml-2 ${
                                     isSelected
-                                      ? 'border-blue-500 bg-blue-600 text-white'
-                                      : 'border-slate-300 text-slate-400 bg-white'
+                                      ? 'border-[#C25E38] bg-[#C25E38] text-white'
+                                      : 'border-[#E6DFD5] text-[#8C7E72] bg-white'
                                   }`}
                                 >
-                                  {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                                  {isSelected && <Check className="w-3.5 h-3.5 stroke-[2.5]" />}
                                 </div>
                               </button>
                             );
@@ -951,11 +961,11 @@ const LatihanSoal = () => {
                       {/* Opsi 3: CATEGORY (Benar / Salah) */}
                       {qType === 'category' && (
                         <div className="space-y-3 pt-2">
-                          <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 font-medium flex items-center space-x-2">
-                            <HelpCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                          <div className="p-2.5 rounded-lg bg-[#FEF7EE] border border-[#F4D3C4] text-xs text-[#D97E26] font-medium flex items-center space-x-2">
+                            <HelpCircle className="w-4 h-4 text-[#D97E26] flex-shrink-0" />
                             <span>Tentukan apakah setiap pernyataan bernilai Benar atau Salah.</span>
                           </div>
-                          <div className="divide-y divide-slate-200 border border-slate-200 rounded-xl overflow-hidden bg-white">
+                          <div className="divide-y divide-[#E6DFD5] border border-[#E6DFD5] rounded-lg overflow-hidden bg-white">
                             {currentQ.statements?.map((stmt, sIdx) => {
                               const stmtVal =
                                 typeof currentAns === 'object' && currentAns !== null
@@ -964,10 +974,10 @@ const LatihanSoal = () => {
                               return (
                                 <div
                                   key={sIdx}
-                                  className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/80"
+                                  className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[#FAF7F2]"
                                 >
                                   <span
-                                    className="text-xs sm:text-sm text-slate-800 flex-1 leading-relaxed"
+                                    className="text-xs sm:text-sm text-[#261C14] flex-1 leading-relaxed"
                                     dangerouslySetInnerHTML={{ __html: formatMath(stmt.text) }}
                                   />
                                   <div className="flex items-center space-x-2 flex-shrink-0">
@@ -979,10 +989,10 @@ const LatihanSoal = () => {
                                             : {};
                                         handleAnswerChange({ ...obj, [sIdx]: true });
                                       }}
-                                      className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                                         stmtVal === true
-                                          ? 'bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-400'
-                                          : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200'
+                                          ? 'bg-[#286657] text-white'
+                                          : 'bg-[#FAF7F2] hover:bg-[#F2ECE4] text-[#6E6258] border border-[#E6DFD5]'
                                       }`}
                                     >
                                       Benar
@@ -995,10 +1005,10 @@ const LatihanSoal = () => {
                                             : {};
                                         handleAnswerChange({ ...obj, [sIdx]: false });
                                       }}
-                                      className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                                         stmtVal === false
-                                          ? 'bg-rose-600 text-white shadow-sm ring-2 ring-rose-400'
-                                          : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200'
+                                          ? 'bg-[#C93B3B] text-white'
+                                          : 'bg-[#FAF7F2] hover:bg-[#F2ECE4] text-[#6E6258] border border-[#E6DFD5]'
                                       }`}
                                     >
                                       Salah
@@ -1012,14 +1022,14 @@ const LatihanSoal = () => {
                       )}
 
                       {/* Navigasi Bawah */}
-                      <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                      <div className="mt-6 pt-4 border-t border-[#E6DFD5] flex items-center justify-between">
                         <button
                           disabled={currentQuestionIndex === 0}
                           onClick={() => setCurrentQuestionIndex((prev) => prev - 1)}
-                          className={`px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer ${
+                          className={`px-3.5 py-2 rounded-lg text-xs font-medium cursor-pointer ${
                             currentQuestionIndex === 0
-                              ? 'text-slate-300 bg-slate-50 cursor-not-allowed'
-                              : 'text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200'
+                              ? 'text-[#8C7E72] bg-[#FAF7F2] border border-[#E6DFD5] cursor-not-allowed'
+                              : 'text-[#261C14] hover:text-[#261C14] bg-[#F2ECE4] hover:bg-[#E6DFD5]'
                           }`}
                         >
                           &larr; Sebelumnya
@@ -1029,22 +1039,35 @@ const LatihanSoal = () => {
                           {currentQuestionIndex < activeLatihan.soal.length - 1 ? (
                             <button
                               onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
-                              className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-md cursor-pointer hover:scale-105 active:scale-95"
+                              className="px-4 py-2 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white text-xs font-semibold transition-colors cursor-pointer"
                             >
                               Selanjutnya &rarr;
                             </button>
                           ) : (
                             <button
                               onClick={() => {
-                                if (
-                                  window.confirm(
-                                    'Apakah Anda yakin ingin mengumpulkan lembar jawaban latihan sekarang?'
-                                  )
-                                ) {
-                                  handleFinishQuiz();
+                                const answered = activeLatihan.soal.filter((q, idx) =>
+                                  isQuestionAnswered(q, userAnswers[idx])
+                                ).length;
+                                const unanswered = activeLatihan.soal.length - answered;
+
+                                if (unanswered > 0) {
+                                  if (
+                                    window.confirm(
+                                      `Perhatian: Masih ada ${unanswered} soal yang belum kamu jawab!\n\nSesuai sistem kenaikan level, jika kamu TIDAK MENYELESAIKAN SEMUA SOAL (${activeLatihan.soal.length}/${activeLatihan.soal.length}), kamu TIDAK AKAN MENDAPATKAN EXP.\n\nApakah kamu tetap ingin mengumpulkan latihan sekarang?`
+                                    )
+                                  ) {
+                                    handleFinishQuiz();
+                                  }
+                                } else {
+                                  if (
+                                    window.confirm('Apakah Anda yakin ingin mengumpulkan lembar jawaban latihan sekarang?')
+                                  ) {
+                                    handleFinishQuiz();
+                                  }
                                 }
                               }}
-                              className="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold transition-all shadow-lg shadow-emerald-600/20 hover:scale-105 active:scale-95 cursor-pointer"
+                              className="px-4 py-2 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white text-xs font-semibold transition-colors cursor-pointer"
                             >
                               Kumpulkan Latihan
                             </button>
@@ -1058,24 +1081,24 @@ const LatihanSoal = () => {
             ) : !isReviewMode ? (
               /* HASIL NILAI DI AKHIR */
               <div className="max-w-md mx-auto py-8 text-center space-y-5 animate-fade-in">
-                <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-slate-950 flex items-center justify-center mx-auto shadow-xl shadow-emerald-500/20 font-black text-3xl">
-                  <Trophy className="w-10 h-10 text-slate-950" />
+                <div className="w-14 h-14 rounded-full bg-[#E8F2EF] text-[#286657] border border-[#C5DDD6] flex items-center justify-center mx-auto">
+                  <Trophy className="w-7 h-7" />
                 </div>
 
                 <div>
-                  <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">
+                  <span className="text-xs font-semibold text-[#286657] uppercase tracking-wider">
                     Latihan Selesai
                   </span>
-                  <h3 className="text-2xl font-black text-slate-900 mt-1">
+                  <h3 className="text-xl font-bold text-[#261C14] mt-1">
                     Hasil Latihan {activeLatihan.level}
                   </h3>
                 </div>
 
                 {/* Skor Card */}
-                <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200 shadow-md space-y-4">
-                  <div className="text-4xl font-extrabold text-slate-900">
+                <div className="p-6 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] shadow-xs space-y-4">
+                  <div className="text-4xl font-extrabold text-[#261C14]">
                     {latestScoreResult?.score}
-                    <span className="text-sm text-slate-500 font-normal"> / 100</span>
+                    <span className="text-sm text-[#6E6258] font-normal"> / 100</span>
                   </div>
 
                   {/* Perolehan Bintang */}
@@ -1085,17 +1108,17 @@ const LatihanSoal = () => {
                       return (
                         <div
                           key={starNum}
-                          className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${
+                          className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                             isEarned
-                              ? 'bg-amber-100 border-2 border-amber-400 shadow-md scale-105'
-                              : 'bg-slate-100 border border-slate-200 opacity-40'
+                              ? 'bg-[#FEF7EE] border border-[#F4D3C4]'
+                              : 'bg-[#F2ECE4] border border-[#E6DFD5] opacity-50'
                           }`}
                         >
                           <Star
-                            className={`w-6 h-6 ${
+                            className={`w-5 h-5 ${
                               isEarned
-                                ? 'text-amber-500 fill-amber-400 drop-shadow-xs'
-                                : 'text-slate-300 fill-slate-200'
+                                ? 'text-[#D97E26] fill-[#E5A875]'
+                                : 'text-[#8C7E72] fill-transparent'
                             }`}
                           />
                         </div>
@@ -1103,24 +1126,38 @@ const LatihanSoal = () => {
                     })}
                   </div>
 
-                  <p className="text-xs sm:text-sm font-bold text-amber-700">
+                  <p className="text-xs sm:text-sm font-semibold text-[#D97E26]">
                     {latestScoreResult?.starsEarned === 3
-                      ? '⭐⭐⭐ Sempurna! Kamu meraih 3 Bintang Emas!'
+                      ? 'Sempurna! Kamu meraih 3 Bintang Emas.'
                       : latestScoreResult?.starsEarned === 2
-                      ? '⭐⭐☆ Hebat! Kamu meraih 2 Bintang Emas!'
+                      ? 'Hebat! Kamu meraih 2 Bintang Emas.'
                       : latestScoreResult?.starsEarned === 1
-                      ? '⭐☆☆ Bagus! Kamu berhasil meraih 1 Bintang!'
-                      : 'Belum meraih bintang. Ulangi latihan untuk hasil lebih baik!'}
+                      ? 'Bagus! Kamu berhasil meraih 1 Bintang.'
+                      : 'Belum meraih bintang. Ulangi latihan untuk hasil lebih baik.'}
                   </p>
 
-                  <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-200 text-xs">
-                    <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800">
+                  {/* Status EXP Sesuai Kelengkapan Soal */}
+                  <div className="pt-0.5">
+                    {latestScoreResult?.isCompletedAll ? (
+                      <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#E8F2EF] text-[#286657] border border-[#BCD9D0] text-xs font-bold shadow-2xs">
+                        <Sparkles className="w-3.5 h-3.5 text-[#286657]" />
+                        <span>+{latestScoreResult?.expEarned} EXP Didapatkan! (Semua Soal Selesai)</span>
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FDF1F1] text-[#C93B3B] border border-[#F4C7C7] text-xs font-medium">
+                        <span>0 EXP (EXP hanya didapat jika menyelesaikan seluruh {latestScoreResult?.totalCount} soal latihan)</span>
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 pt-3 border-t border-[#E6DFD5] text-xs">
+                    <div className="p-2.5 rounded-lg bg-[#E8F2EF] border border-[#C5DDD6] text-[#286657]">
                       <span className="block font-bold text-base">
                         {latestScoreResult?.correctCount} / {latestScoreResult?.totalCount}
                       </span>
                       <span>Jawaban Benar</span>
                     </div>
-                    <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800">
+                    <div className="p-2.5 rounded-lg bg-[#FDF1F1] border border-[#F4C7C7] text-[#C93B3B]">
                       <span className="block font-bold text-base">
                         {latestScoreResult?.wrongCount}
                       </span>
@@ -1130,13 +1167,13 @@ const LatihanSoal = () => {
                 </div>
 
                 {/* Tombol Aksi */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-2">
                   <button
                     onClick={() => {
                       setReviewFilter('all');
                       setIsReviewMode(true);
                     }}
-                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center space-x-1.5"
+                    className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white font-semibold text-xs shadow-xs transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
                   >
                     <Eye className="w-4 h-4" />
                     <span>Review Pembahasan</span>
@@ -1144,7 +1181,7 @@ const LatihanSoal = () => {
 
                   <button
                     onClick={() => handleStartLatihan(activeLatihan)}
-                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold transition-all cursor-pointer flex items-center justify-center space-x-1.5"
+                    className="w-full sm:w-auto px-4 py-2 rounded-lg bg-white hover:bg-[#FAF7F2] border border-[#E6DFD5] text-[#261C14] text-xs font-medium transition-colors cursor-pointer flex items-center justify-center space-x-1.5"
                   >
                     <RotateCcw className="w-4 h-4" />
                     <span>Coba Lagi</span>
@@ -1155,7 +1192,7 @@ const LatihanSoal = () => {
                       setActiveLatihan(null);
                       refreshActivity();
                     }}
-                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all cursor-pointer"
+                    className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#261C14] hover:bg-[#3D2E24] text-white text-xs font-semibold transition-colors cursor-pointer"
                   >
                     Peta Latihan
                   </button>
@@ -1163,45 +1200,45 @@ const LatihanSoal = () => {
               </div>
             ) : (
               /* REVIEW LATIHAN SOAL LENGKAP */
-              <div className="max-w-3xl mx-auto space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-200 gap-3">
+              <div className="max-w-3xl mx-auto space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#E6DFD5] gap-3">
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900">
+                    <h3 className="text-base font-semibold text-[#261C14]">
                       Review Latihan {activeLatihan.level} & Pembahasan Lengkap
                     </h3>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-[#6E6258]">
                       Pelajari penjelasan setiap butir soal untuk menguasai kompetensi TKA SD.
                     </p>
                   </div>
 
                   <div className="flex items-center space-x-2">
-                    <div className="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+                    <div className="flex items-center space-x-1 bg-[#F2ECE4] p-1 rounded-lg text-xs font-medium">
                       <button
                         onClick={() => setReviewFilter('all')}
-                        className={`px-2.5 py-1 rounded-lg cursor-pointer ${
+                        className={`px-2.5 py-1 rounded-md transition-colors cursor-pointer ${
                           reviewFilter === 'all'
-                            ? 'bg-white text-slate-900 shadow-2xs'
-                            : 'text-slate-600 hover:text-slate-900'
+                            ? 'bg-white text-[#261C14] shadow-xs font-semibold'
+                            : 'text-[#6E6258] hover:text-[#261C14]'
                         }`}
                       >
                         Semua ({activeLatihan.soal.length})
                       </button>
                       <button
                         onClick={() => setReviewFilter('wrong')}
-                        className={`px-2.5 py-1 rounded-lg cursor-pointer ${
+                        className={`px-2.5 py-1 rounded-md transition-colors cursor-pointer ${
                           reviewFilter === 'wrong'
-                            ? 'bg-rose-600 text-white shadow-2xs'
-                            : 'text-slate-600 hover:text-slate-900'
+                            ? 'bg-[#C93B3B] text-white font-semibold'
+                            : 'text-[#6E6258] hover:text-[#261C14]'
                         }`}
                       >
                         Salah ({latestScoreResult?.wrongCount})
                       </button>
                       <button
                         onClick={() => setReviewFilter('correct')}
-                        className={`px-2.5 py-1 rounded-lg cursor-pointer ${
+                        className={`px-2.5 py-1 rounded-md transition-colors cursor-pointer ${
                           reviewFilter === 'correct'
-                            ? 'bg-emerald-600 text-white shadow-2xs'
-                            : 'text-slate-600 hover:text-slate-900'
+                            ? 'bg-[#286657] text-white font-semibold'
+                            : 'text-[#6E6258] hover:text-[#261C14]'
                         }`}
                       >
                         Benar ({latestScoreResult?.correctCount})
@@ -1210,7 +1247,7 @@ const LatihanSoal = () => {
 
                     <button
                       onClick={() => setIsReviewMode(false)}
-                      className="px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700 shadow-sm cursor-pointer"
+                      className="px-3 py-1.5 rounded-lg bg-white hover:bg-[#FAF7F2] border border-[#E6DFD5] text-xs font-medium text-[#261C14] transition-colors cursor-pointer"
                     >
                       Tutup
                     </button>
@@ -1218,7 +1255,7 @@ const LatihanSoal = () => {
                 </div>
 
                 {/* Daftar Soal & Penjelasannya */}
-                <div className="space-y-5">
+                <div className="space-y-4">
                   {activeLatihan.soal
                     .filter((q, idx) => {
                       const isCorrect = isQuestionCorrect(q, userAnswers[idx]);
@@ -1235,46 +1272,44 @@ const LatihanSoal = () => {
                       return (
                         <div
                           key={q.id || origIdx}
-                          className={`p-5 rounded-2xl border shadow-sm ${
-                            isCorrect
-                              ? 'bg-emerald-50/30 border-emerald-300'
-                              : 'bg-rose-50/30 border-rose-300'
+                          className={`p-4 rounded-lg border bg-white ${
+                            isCorrect ? 'border-[#C5DDD6]' : 'border-[#F4C7C7]'
                           }`}
                         >
                           <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                             <div className="flex items-center space-x-2">
-                              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-white">
+                              <span className="text-xs font-semibold px-2 py-0.5 rounded bg-[#261C14] text-white">
                                 Soal #{origIdx + 1}
                               </span>
                               {q.indicator && (
-                                <span className="text-[10px] text-slate-600 bg-white px-2 py-0.5 rounded-md border border-slate-200">
+                                <span className="text-[11px] text-[#6E6258] bg-[#FAF7F2] px-2 py-0.5 rounded border border-[#E6DFD5]">
                                   {q.indicator}
                                 </span>
                               )}
                             </div>
 
                             {isCorrect ? (
-                              <span className="inline-flex items-center space-x-1 text-xs font-bold text-emerald-700 bg-emerald-100/70 px-2.5 py-0.5 rounded-full">
-                                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                              <span className="inline-flex items-center space-x-1 text-xs font-medium text-[#286657] bg-[#E8F2EF] px-2 py-0.5 rounded border border-[#C5DDD6]">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-[#286657]" />
                                 <span>Jawabanmu Benar</span>
                               </span>
                             ) : (
-                              <span className="inline-flex items-center space-x-1 text-xs font-bold text-rose-700 bg-rose-100/70 px-2.5 py-0.5 rounded-full">
-                                <XCircle className="w-4 h-4 text-rose-600" />
+                              <span className="inline-flex items-center space-x-1 text-xs font-medium text-[#C93B3B] bg-[#FDF1F1] px-2 py-0.5 rounded border border-[#F4C7C7]">
+                                <XCircle className="w-3.5 h-3.5 text-[#C93B3B]" />
                                 <span>Jawabanmu Salah</span>
                               </span>
                             )}
                           </div>
 
                           {q.stimulus && (
-                            <div className="p-3 mb-3 rounded-xl bg-amber-50/60 border border-amber-200 text-slate-700 text-xs">
-                              <span className="font-bold text-amber-900 block mb-0.5">Stimulus:</span>
+                            <div className="p-3 mb-3 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] text-[#261C14] text-xs">
+                              <span className="font-semibold text-[#261C14] block mb-1">Stimulus:</span>
                               <div dangerouslySetInnerHTML={{ __html: formatMath(q.stimulus) }} />
                             </div>
                           )}
 
                           <h4
-                            className="text-sm font-semibold text-slate-900 mb-3 leading-relaxed"
+                            className="text-xs sm:text-sm font-semibold text-[#261C14] mb-3 leading-relaxed"
                             dangerouslySetInnerHTML={{ __html: formatMath(q.pertanyaan) }}
                           />
 
@@ -1289,21 +1324,21 @@ const LatihanSoal = () => {
                                   opt === userAnswer ||
                                   (typeof userAnswer === 'number' && oIdx === userAnswer);
 
-                                let badgeStyle = 'bg-white border-slate-200 text-slate-600';
+                                let badgeStyle = 'bg-white border-[#E6DFD5] text-[#6E6258]';
                                 if (isOptionCorrect) {
-                                  badgeStyle = 'bg-emerald-100 border-emerald-400 text-emerald-900 font-semibold';
+                                  badgeStyle = 'bg-[#E8F2EF] border-[#C5DDD6] text-[#286657] font-medium';
                                 } else if (isOptionSelected && !isCorrect) {
-                                  badgeStyle = 'bg-rose-100 border-rose-400 text-rose-900 line-through';
+                                  badgeStyle = 'bg-[#FDF1F1] border-[#F4C7C7] text-[#C93B3B] line-through';
                                 }
 
                                 return (
                                   <div
                                     key={oIdx}
-                                    className={`p-2.5 rounded-xl border text-xs flex items-center justify-between ${badgeStyle}`}
+                                    className={`p-2.5 rounded-lg border text-xs flex items-center justify-between ${badgeStyle}`}
                                   >
                                     <span dangerouslySetInnerHTML={{ __html: `${String.fromCharCode(65 + oIdx)}. ${formatMath(opt)}` }} />
                                     {isOptionCorrect && (
-                                      <span className="text-[10px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded ml-2">
+                                      <span className="text-[10px] bg-[#286657] text-white font-semibold px-1.5 py-0.5 rounded ml-2">
                                         Kunci
                                       </span>
                                     )}
@@ -1322,23 +1357,23 @@ const LatihanSoal = () => {
                                 return (
                                   <div
                                     key={oIdx}
-                                    className={`p-2 rounded-xl text-xs flex items-center justify-between border ${
+                                    className={`p-2 rounded-lg text-xs flex items-center justify-between border ${
                                       isKey
-                                        ? 'bg-emerald-50 border-emerald-300 text-emerald-900 font-medium'
+                                        ? 'bg-[#E8F2EF] border-[#C5DDD6] text-[#286657] font-medium'
                                         : isUser
-                                        ? 'bg-rose-50 border-rose-300 text-rose-900'
-                                        : 'bg-white border-slate-200 text-slate-600'
+                                        ? 'bg-[#FDF1F1] border-[#F4C7C7] text-[#C93B3B]'
+                                        : 'bg-white border-[#E6DFD5] text-[#6E6258]'
                                     }`}
                                   >
                                     <span dangerouslySetInnerHTML={{ __html: formatMath(opt) }} />
                                     <div className="flex items-center space-x-1">
                                       {isKey && (
-                                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white">
+                                        <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[#286657] text-white">
                                           Kunci
                                         </span>
                                       )}
                                       {isUser && (
-                                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-600 text-white">
+                                        <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[#C25E38] text-white">
                                           Dipilih
                                         </span>
                                       )}
@@ -1351,7 +1386,7 @@ const LatihanSoal = () => {
 
                           {/* Detail Category (Benar / Salah) */}
                           {qType === 'category' && (
-                            <div className="divide-y divide-slate-200 border border-slate-200 rounded-xl overflow-hidden bg-white mb-3 text-xs">
+                            <div className="divide-y divide-[#E6DFD5] border border-[#E6DFD5] rounded-lg overflow-hidden bg-white mb-3 text-xs">
                               {q.statements?.map((stmt, sIdx) => {
                                 const userVal =
                                   typeof userAnswer === 'object' && userAnswer !== null
@@ -1361,15 +1396,15 @@ const LatihanSoal = () => {
                                 return (
                                   <div key={sIdx} className="p-2.5 flex items-center justify-between gap-2">
                                     <span
-                                      className="flex-1"
+                                      className="flex-1 text-[#261C14]"
                                       dangerouslySetInnerHTML={{ __html: formatMath(stmt.text) }}
                                     />
-                                    <div className="flex items-center space-x-2 text-[11px] font-bold">
-                                      <span className={stmt.answer ? 'text-emerald-700' : 'text-rose-700'}>
+                                    <div className="flex items-center space-x-2 text-[11px] font-medium">
+                                      <span className={stmt.answer ? 'text-[#286657]' : 'text-[#C93B3B]'}>
                                         Kunci: {stmt.answer ? 'Benar' : 'Salah'}
                                       </span>
-                                      <span className="text-slate-400">|</span>
-                                      <span className={isStmtCorrect ? 'text-emerald-600' : 'text-rose-600'}>
+                                      <span className="text-[#8C7E72]">|</span>
+                                      <span className={isStmtCorrect ? 'text-[#286657]' : 'text-[#C93B3B]'}>
                                         Kamu: {userVal === undefined ? 'Belum dijawab' : userVal ? 'Benar' : 'Salah'}
                                       </span>
                                     </div>
@@ -1380,13 +1415,13 @@ const LatihanSoal = () => {
                           )}
 
                           {/* Penjelasan */}
-                          <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-xs">
-                            <strong className="text-blue-900 flex items-center space-x-1.5 mb-1 font-bold">
-                              <HelpCircle className="w-3.5 h-3.5 text-blue-600" />
+                          <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] text-xs">
+                            <strong className="text-[#261C14] flex items-center space-x-1.5 mb-1 font-semibold">
+                              <HelpCircle className="w-3.5 h-3.5 text-[#C25E38]" />
                               <span>Penjelasan & Pembahasan:</span>
                             </strong>
                             <div
-                              className="text-slate-700 leading-relaxed"
+                              className="text-[#6E6258] leading-relaxed"
                               dangerouslySetInnerHTML={{ __html: formatMath(q.penjelasan) }}
                             />
                           </div>
@@ -1399,26 +1434,22 @@ const LatihanSoal = () => {
           </div>
         )}
 
-        {/* --- TAHAP 3: PETA PETUALANGAN LATIHAN (DUOLINGO-STYLE) & GRID VIEW --- */}
+        {/* --- TAHAP 3: PETA PETUALANGAN LATIHAN & GRID VIEW --- */}
         {selectedSubject && !activeLatihan && (
-          <div className="w-full space-y-4 animate-fade-in">
+          <div className="w-full space-y-4">
             {/* Header Hero Banner Mapel Aktif */}
-            <div
-              className={`p-5 sm:p-7 rounded-3xl bg-gradient-to-r ${currentSubject.theme.gradient} text-white shadow-xl relative overflow-hidden`}
-            >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
-
+            <div className="p-5 sm:p-6 rounded-xl bg-white border border-[#E6DFD5] text-[#261C14] shadow-xs relative overflow-hidden">
               <div className="relative z-10 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="space-y-1">
-                    <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-xs text-xs font-semibold border border-white/20">
-                      <currentSubject.icon className="w-3.5 h-3.5" />
+                    <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#FAF7F2] text-xs font-medium text-[#6E6258] border border-[#E6DFD5]">
+                      <currentSubject.icon className={`w-3.5 h-3.5 ${selectedSubject === 'bahasa_indonesia' ? 'text-[#286657]' : 'text-[#C25E38]'}`} />
                       <span>{currentSubject.tagline}</span>
                     </div>
-                    <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
+                    <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#261C14]">
                       {currentSubject.title}
                     </h2>
-                    <p className="text-xs sm:text-sm text-white/80 max-w-xl leading-relaxed">
+                    <p className="text-xs sm:text-sm text-[#6E6258] max-w-xl leading-relaxed">
                       {currentSubject.deskripsi}
                     </p>
                   </div>
@@ -1427,21 +1458,21 @@ const LatihanSoal = () => {
                     {/* Tombol Buku Panduan */}
                     <button
                       onClick={() => setShowGuideModal(true)}
-                      className="w-full sm:w-auto min-w-[148px] px-3.5 py-2 rounded-2xl bg-white/20 hover:bg-white/30 backdrop-blur-xs text-xs font-bold text-white transition-all flex items-center justify-center space-x-2 border border-white/30 shadow-xs cursor-pointer active:scale-95 hover:shadow-md"
+                      className="w-full sm:w-auto px-3.5 py-2 rounded-lg bg-white hover:bg-[#FAF7F2] text-xs font-semibold text-[#261C14] transition-colors flex items-center justify-center space-x-2 border border-[#E6DFD5] cursor-pointer shadow-xs"
                       title="Buku Panduan Aturan Main"
                     >
-                      <BookOpen className="w-4 h-4 drop-shadow-xs" />
-                      <span className="tracking-wide">Buku Panduan</span>
+                      <BookOpen className="w-4 h-4 text-[#8C7E72]" />
+                      <span>Buku Panduan</span>
                     </button>
 
                     {/* Switcher Mode Tampilan (Peta / Daftar) */}
-                    <div className="w-full sm:w-auto min-w-[148px] bg-black/25 p-1 rounded-2xl flex items-center justify-between border border-white/20 shadow-xs">
+                    <div className="w-full sm:w-auto bg-[#FAF7F2] p-1 rounded-lg flex items-center border border-[#E6DFD5]">
                       <button
                         onClick={() => setViewMode('roadmap')}
-                        className={`flex-1 py-1.5 px-2.5 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 transition-all cursor-pointer ${
+                        className={`flex-1 sm:flex-initial py-1 px-3 rounded-md text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors cursor-pointer ${
                           viewMode === 'roadmap'
-                            ? 'bg-white text-slate-900 shadow-xs'
-                            : 'text-white/80 hover:text-white'
+                            ? 'bg-white text-[#C25E38] font-semibold shadow-xs'
+                            : 'text-[#6E6258] hover:text-[#261C14]'
                         }`}
                         title="Tampilan Peta Jalan"
                       >
@@ -1450,10 +1481,10 @@ const LatihanSoal = () => {
                       </button>
                       <button
                         onClick={() => setViewMode('grid')}
-                        className={`flex-1 py-1.5 px-2.5 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 transition-all cursor-pointer ${
+                        className={`flex-1 sm:flex-initial py-1 px-3 rounded-md text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors cursor-pointer ${
                           viewMode === 'grid'
-                            ? 'bg-white text-slate-900 shadow-xs'
-                            : 'text-white/80 hover:text-white'
+                            ? 'bg-white text-[#C25E38] font-semibold shadow-xs'
+                            : 'text-[#6E6258] hover:text-[#261C14]'
                         }`}
                         title="Tampilan Daftar Kartu"
                       >
@@ -1465,25 +1496,25 @@ const LatihanSoal = () => {
                 </div>
 
                 {/* Progress Bar & Indikator Status */}
-                <div className="pt-2 border-t border-white/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+                <div className="pt-3 border-t border-[#E6DFD5] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                   <div className="flex-1 max-w-md">
-                    <div className="flex items-center justify-between mb-1 text-[11px] font-semibold text-white/90">
+                    <div className="flex items-center justify-between mb-1.5 text-[11px] font-medium text-[#6E6258]">
                       <span>Progres {currentSubject.title}</span>
-                      <span className="font-bold text-white">
-                        {completedCount} dari {currentLevels.length} Latihan Tuntas ({progressPercent}%)
+                      <span className="font-semibold text-[#261C14]">
+                        {completedCount} dari {currentLevels.length} Selesai ({progressPercent}%)
                       </span>
                     </div>
-                    <div className="w-full bg-black/25 rounded-full h-2.5 p-0.5 overflow-hidden border border-white/10">
+                    <div className="w-full bg-[#F2ECE4] rounded-full h-2 overflow-hidden">
                       <div
-                        className="bg-gradient-to-r from-yellow-300 to-amber-400 h-1.5 rounded-full transition-all duration-700 shadow-xs"
+                        className={`${selectedSubject === 'bahasa_indonesia' ? 'bg-[#286657]' : 'bg-[#C25E38]'} h-2 rounded-full transition-all duration-500`}
                         style={{ width: `${Math.max(4, progressPercent)}%` }}
                       />
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-2 text-[11px]">
-                    <span className="px-2.5 py-1 rounded-xl bg-white/15 border border-white/20 font-semibold text-white flex items-center space-x-1">
-                      <Sparkles className="w-3 h-3 text-yellow-300" />
+                    <span className="px-2.5 py-1 rounded-md bg-[#FAF7F2] border border-[#E6DFD5] font-medium text-[#6E6258] flex items-center space-x-1">
+                      <Sparkles className="w-3 h-3 text-[#D97E26]" />
                       <span>
                         Fokus: Latihan{' '}
                         {currentActiveLevelIndex !== -1
@@ -1492,8 +1523,8 @@ const LatihanSoal = () => {
                       </span>
                     </span>
 
-                    <span className="px-2.5 py-1 rounded-xl bg-amber-400/25 border border-amber-300/40 font-bold text-amber-100 flex items-center space-x-1">
-                      <Star className="w-3 h-3 text-yellow-300 fill-yellow-300" />
+                    <span className="px-2.5 py-1 rounded-md bg-[#FEF7EE] border border-[#FCD9BD] font-medium text-[#D97E26] flex items-center space-x-1">
+                      <Star className="w-3 h-3 text-[#D97E26] fill-[#E5A875]" />
                       <span>
                         {currentLevels.reduce((acc, lvl) => acc + getLevelStars(lvl.id), 0)}/{currentLevels.length * 3} Bintang
                       </span>
@@ -1501,10 +1532,10 @@ const LatihanSoal = () => {
 
                     <button
                       onClick={() => setShowResetConfirm(true)}
-                      className="text-white/70 hover:text-white transition-colors text-[10px] underline ml-1 cursor-pointer"
+                      className="text-[#8C7E72] hover:text-[#C93B3B] transition-colors text-[11px] underline ml-1 cursor-pointer"
                       title="Reset progres untuk mulai dari awal"
                     >
-                      Reset Progres
+                      Reset
                     </button>
                   </div>
                 </div>
@@ -1513,18 +1544,18 @@ const LatihanSoal = () => {
 
             {/* Pencarian Latihan Instan */}
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-[#8C7E72] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={`Cari tingkat latihan ${currentSubject.title} (contoh: Fondasi, Penguatan, HOTS, Latihan 1)...`}
-                className="w-full pl-11 pr-10 py-3 rounded-2xl bg-white border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-hidden focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 shadow-xs transition-all"
+                placeholder={`Cari tingkat latihan ${currentSubject.title}...`}
+                className="w-full pl-10 pr-9 py-2.5 rounded-lg bg-white border border-[#E6DFD5] text-xs sm:text-sm text-[#261C14] placeholder-[#8C7E72] focus:outline-hidden focus:border-[#C25E38] focus:ring-1 focus:ring-[#C25E38] shadow-xs transition-colors"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8C7E72] hover:text-[#261C14] cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -1533,7 +1564,7 @@ const LatihanSoal = () => {
 
             {/* --- JIKA MODE GRID TAMPILAN KARTU --- */}
             {viewMode === 'grid' ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 pt-1">
                 {filteredLevels.map((lvl) => {
                   const originalIndex = currentLevels.findIndex((l) => l.id === lvl.id);
                   const isCompleted = isLevelCompleted(lvl.id);
@@ -1544,47 +1575,47 @@ const LatihanSoal = () => {
                     <div
                       key={lvl.id}
                       onClick={() => setSelectedLevelModal(lvl)}
-                      className={`p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between ${
+                      className={`p-4 rounded-lg border transition-all cursor-pointer flex flex-col justify-between ${
                         isCompleted
-                          ? 'bg-gradient-to-br from-emerald-50/70 to-white border-emerald-300 hover:border-emerald-500 shadow-xs'
+                          ? 'bg-white border-[#C5DDD6] hover:border-[#286657] shadow-xs'
                           : isCurrent
-                          ? 'bg-gradient-to-br from-blue-50/80 to-white border-blue-400 hover:border-blue-600 shadow-md ring-2 ring-blue-400/30'
+                          ? 'bg-white border-[#C25E38] shadow-xs ring-1 ring-[#C25E38]'
                           : isUnlocked
-                          ? 'bg-white border-slate-200 hover:border-emerald-300 shadow-2xs'
-                          : 'bg-slate-50/80 border-slate-200 hover:border-slate-300 text-slate-400'
+                          ? 'bg-white border-[#E6DFD5] hover:border-[#8C7E72] shadow-xs'
+                          : 'bg-[#FAF7F2] border-[#E6DFD5] text-[#8C7E72] hover:border-[#8C7E72]'
                       }`}
                     >
                       <div>
-                        <div className="flex items-center justify-between mb-2.5">
+                        <div className="flex items-center justify-between mb-2">
                           <span
-                            className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black shadow-2xs ${
+                            className={`w-7 h-7 rounded-md flex items-center justify-center text-xs font-semibold ${
                               isCompleted
-                                ? 'bg-emerald-500 text-white'
+                                ? 'bg-[#286657] text-white'
                                 : isCurrent
-                                ? 'bg-blue-600 text-white'
+                                ? 'bg-[#C25E38] text-white'
                                 : isUnlocked
-                                ? 'bg-sky-100 text-sky-800'
-                                : 'bg-slate-200 text-slate-500'
+                                ? 'bg-[#F2ECE4] text-[#261C14]'
+                                : 'bg-[#E6DFD5] text-[#8C7E72]'
                             }`}
                           >
                             {lvl.level}
                           </span>
 
                           {isCompleted ? (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center space-x-1">
-                              <Check className="w-3 h-3 stroke-[3]" />
-                              <span>Tuntas</span>
+                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#E8F2EF] text-[#286657] border border-[#C5DDD6] flex items-center space-x-1">
+                              <Check className="w-3 h-3 stroke-[2.5]" />
+                              <span>Selesai</span>
                             </span>
                           ) : isCurrent ? (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200 animate-pulse">
-                              Fokus Latihan
+                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FAECE6] text-[#C25E38] border border-[#F4D3C4]">
+                              Fokus Saat Ini
                             </span>
                           ) : isUnlocked ? (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FAF7F2] text-[#6E6258] border border-[#E6DFD5]">
                               Terbuka
                             </span>
                           ) : (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-600 flex items-center space-x-1">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#F2ECE4] text-[#8C7E72] flex items-center space-x-1 border border-[#E6DFD5]">
                               <Lock className="w-2.5 h-2.5" />
                               <span>Terkunci</span>
                             </span>
@@ -1592,18 +1623,18 @@ const LatihanSoal = () => {
                         </div>
 
                         <h4
-                          className={`text-sm font-bold leading-snug ${
+                          className={`text-sm font-semibold leading-snug ${
                             isCompleted
-                              ? 'text-emerald-950'
+                              ? 'text-[#261C14]'
                               : isUnlocked
-                              ? 'text-slate-900'
-                              : 'text-slate-500'
+                              ? 'text-[#261C14]'
+                              : 'text-[#8C7E72]'
                           }`}
                         >
                           Latihan {lvl.level}: {lvl.subjudul}
                         </h4>
 
-                        <p className="text-[11px] text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-[#6E6258] mt-1 line-clamp-2 leading-relaxed">
                           {lvl.deskripsi}
                         </p>
 
@@ -1616,45 +1647,43 @@ const LatihanSoal = () => {
                                 key={s}
                                 className={`w-3.5 h-3.5 ${
                                   s <= stars
-                                    ? 'text-amber-500 fill-amber-400 drop-shadow-xs'
-                                    : 'text-slate-300 fill-slate-100 stroke-slate-300'
+                                    ? 'text-[#D97E26] fill-[#E5A875]'
+                                    : 'text-[#8C7E72] fill-transparent'
                                 }`}
                               />
                             );
                           })}
-                          <span className="text-[10px] font-bold text-slate-500 ml-1">
-                            {getLevelStars(lvl.id) > 0 ? `${getLevelStars(lvl.id)}/3 ⭐` : '0/3'}
+                          <span className="text-[10px] font-medium text-[#6E6258] ml-1">
+                            {getLevelStars(lvl.id) > 0 ? `${getLevelStars(lvl.id)}/3` : '0/3'}
                           </span>
                         </div>
                       </div>
 
-                      <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold">
-                        <span className={isUnlocked ? 'text-emerald-600' : 'text-slate-400'}>
-                          {isUnlocked ? 'Kerjakan Latihan' : 'Lompat Latihan ⚡'}
+                      <div className="mt-4 pt-3 border-t border-[#E6DFD5] flex items-center justify-between text-xs font-medium">
+                        <span className={isUnlocked ? 'text-[#C25E38]' : 'text-[#8C7E72]'}>
+                          {isUnlocked ? 'Kerjakan Latihan' : 'Lompat Latihan'}
                         </span>
-                        <ChevronRight className="w-3.5 h-3.5" />
+                        <ChevronRight className="w-3.5 h-3.5 text-[#8C7E72]" />
                       </div>
                     </div>
                   );
                 })}
               </div>
             ) : (
-              /* --- Winding Path Petualangan (Duolingo Path Style) --- */
-              <div className="bg-white/80 backdrop-blur-xs rounded-3xl border border-slate-200 p-4 sm:p-8 shadow-lg relative overflow-hidden">
-                <div className="absolute inset-0 bg-radial from-emerald-50/30 via-transparent to-transparent pointer-events-none" />
-
+              /* --- Winding Path Petualangan --- */
+              <div className="bg-white rounded-lg border border-[#E6DFD5] p-4 sm:p-8 shadow-xs relative overflow-hidden">
                 {/* Subtitle Alur */}
                 <div className="text-center mb-6">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                  <span className="text-xs font-semibold text-[#6E6258] uppercase tracking-wider">
                     Peta Latihan {currentLevels.length} Level • {currentSubject.title}
                   </span>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Klik lingkaran latihan untuk mulai mengerjakan soal, raih 3 bintang dan buka latihan berikutnya!
+                  <p className="text-xs text-[#6E6258] mt-1">
+                    Pilih tingkat latihan untuk mulai mengerjakan soal dan raih 3 bintang.
                   </p>
                 </div>
 
                 {/* Kontainer Alur Zig-Zag (Roadmap Path) */}
-                <div className="relative max-w-md mx-auto py-4 flex flex-col items-center space-y-7">
+                <div className="relative max-w-md mx-auto py-2 flex flex-col items-center space-y-6">
                   {currentLevels.map((lvl, index) => {
                     const isCompleted = isLevelCompleted(lvl.id);
                     const isUnlocked = isLevelUnlocked(index, lvl, currentLevels);
@@ -1674,79 +1703,95 @@ const LatihanSoal = () => {
                         >
                           {/* Balon Tag Level Aktif Sekarang */}
                           {isCurrent && (
-                            <div className="absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap px-3.5 py-1 rounded-full bg-emerald-600 text-white font-bold text-[11px] shadow-lg flex items-center space-x-1.5 z-20 animate-bounce-subtle border-2 border-white">
-                              <Sparkles className="w-3 h-3 text-yellow-300" />
-                              <span>Mulai di Sini!</span>
-                              <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-6 border-t-emerald-600" />
+                            <div
+                              className={`absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1 rounded-full ${
+                                selectedSubject === 'bahasa_indonesia'
+                                  ? 'bg-[#286657] border-[#1E5044]'
+                                  : 'bg-[#C25E38] border-[#A94D2B]'
+                              } text-white font-bold text-[11px] shadow-md flex items-center space-x-1.5 z-20 border animate-bounce select-none pointer-events-none`}
+                            >
+                              <Sparkles className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
+                              <span>Mulai di Sini</span>
+                              <div
+                                className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-[6px] ${
+                                  selectedSubject === 'bahasa_indonesia'
+                                    ? 'border-t-[#286657]'
+                                    : 'border-t-[#C25E38]'
+                                }`}
+                              />
                             </div>
                           )}
 
-                          {/* Tombol Lingkaran 3D Duolingo-Style */}
+                          {/* Tombol Lingkaran Interaktif Tactile 3D Node */}
                           <button
                             onClick={() => setSelectedLevelModal(lvl)}
-                            className={`w-18 h-18 sm:w-20 sm:h-20 rounded-full flex flex-col items-center justify-center font-black transition-all duration-200 transform cursor-pointer relative z-10 ${
+                            className={`w-18 h-18 sm:w-20 sm:h-20 rounded-full flex flex-col items-center justify-center font-bold border-2 transition-all duration-150 cursor-pointer relative z-10 select-none group ${
                               isCompleted
-                                ? 'bg-gradient-to-b from-emerald-400 to-emerald-600 border-b-[6px] border-emerald-700 text-white shadow-emerald-200 shadow-xl hover:scale-105 active:translate-y-1 active:border-b-2'
+                                ? 'bg-[#286657] border-[#1E5044] text-white shadow-[0_6px_0_0_#163C33] hover:shadow-[0_7px_0_0_#163C33] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#163C33]'
                                 : isCurrent
-                                ? `bg-gradient-to-b ${currentSubject.theme.activeBtn} border-b-[6px] text-white shadow-blue-300 shadow-2xl hover:scale-105 ring-4 ${currentSubject.theme.activeRing} ring-offset-2 active:translate-y-1 active:border-b-2`
+                                ? selectedSubject === 'bahasa_indonesia'
+                                  ? 'bg-[#286657] border-[#1E5044] text-white shadow-[0_6px_0_0_#163C33] hover:shadow-[0_7px_0_0_#163C33] ring-4 ring-offset-2 ring-[#286657]/30 hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#163C33]'
+                                  : 'bg-[#C25E38] border-[#A94D2B] text-white shadow-[0_6px_0_0_#8D391B] hover:shadow-[0_7px_0_0_#8D391B] ring-4 ring-offset-2 ring-[#C25E38]/30 hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#8D391B]'
                                 : isUnlocked
-                                ? 'bg-gradient-to-b from-sky-400 to-blue-500 border-b-[6px] border-blue-700 text-white shadow-md hover:scale-105 active:translate-y-1 active:border-b-2'
-                                : 'bg-slate-200 border-b-[6px] border-slate-300 text-slate-400 hover:bg-slate-300/90 hover:text-slate-600 shadow-2xs hover:scale-105 active:translate-y-1 active:border-b-2'
+                                ? 'bg-white border-[#D8CDC2] text-[#261C14] shadow-[0_6px_0_0_#C5B8AC] hover:border-[#C25E38] hover:text-[#C25E38] hover:shadow-[0_7px_0_0_#A94D2B] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#C5B8AC]'
+                                : 'bg-[#F2ECE4] border-[#E6DFD5] text-[#8C7E72] shadow-[0_5px_0_0_#D8CDC2] hover:bg-[#EAE2D8] hover:text-[#6E6258] hover:shadow-[0_6px_0_0_#C5B8AC] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#D8CDC2]'
                             }`}
-                            title={`Latihan ${lvl.level}: ${lvl.subjudul} (${
+                            title={`Latihan ${lvl.level}: ${lvl.subjudul || lvl.namaLevel} (${
                               isCompleted ? 'Tuntas' : isUnlocked ? 'Terbuka' : 'Terkunci - Klik untuk Lompat'
                             })`}
                           >
                             {/* Ikon di dalam node */}
                             {isCompleted ? (
-                              <Check className="w-8 h-8 sm:w-9 sm:h-9 stroke-[3.5] drop-shadow-xs" />
+                              <Check className="w-8 h-8 stroke-[3] group-hover:scale-110 transition-transform" />
                             ) : isCurrent ? (
-                              <Sparkles className="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-xs" />
+                              <Sparkles className="w-7 h-7 text-amber-300 group-hover:scale-110 transition-transform" />
                             ) : isUnlocked ? (
-                              <div className="flex flex-col items-center">
-                                <span className="text-xl sm:text-2xl font-black leading-none">{lvl.level}</span>
-                                <span className="text-[9px] font-bold uppercase opacity-85 mt-0.5">Latihan</span>
+                              <div className="flex flex-col items-center group-hover:scale-105 transition-transform">
+                                <span className="text-xl font-black leading-none">{lvl.level}</span>
+                                <span className="text-[9px] font-bold uppercase opacity-75 mt-0.5">Soal</span>
                               </div>
                             ) : (
-                              <div className="flex flex-col items-center">
-                                <Lock className="w-6 h-6 sm:w-7 sm:h-7 mb-0.5" />
-                                <span className="text-[9px] font-bold opacity-80">{lvl.level}</span>
+                              <div className="flex flex-col items-center opacity-75 group-hover:opacity-100 transition-opacity">
+                                <Lock className="w-5 h-5 mb-0.5" />
+                                <span className="text-[9px] font-bold">{lvl.level}</span>
                               </div>
                             )}
 
                             {/* Badge Bintang jika Tuntas */}
                             {isCompleted && (
-                              <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-yellow-400 text-yellow-900 border-2 border-white flex items-center justify-center text-[10px] font-black shadow-xs">
+                              <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-amber-400 text-amber-950 border-2 border-white flex items-center justify-center text-xs font-black shadow-xs">
                                 ★
                               </div>
                             )}
                           </button>
 
-                          {/* Pill Judul Level (Latihan 1, Latihan 2, dst) */}
+                          {/* Pill Judul Level (Hanya Indikator, Bukan Tombol) */}
                           <div
-                            onClick={() => setSelectedLevelModal(lvl)}
-                            className={`mt-2 px-3 py-1 rounded-xl text-center cursor-pointer transition-all max-w-[160px] sm:max-w-[190px] border shadow-2xs ${
+                            className={`mt-2.5 px-3.5 py-1.5 rounded-lg text-center select-none max-w-[170px] sm:max-w-[200px] border shadow-2xs ${
                               isCompleted
-                                ? currentSubject.theme.pillCompleted
+                                ? 'bg-[#E8F2EF] border-[#C5DDD6] text-[#286657]'
                                 : isCurrent
-                                ? `${currentSubject.theme.pillActive} font-bold`
+                                ? `${
+                                    selectedSubject === 'bahasa_indonesia'
+                                      ? 'bg-[#E8F2EF] border-[#BCD9D0] text-[#286657]'
+                                      : 'bg-[#FAECE6] border-[#F2D2C4] text-[#C25E38]'
+                                  } font-bold shadow-xs`
                                 : isUnlocked
-                                ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'
-                                : 'bg-slate-100/80 border-slate-200 text-slate-400 hover:text-slate-600'
+                                ? 'bg-white border-[#E6DFD5] text-[#261C14]'
+                                : 'bg-[#FAF7F2] border-[#E6DFD5] text-[#8C7E72]'
                             }`}
                           >
-                            <span className="block text-[10px] font-bold uppercase tracking-wider opacity-75">
+                            <span className="block text-[10px] font-semibold uppercase tracking-wider opacity-75">
                               Latihan {lvl.level}
                             </span>
-                            <span className="block text-xs font-semibold truncate">
+                            <span className="block text-xs font-medium truncate">
                               {lvl.subjudul || lvl.namaLevel}
                             </span>
                           </div>
 
-                          {/* 3 Bintang Horizontal Capaian Latihan */}
+                          {/* 3 Bintang Horizontal Capaian Latihan (Indikator Saja) */}
                           <div
-                            onClick={() => setSelectedLevelModal(lvl)}
-                            className="flex items-center justify-center space-x-1.5 mt-2 cursor-pointer transition-transform hover:scale-110 select-none py-1 px-2.5 rounded-full bg-white/80 backdrop-blur-2xs border border-slate-200/80 shadow-2xs hover:shadow-xs"
+                            className="flex items-center justify-center space-x-1.5 mt-2 select-none py-1 px-2.5 rounded-full bg-white border border-[#E6DFD5] shadow-2xs"
                             title={`Latihan ${lvl.level}: Meraih ${starsEarned} dari 3 Bintang`}
                           >
                             {[1, 2, 3].map((starIdx) => {
@@ -1754,10 +1799,10 @@ const LatihanSoal = () => {
                               return (
                                 <Star
                                   key={starIdx}
-                                  className={`w-4 h-4 transition-all duration-300 ${
+                                  className={`w-3.5 h-3.5 transition-colors ${
                                     isFilled
-                                      ? 'text-amber-500 fill-amber-400 drop-shadow-[0_1px_2px_rgba(245,158,11,0.5)] scale-105'
-                                      : 'text-slate-300 fill-slate-200/40 stroke-slate-300'
+                                      ? 'text-amber-500 fill-amber-400'
+                                      : 'text-[#D4C8BC] fill-[#FAF7F2] stroke-[#D4C8BC]'
                                   }`}
                                 />
                               );
@@ -1780,18 +1825,18 @@ const LatihanSoal = () => {
                             className="relative flex flex-col items-center my-3 cursor-pointer group"
                           >
                             <div
-                              className={`w-16 h-16 sm:w-18 sm:h-18 rounded-2xl flex items-center justify-center border-b-4 transition-all duration-200 transform group-hover:scale-110 shadow-lg ${
+                              className={`w-14 h-14 rounded-2xl flex items-center justify-center border-2 transition-all duration-150 cursor-pointer ${
                                 completedCount >= milestoneItem.requiredLevel
-                                  ? 'bg-gradient-to-b from-amber-300 to-yellow-500 border-yellow-600 text-yellow-950 shadow-yellow-200'
-                                  : 'bg-slate-100 border-slate-300 text-slate-400'
+                                  ? 'bg-[#FEF7EE] border-amber-300 text-amber-700 shadow-[0_5px_0_0_#D97E26] hover:shadow-[0_6px_0_0_#D97E26] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none'
+                                  : 'bg-[#F2ECE4] border-[#E6DFD5] text-[#8C7E72] shadow-[0_4px_0_0_#D8CDC2] hover:bg-[#EAE2D8] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none'
                               }`}
                             >
-                              <Gift className="w-8 h-8 sm:w-9 sm:h-9" />
+                              <Gift className="w-7 h-7 group-hover:scale-110 transition-transform" />
                             </div>
-                            <div className="mt-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-[10px] font-bold text-slate-600">
+                            <div className="mt-2 px-2.5 py-0.5 rounded-full bg-white border border-[#E6DFD5] text-[10px] font-bold text-[#6E6258] shadow-2xs group-hover:border-[#8C7E72]">
                               {completedCount >= milestoneItem.requiredLevel
-                                ? '🎁 Peti Terbuka!'
-                                : `🔒 Peti Latihan ${milestoneItem.requiredLevel}`}
+                                ? '🎁 Peti Terbuka'
+                                : `Peti Latihan ${milestoneItem.requiredLevel}`}
                             </div>
                           </div>
                         )}
@@ -1811,24 +1856,24 @@ const LatihanSoal = () => {
                             className="relative flex flex-col items-center pt-4 pb-2 cursor-pointer group animate-fade-in"
                           >
                             <div
-                              className={`w-20 h-20 sm:w-24 sm:h-24 rounded-3xl flex items-center justify-center border-b-[6px] transition-all duration-200 transform group-hover:scale-110 shadow-xl ${
+                              className={`w-16 h-16 rounded-2xl flex items-center justify-center border-2 transition-all duration-150 cursor-pointer ${
                                 completedCount === currentLevels.length
-                                  ? 'bg-gradient-to-b from-yellow-300 via-amber-400 to-yellow-600 border-yellow-700 text-amber-950 shadow-yellow-300 animate-wiggle'
-                                  : 'bg-slate-100 border-slate-300 text-slate-400'
+                                  ? 'bg-amber-100 border-amber-400 text-amber-800 shadow-[0_6px_0_0_#B8731E] hover:shadow-[0_7px_0_0_#B8731E] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none ring-4 ring-amber-300/40'
+                                  : 'bg-[#F2ECE4] border-[#E6DFD5] text-[#8C7E72] shadow-[0_4px_0_0_#D8CDC2] hover:bg-[#EAE2D8] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none'
                               }`}
                             >
-                              <Trophy className="w-10 h-10 sm:w-12 sm:h-12" />
+                              <Trophy className="w-8 h-8 group-hover:scale-110 transition-transform" />
                             </div>
                             <div className="mt-2 text-center">
                               <span
-                                className={`text-xs font-black px-3 py-1 rounded-full border shadow-2xs ${
+                                className={`text-xs font-bold px-3 py-1 rounded-full border shadow-2xs inline-block transition-transform group-hover:scale-105 ${
                                   completedCount === currentLevels.length
-                                    ? 'bg-yellow-100 text-yellow-900 border-yellow-300'
-                                    : 'bg-slate-100 text-slate-500 border-slate-200'
+                                    ? 'bg-amber-50 text-amber-900 border-amber-300'
+                                    : 'bg-[#F2ECE4] text-[#6E6258] border-[#E6DFD5]'
                                 }`}
                               >
                                 {completedCount === currentLevels.length
-                                  ? `👑 MAESTRO LATIHAN ${currentSubject.title.toUpperCase()}`
+                                  ? `👑 MAESTRO ${currentSubject.title.toUpperCase()}`
                                   : `Piala Puncak (Latihan ${currentLevels.length} Selesai)`}
                               </span>
                             </div>
@@ -1844,7 +1889,7 @@ const LatihanSoal = () => {
         )}
       </main>
 
-      {/* --- MODAL 1: DETAIL LATIHAN (INTERACTIVE POPUP DIALOG) --- */}
+      {/* --- MODAL 1: DETAIL LATIHAN --- */}
       {selectedLevelModal && currentLevels.length > 0 && (() => {
         const modalIndex = currentLevels.findIndex((l) => l.id === selectedLevelModal.id);
         const isCompleted = isLevelCompleted(selectedLevelModal.id);
@@ -1852,60 +1897,50 @@ const LatihanSoal = () => {
         const prevLvl = modalIndex > 0 ? currentLevels[modalIndex - 1] : null;
 
         return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full overflow-hidden relative animate-fade-in">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1F1914]/50 backdrop-blur-xs">
+            <div className="bg-white rounded-xl border border-[#E6DFD5] shadow-xl max-w-md w-full overflow-hidden relative">
               {/* Header Modal */}
-              <div
-                className={`p-5 text-white relative ${
-                  isCompleted
-                    ? 'bg-gradient-to-r from-emerald-600 to-teal-600'
-                    : isUnlocked
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600'
-                    : 'bg-gradient-to-r from-slate-700 to-slate-800'
-                }`}
-              >
+              <div className="p-4 bg-[#1F1914] text-white relative border-b border-[#33261D]">
                 <button
                   onClick={() => setSelectedLevelModal(null)}
-                  className="absolute right-4 top-4 w-7 h-7 rounded-full bg-black/20 hover:bg-black/30 text-white flex items-center justify-center transition-colors cursor-pointer"
+                  className="absolute right-3.5 top-3.5 w-7 h-7 rounded-md hover:bg-[#2D241C] text-[#D4C8BC] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
 
-                <div className="flex items-center space-x-2 mb-1.5">
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-white/20">
-                    LATIHAN {selectedLevelModal.level} DARI {currentLevels.length} • {currentSubject?.title.toUpperCase()}
+                <div className="flex items-center space-x-2 mb-1">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#2D241C] text-[#D4C8BC] border border-[#3D3126]">
+                    LATIHAN {selectedLevelModal.level} • {currentSubject?.title.toUpperCase()}
                   </span>
                   {isCompleted ? (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-400 text-emerald-950 flex items-center space-x-1">
-                      <span>✓ Tuntas</span>
-                      <span>•</span>
-                      <span>{getLevelStars(selectedLevelModal.id)}/3 ⭐</span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#1E5044] text-[#E8F2EF] border border-[#286657]">
+                      Tuntas ({getLevelStars(selectedLevelModal.id)}/3 ★)
                     </span>
                   ) : isUnlocked ? (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-200 text-blue-900">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#FAECE6] text-[#C25E38] border border-[#F4D3C4]">
                       Terbuka
                     </span>
                   ) : (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500 text-white">
-                      🔒 Terkunci
+                    <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#2D241C] text-[#8C7E72] border border-[#3D3126]">
+                      Terkunci
                     </span>
                   )}
                 </div>
 
-                <h3 className="text-xl font-black text-white">{selectedLevelModal.subjudul}</h3>
+                <h3 className="text-base font-bold text-white">{selectedLevelModal.subjudul}</h3>
               </div>
 
               {/* Body Modal */}
-              <div className="p-5 space-y-4">
+              <div className="p-4 space-y-3.5">
                 {/* Capaian Bintang Latihan */}
-                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] flex items-center justify-between">
                   <div>
-                    <span className="text-[11px] text-slate-500 font-semibold block uppercase tracking-wider">
+                    <span className="text-[11px] text-[#6E6258] font-medium block">
                       Capaian Latihan
                     </span>
-                    <span className="text-xs font-bold text-slate-800">
+                    <span className="text-xs font-semibold text-[#261C14]">
                       {isCompleted
-                        ? `${getLevelStars(selectedLevelModal.id)} dari 3 Bintang Terkumpul`
+                        ? `${getLevelStars(selectedLevelModal.id)} dari 3 Bintang Diraih`
                         : isUnlocked
                         ? 'Belum dikerjakan (0/3 Bintang)'
                         : 'Latihan masih terkunci'}
@@ -1917,17 +1952,17 @@ const LatihanSoal = () => {
                       return (
                         <div
                           key={starIdx}
-                          className={`w-7 h-7 rounded-xl flex items-center justify-center transition-all ${
+                          className={`w-6 h-6 rounded-md flex items-center justify-center ${
                             isFilled
-                              ? 'bg-amber-100 border border-amber-300 shadow-2xs'
-                              : 'bg-slate-200/60 border border-slate-200'
+                              ? 'bg-[#FEF7EE] border border-[#F4D3C4]'
+                              : 'bg-[#F2ECE4] border border-[#E6DFD5]'
                           }`}
                         >
                           <Star
-                            className={`w-4 h-4 ${
+                            className={`w-3.5 h-3.5 ${
                               isFilled
-                                ? 'text-amber-500 fill-amber-400 drop-shadow-xs'
-                                : 'text-slate-300 fill-slate-200/50 stroke-slate-300'
+                                ? 'text-[#D97E26] fill-[#E5A875]'
+                                : 'text-[#8C7E72] fill-transparent'
                             }`}
                           />
                         </div>
@@ -1937,31 +1972,29 @@ const LatihanSoal = () => {
                 </div>
 
                 <div>
-                  <h5 className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  <h5 className="text-[11px] font-semibold text-[#6E6258] uppercase tracking-wider">
                     Deskripsi Latihan
                   </h5>
-                  <p className="text-xs sm:text-sm text-slate-700 mt-1 leading-relaxed">
+                  <p className="text-xs text-[#261C14] mt-1 leading-relaxed">
                     {selectedLevelModal.deskripsi}
                   </p>
                 </div>
 
-                <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 font-medium">
+                <div className="p-2.5 rounded-lg bg-[#FAECE6] border border-[#F4D3C4] text-xs text-[#C25E38] font-medium">
                   <span>Target: <strong>{selectedLevelModal.targetSoal} Soal</strong> Standar Pusmendik Kemendikdasmen RI</span>
                 </div>
 
                 {/* Status Penjelasan jika terkunci */}
                 {!isUnlocked && (
-                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-2">
+                  <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] text-xs text-[#6E6258] space-y-1">
                     <div className="flex items-start space-x-2">
-                      <Lock className="w-4 h-4 text-slate-500 flex-shrink-0 mt-0.5" />
+                      <Lock className="w-4 h-4 text-[#8C7E72] flex-shrink-0 mt-0.5" />
                       <div>
-                        <strong className="block font-bold text-slate-800">
-                          Latihan ini masih terkunci!
+                        <strong className="block font-semibold text-[#261C14]">
+                          Latihan ini masih terkunci
                         </strong>
-                        <p className="mt-0.5 text-slate-600 leading-relaxed">
-                          Selesaikan Latihan {prevLvl?.level} ({prevLvl?.subjudul}) terlebih dahulu,{' '}
-                          <strong className="text-emerald-700">ATAU kamu dapat langsung melompat</strong>{' '}
-                          ke latihan ini dengan menjawab soal tantangan!
+                        <p className="mt-0.5 text-[#6E6258] leading-relaxed">
+                          Selesaikan Latihan {prevLvl?.level} terlebih dahulu, atau langsung melompat dengan menyelesaikan kuis tantangan.
                         </p>
                       </div>
                     </div>
@@ -1969,11 +2002,11 @@ const LatihanSoal = () => {
                 )}
 
                 {/* Tombol Aksi */}
-                <div className="pt-2 space-y-2.5">
+                <div className="pt-2 space-y-2">
                   {isUnlocked ? (
                     <button
                       onClick={() => handleStartLatihan(selectedLevelModal)}
-                      className="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2 cursor-pointer active:scale-98"
+                      className="w-full py-2.5 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white font-semibold text-xs sm:text-sm transition-colors flex items-center justify-center space-x-2 cursor-pointer"
                     >
                       <CheckCircle2 className="w-4 h-4" />
                       <span>{isCompleted ? 'Kerjakan Ulang Latihan' : 'Mulai Kerjakan Latihan'}</span>
@@ -1981,16 +2014,16 @@ const LatihanSoal = () => {
                   ) : (
                     <button
                       onClick={() => handleStartJumpChallenge(selectedLevelModal)}
-                      className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-xs sm:text-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2 cursor-pointer active:scale-98"
+                      className="w-full py-2.5 rounded-lg bg-[#D97E26] hover:bg-[#B5671B] text-white font-semibold text-xs sm:text-sm transition-colors flex items-center justify-center space-x-2 cursor-pointer"
                     >
                       <Zap className="w-4 h-4 fill-current" />
-                      <span>Lompat ke Latihan Ini (Tantangan Kuis)</span>
+                      <span>Lompat ke Latihan Ini (Tantangan)</span>
                     </button>
                   )}
 
                   <button
                     onClick={() => setSelectedLevelModal(null)}
-                    className="w-full py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs transition-colors cursor-pointer"
+                    className="w-full py-2 rounded-lg bg-white hover:bg-[#FAF7F2] border border-[#E6DFD5] text-[#261C14] font-medium text-xs transition-colors cursor-pointer"
                   >
                     Tutup
                   </button>
@@ -2003,61 +2036,61 @@ const LatihanSoal = () => {
 
       {/* --- MODAL 2: TANTANGAN LOMPAT LATIHAN (JUMP CHALLENGE) --- */}
       {jumpChallengeLevel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/70 backdrop-blur-xs animate-fade-in overflow-y-auto">
-          <div className="bg-white rounded-3xl border border-amber-300 shadow-2xl max-w-lg w-full overflow-hidden relative animate-fade-in my-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1F1914]/50 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white rounded-xl border border-[#E6DFD5] shadow-xl max-w-lg w-full overflow-hidden relative my-auto">
             {/* Header Tantangan Lompat */}
-            <div className="p-5 bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 text-white relative">
+            <div className="p-4 bg-[#1F1914] text-white relative border-b border-[#33261D]">
               <button
                 onClick={() => setJumpChallengeLevel(null)}
-                className="absolute right-4 top-4 w-7 h-7 rounded-full bg-black/20 hover:bg-black/30 text-white flex items-center justify-center transition-colors cursor-pointer"
+                className="absolute right-3.5 top-3.5 w-7 h-7 rounded-md hover:bg-[#2D241C] text-[#D4C8BC] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
 
-              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-xs text-[10px] font-black uppercase tracking-wider mb-2">
-                <Zap className="w-3 h-3 fill-current text-yellow-200" />
-                <span>Tantangan Lompat Latihan • {currentSubject?.title}</span>
+              <div className="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded bg-[#2D241C] text-[10px] font-semibold text-[#E5A875] border border-[#3D3126] mb-1.5">
+                <Zap className="w-3 h-3 fill-current" />
+                <span>Tantangan Lompat • {currentSubject?.title}</span>
               </div>
-              <h3 className="text-lg sm:text-xl font-black">
+              <h3 className="text-base font-bold text-white">
                 Uji Pemahaman: Latihan {jumpChallengeLevel.level} ({jumpChallengeLevel.subjudul})
               </h3>
-              <p className="text-xs text-amber-100 mt-1">
-                Jawab soal latihan ini dengan tepat untuk langsung membuka Latihan {jumpChallengeLevel.level} lebih awal!
+              <p className="text-xs text-[#D4C8BC] mt-0.5">
+                Jawab soal tantangan dengan tepat untuk membuka latihan ini lebih awal.
               </p>
             </div>
 
             {/* Body Tantangan */}
-            <div className="p-5 sm:p-6">
+            <div className="p-4 sm:p-5">
               {jumpFinished ? (
-                <div className="text-center py-6 space-y-4 animate-fade-in">
-                  <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto border-2 border-emerald-300 shadow-md animate-bounce-subtle">
-                    <Trophy className="w-8 h-8" />
+                <div className="text-center py-4 space-y-3">
+                  <div className="w-12 h-12 rounded-full bg-[#E8F2EF] text-[#286657] flex items-center justify-center mx-auto border border-[#C5DDD6]">
+                    <Trophy className="w-6 h-6" />
                   </div>
                   <div>
-                    <h4 className="text-xl font-black text-slate-900">
-                      Tantangan Berhasil Dituntaskan! 🎉
+                    <h4 className="text-base font-bold text-[#261C14]">
+                      Tantangan Berhasil Dituntaskan!
                     </h4>
-                    <p className="text-xs sm:text-sm text-slate-600 max-w-sm mx-auto mt-1 leading-relaxed">
-                      Hebat! Kamu telah membuktikan kemampuanmu. <strong>Latihan {jumpChallengeLevel.level} ({jumpChallengeLevel.subjudul})</strong> kini resmi <strong>TERBUKA</strong> untukmu!
+                    <p className="text-xs text-[#6E6258] max-w-sm mx-auto mt-1 leading-relaxed">
+                      Latihan {jumpChallengeLevel.level} ({jumpChallengeLevel.subjudul}) kini resmi <strong>TERBUKA</strong>.
                     </p>
                   </div>
 
-                  <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-2.5">
+                  <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2">
                     <button
                       onClick={() => {
                         const target = jumpChallengeLevel;
                         setJumpChallengeLevel(null);
                         handleStartLatihan(target);
                       }}
-                      className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+                      className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white font-semibold text-xs transition-colors cursor-pointer"
                     >
-                      📝 Langsung Kerjakan Latihan
+                      Langsung Kerjakan Latihan
                     </button>
                     <button
                       onClick={() => setJumpChallengeLevel(null)}
-                      className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+                      className="w-full sm:w-auto px-4 py-2 rounded-lg bg-white hover:bg-[#FAF7F2] border border-[#E6DFD5] text-[#261C14] font-medium text-xs transition-colors cursor-pointer"
                     >
-                      🗺️ Kembali ke Peta Latihan
+                      Kembali ke Peta Latihan
                     </button>
                   </div>
                 </div>
@@ -2068,20 +2101,20 @@ const LatihanSoal = () => {
                   if (!currentQ) return null;
 
                   return (
-                    <div className="space-y-4">
+                    <div className="space-y-3.5">
                       {/* Stepper Progress */}
-                      <div className="flex items-center justify-between text-xs font-semibold text-slate-500 border-b border-slate-100 pb-2">
+                      <div className="flex items-center justify-between text-xs font-medium text-[#6E6258] border-b border-[#E6DFD5] pb-2">
                         <span>Soal Tantangan {jumpQuizIndex + 1} dari {challengeList.length}</span>
                         <div className="flex space-x-1">
                           {challengeList.map((_, i) => (
                             <span
                               key={i}
-                              className={`w-5 h-1.5 rounded-full ${
+                              className={`w-4 h-1.5 rounded-full ${
                                 i < jumpQuizIndex
-                                  ? 'bg-emerald-500'
+                                  ? 'bg-[#286657]'
                                   : i === jumpQuizIndex
-                                  ? 'bg-amber-500'
-                                  : 'bg-slate-200'
+                                  ? 'bg-[#C25E38]'
+                                  : 'bg-[#F2ECE4]'
                               }`}
                             />
                           ))}
@@ -2090,20 +2123,20 @@ const LatihanSoal = () => {
 
                       {/* Stimulus jika ada */}
                       {currentQ.stimulus && (
-                        <div className="p-3 rounded-xl bg-amber-50/70 border border-amber-200 text-slate-800 text-xs leading-relaxed">
-                          <strong className="block text-amber-900 mb-0.5">Stimulus:</strong>
+                        <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] text-[#261C14] text-xs leading-relaxed">
+                          <strong className="block text-[#261C14] mb-0.5">Stimulus:</strong>
                           <div dangerouslySetInnerHTML={{ __html: formatMath(currentQ.stimulus) }} />
                         </div>
                       )}
 
                       {/* Pertanyaan */}
                       <h4
-                        className="text-xs sm:text-sm font-bold text-slate-900 leading-relaxed"
+                        className="text-xs sm:text-sm font-semibold text-[#261C14] leading-relaxed"
                         dangerouslySetInnerHTML={{ __html: formatMath(currentQ.pertanyaan) }}
                       />
 
                       {/* Pilihan Jawaban */}
-                      <div className="space-y-2">
+                      <div className="space-y-1.5">
                         {currentQ.pilihan?.map((opt, idx) => {
                           const isSelected = jumpSelectedAnswer === opt;
                           const isWrongSubmitted = jumpHasSubmitted && !jumpIsCorrect && isSelected;
@@ -2118,22 +2151,22 @@ const LatihanSoal = () => {
                                 setJumpIsCorrect(false);
                                 setShowJumpHint(false);
                               }}
-                              className={`w-full p-3 rounded-xl text-left text-xs font-semibold border transition-all flex items-center justify-between cursor-pointer ${
+                              className={`w-full p-2.5 rounded-lg text-left text-xs font-medium border transition-colors flex items-center justify-between cursor-pointer ${
                                 isWrongSubmitted
-                                  ? 'bg-rose-50 border-rose-400 text-rose-950 shadow-2xs'
+                                  ? 'bg-[#FDF1F1] border-[#F4C7C7] text-[#C93B3B]'
                                   : isSelected
-                                  ? 'bg-amber-50 border-amber-500 text-amber-900 shadow-2xs'
-                                  : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                                  ? 'bg-[#FAECE6] border-[#C25E38] text-[#261C14]'
+                                  : 'bg-white border-[#E6DFD5] text-[#261C14] hover:bg-[#FAF7F2]'
                               }`}
                             >
                               <span dangerouslySetInnerHTML={{ __html: formatMath(opt) }} />
                               <div
-                                className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-bold ${
+                                className={`w-5 h-5 rounded-md border flex items-center justify-center text-[10px] font-semibold ${
                                   isWrongSubmitted
-                                    ? 'border-rose-500 bg-rose-600 text-white'
+                                    ? 'border-[#C93B3B] bg-[#C93B3B] text-white'
                                     : isSelected
-                                    ? 'border-amber-500 bg-amber-500 text-white'
-                                    : 'border-slate-300 text-slate-400'
+                                    ? 'border-[#C25E38] bg-[#C25E38] text-white'
+                                    : 'border-[#E6DFD5] text-[#8C7E72]'
                                 }`}
                               >
                                 {String.fromCharCode(65 + idx)}
@@ -2145,22 +2178,22 @@ const LatihanSoal = () => {
 
                       {/* Hint jika salah */}
                       {(showJumpHint || (jumpHasSubmitted && !jumpIsCorrect)) && (
-                        <div className="p-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs animate-fade-in flex items-start space-x-2">
-                          <HelpCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                        <div className="p-3 rounded-lg bg-[#FDF1F1] border border-[#F4C7C7] text-[#C93B3B] text-xs flex items-start space-x-2">
+                          <HelpCircle className="w-4 h-4 text-[#C93B3B] flex-shrink-0 mt-0.5" />
                           <div>
-                            <strong>Jawaban Kurang Tepat!</strong>
-                            <p className="mt-0.5 text-slate-700">
-                              Baca pertanyaan dengan cermat dan coba pilih jawaban yang paling sesuai.
+                            <strong>Jawaban Kurang Tepat</strong>
+                            <p className="mt-0.5 text-[#6E6258]">
+                              Baca pertanyaan dengan cermat dan coba pilih opsi lain yang sesuai.
                             </p>
                           </div>
                         </div>
                       )}
 
                       {/* Aksi Tombol Bawah */}
-                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                      <div className="pt-2 border-t border-[#E6DFD5] flex items-center justify-between">
                         <button
                           onClick={() => setJumpChallengeLevel(null)}
-                          className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-700 cursor-pointer"
+                          className="px-3 py-1.5 rounded-lg text-xs font-medium text-[#6E6258] hover:text-[#261C14] cursor-pointer"
                         >
                           Batal
                         </button>
@@ -2175,14 +2208,14 @@ const LatihanSoal = () => {
                             (jumpHasSubmitted && jumpIsCorrect) ||
                             (!jumpHasSubmitted && jumpSelectedAnswer === null)
                           }
-                          className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md ${
+                          className={`px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
                             isJumpTransitioning || (jumpHasSubmitted && jumpIsCorrect)
-                              ? 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
+                              ? 'bg-[#F2ECE4] text-[#8C7E72] cursor-not-allowed'
                               : jumpHasSubmitted && !jumpIsCorrect
-                              ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 font-black cursor-pointer hover:scale-105 active:scale-95'
+                              ? 'bg-[#D97E26] hover:bg-[#B5671B] text-white cursor-pointer'
                               : jumpSelectedAnswer !== null
-                              ? 'bg-emerald-600 hover:bg-emerald-500 text-white font-bold cursor-pointer'
-                              : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                              ? 'bg-[#C25E38] hover:bg-[#A94D2B] text-white cursor-pointer'
+                              : 'bg-[#F2ECE4] text-[#8C7E72] cursor-not-allowed'
                           }`}
                         >
                           {isJumpTransitioning || (jumpHasSubmitted && jumpIsCorrect)
@@ -2203,75 +2236,71 @@ const LatihanSoal = () => {
 
       {/* --- MODAL 3: BUKU PANDUAN CARA BERMAIN --- */}
       {showGuideModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full overflow-hidden relative animate-fade-in">
-            <div
-              className={`p-5 bg-gradient-to-r ${
-                currentSubject?.theme.gradient || 'from-emerald-600 to-teal-600'
-              } text-white`}
-            >
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1F1914]/50 backdrop-blur-xs">
+          <div className="bg-white rounded-xl border border-[#E6DFD5] shadow-xl max-w-md w-full overflow-hidden relative">
+            <div className="p-4 bg-[#1F1914] text-white border-b border-[#33261D]">
               <button
                 onClick={() => setShowGuideModal(false)}
-                className="absolute right-4 top-4 w-7 h-7 rounded-full bg-black/20 hover:bg-black/30 text-white flex items-center justify-center transition-colors cursor-pointer"
+                className="absolute right-3.5 top-3.5 w-7 h-7 rounded-md hover:bg-[#2D241C] text-[#D4C8BC] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
-              <h3 className="text-lg font-black flex items-center space-x-2">
-                <BookOpen className="w-5 h-5" />
+              <h3 className="text-base font-bold flex items-center space-x-2">
+                <BookOpen className="w-4 h-4 text-[#E5A875]" />
                 <span>Buku Panduan Petualangan Latihan</span>
               </h3>
-              <p className="text-xs text-white/90 mt-1">
+              <p className="text-xs text-[#D4C8BC] mt-0.5">
                 Aturan & Cara Menuntaskan Latihan Pembelajaran TKA SD
               </p>
             </div>
 
-            <div className="p-5 space-y-3.5 text-xs text-slate-700 leading-relaxed">
+            <div className="p-4 space-y-3 text-xs text-[#6E6258] leading-relaxed">
               <div className="flex items-start space-x-3">
-                <span className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold flex-shrink-0">
+                <span className="w-5 h-5 rounded bg-[#F2ECE4] text-[#261C14] flex items-center justify-center font-bold flex-shrink-0 text-[11px] border border-[#E6DFD5]">
                   1
                 </span>
                 <div>
-                  <strong className="block text-slate-900 font-bold">Posisi Awal Belajar</strong>
-                  Hanya <strong>Latihan 1</strong> pada masing-masing mata pelajaran yang terbuka di awal petualangan. Latihan selanjutnya masih terkunci.
+                  <strong className="block text-[#261C14] font-semibold">Posisi Awal Belajar</strong>
+                  Hanya <strong>Latihan 1</strong> pada masing-masing mata pelajaran yang terbuka di awal. Latihan selanjutnya masih terkunci.
                 </div>
               </div>
 
               <div className="flex items-start space-x-3">
-                <span className="w-6 h-6 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold flex-shrink-0">
+                <span className="w-5 h-5 rounded bg-[#F2ECE4] text-[#261C14] flex items-center justify-center font-bold flex-shrink-0 text-[11px] border border-[#E6DFD5]">
                   2
                 </span>
                 <div>
-                  <strong className="block text-slate-900 font-bold">Membuka Latihan Berurutan</strong>
+                  <strong className="block text-[#261C14] font-semibold">Membuka Latihan Berurutan</strong>
                   Untuk membuka latihan berikutnya secara bertahap, kerjakan seluruh soal latihan saat ini dan raih nilai memuaskan.
                 </div>
               </div>
 
               <div className="flex items-start space-x-3">
-                <span className="w-6 h-6 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center font-bold flex-shrink-0">
+                <span className="w-5 h-5 rounded bg-[#F2ECE4] text-[#261C14] flex items-center justify-center font-bold flex-shrink-0 text-[11px] border border-[#E6DFD5]">
                   3
                 </span>
                 <div>
-                  <strong className="block text-slate-900 font-bold">Fitur Tantangan Lompat Latihan</strong>
-                  Ingin langsung berlatih di tingkat tertentu? Kamu bisa membuka latihan lebih awal dengan menyelesaikan <strong>Tantangan Kuis</strong> dari latihan yang dituju!
+                  <strong className="block text-[#261C14] font-semibold">Fitur Tantangan Lompat Latihan</strong>
+                  Ingin langsung berlatih di tingkat tertentu? Kamu bisa membuka latihan lebih awal dengan menyelesaikan <strong>Tantangan Kuis</strong>.
                 </div>
               </div>
 
               <div className="flex items-start space-x-3">
-                <span className="w-6 h-6 rounded-lg bg-yellow-100 text-yellow-800 flex items-center justify-center font-bold flex-shrink-0">
+                <span className="w-5 h-5 rounded bg-[#F2ECE4] text-[#261C14] flex items-center justify-center font-bold flex-shrink-0 text-[11px] border border-[#E6DFD5]">
                   4
                 </span>
                 <div>
-                  <strong className="block text-slate-900 font-bold">Milestone Peti & Piala Puncak</strong>
-                  Kumpulkan 3 bintang di setiap latihan dan buka peti bonus di setiap tahapan, hingga Piala Maestro di puncak latihan terakhir!
+                  <strong className="block text-[#261C14] font-semibold">Milestone Peti & Piala Puncak</strong>
+                  Kumpulkan 3 bintang di setiap latihan dan buka peti bonus di setiap tahapan, hingga Piala Maestro di puncak latihan terakhir.
                 </div>
               </div>
 
-              <div className="pt-3">
+              <div className="pt-2">
                 <button
                   onClick={() => setShowGuideModal(false)}
-                  className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-colors cursor-pointer"
+                  className="w-full py-2.5 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white font-semibold text-xs transition-colors cursor-pointer"
                 >
-                  Saya Mengerti, Lanjutkan Petualangan!
+                  Saya Mengerti, Tutup Panduan
                 </button>
               </div>
             </div>
@@ -2281,43 +2310,43 @@ const LatihanSoal = () => {
 
       {/* --- MODAL 4: MILESTONE PETI & PIALA --- */}
       {milestoneModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-sm w-full overflow-hidden relative text-center p-6 space-y-4 animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1F1914]/50 backdrop-blur-xs">
+          <div className="bg-white rounded-xl border border-[#E6DFD5] shadow-xl max-w-sm w-full overflow-hidden relative text-center p-5 space-y-3">
             <div
-              className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto shadow-md ${
+              className={`w-12 h-12 rounded-lg flex items-center justify-center mx-auto border ${
                 milestoneModal.unlocked
-                  ? 'bg-gradient-to-b from-yellow-300 to-amber-500 text-amber-950 animate-bounce-subtle'
-                  : 'bg-slate-100 text-slate-400'
+                  ? 'bg-[#FEF7EE] border-[#F4D3C4] text-[#D97E26]'
+                  : 'bg-[#F2ECE4] border-[#E6DFD5] text-[#8C7E72]'
               }`}
             >
-              {milestoneModal.unlocked ? <Trophy className="w-8 h-8" /> : <Lock className="w-8 h-8" />}
+              {milestoneModal.unlocked ? <Trophy className="w-6 h-6" /> : <Lock className="w-6 h-6" />}
             </div>
 
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8C7E72]">
                 Pencapaian Milestone
               </span>
-              <h3 className="text-lg font-black text-slate-900 mt-0.5">{milestoneModal.title}</h3>
-              <p className="text-xs text-slate-600 mt-1 leading-relaxed">{milestoneModal.desc}</p>
+              <h3 className="text-base font-bold text-[#261C14] mt-0.5">{milestoneModal.title}</h3>
+              <p className="text-xs text-[#6E6258] mt-1 leading-relaxed">{milestoneModal.desc}</p>
             </div>
 
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold">
+            <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] text-xs font-medium">
               {milestoneModal.unlocked ? (
-                <div className="text-emerald-700">
+                <div className="text-[#286657]">
                   <span>Status: <strong>Terbuka!</strong></span>
-                  <div className="text-[11px] text-slate-600 mt-0.5">{milestoneModal.reward}</div>
+                  <div className="text-[11px] text-[#6E6258] mt-0.5">{milestoneModal.reward}</div>
                 </div>
               ) : (
-                <div className="text-slate-500">
-                  <span>Perlu menyelesaikan minimal <strong>{milestoneModal.requiredLevel} Latihan</strong> untuk membuka!</span>
-                  <div className="text-[11px] text-slate-400 mt-0.5">Saat ini: {completedCount} / {milestoneModal.requiredLevel} Latihan</div>
+                <div className="text-[#6E6258]">
+                  <span>Perlu menyelesaikan minimal <strong>{milestoneModal.requiredLevel} Latihan</strong></span>
+                  <div className="text-[11px] text-[#8C7E72] mt-0.5">Saat ini: {completedCount} / {milestoneModal.requiredLevel} Selesai</div>
                 </div>
               )}
             </div>
 
             <button
               onClick={() => setMilestoneModal(null)}
-              className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-colors cursor-pointer"
+              className="w-full py-2 rounded-lg bg-[#261C14] hover:bg-[#3D2E24] text-white font-semibold text-xs transition-colors cursor-pointer"
             >
               Tutup
             </button>
@@ -2327,31 +2356,31 @@ const LatihanSoal = () => {
 
       {/* --- MODAL 5: KONFIRMASI RESET PROGRES --- */}
       {showResetConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-sm w-full p-5 space-y-4 text-center">
-            <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
-              <RotateCcw className="w-6 h-6" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1F1914]/50 backdrop-blur-xs">
+          <div className="bg-white rounded-xl border border-[#E6DFD5] shadow-xl max-w-sm w-full p-5 space-y-3.5 text-center">
+            <div className="w-10 h-10 rounded-full bg-[#FDF1F1] text-[#C93B3B] flex items-center justify-center mx-auto border border-[#F4C7C7]">
+              <RotateCcw className="w-5 h-5" />
             </div>
 
             <div>
-              <h4 className="text-base font-bold text-slate-900">
+              <h4 className="text-sm font-bold text-[#261C14]">
                 Reset Progres Latihan {currentSubject?.title || ''}?
               </h4>
-              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+              <p className="text-xs text-[#6E6258] mt-1 leading-relaxed">
                 Tindakan ini akan mengunci kembali Latihan 2 sampai {currentLevels.length} pada mata pelajaran ini, dan mengembalikan status ke Latihan 1 awal.
               </p>
             </div>
 
-            <div className="flex space-x-2 pt-2">
+            <div className="flex space-x-2 pt-1">
               <button
                 onClick={() => setShowResetConfirm(false)}
-                className="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors cursor-pointer"
+                className="flex-1 py-2 rounded-lg bg-white hover:bg-[#FAF7F2] border border-[#E6DFD5] text-[#261C14] font-medium text-xs transition-colors cursor-pointer"
               >
                 Batal
               </button>
               <button
                 onClick={handleResetProgress}
-                className="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition-colors shadow-xs cursor-pointer"
+                className="flex-1 py-2 rounded-lg bg-[#C93B3B] hover:bg-[#A92A2A] text-white font-semibold text-xs transition-colors cursor-pointer"
               >
                 Ya, Reset
               </button>

@@ -290,11 +290,15 @@ export const getActivityData = () => {
 
   // Inisialisasi Total EXP
   if (data.exp === undefined || data.exp === null) {
-    // Hitung baseline EXP dari riwayat aktivitas yang ada
-    const materiExp = (data.materiCompleted || []).length * 60;
-    const latihanExp = (data.latihanHistory || []).length * 80;
-    const tryoutExp = (data.tryoutHistory || []).length * 150;
-    data.exp = Math.max(120, materiExp + latihanExp + tryoutExp);
+    // Hitung baseline EXP hanya dari riwayat aktivitas yang tuntas
+    const materiExp = (data.materiCompleted || []).length * 80;
+    const latihanExp = (data.latihanHistory || [])
+      .filter((l) => l.isCompletedAll !== false)
+      .reduce((sum, l) => sum + (l.expEarned || 80), 0);
+    const tryoutExp = (data.tryoutHistory || [])
+      .filter((t) => t.isCompletedAll !== false)
+      .reduce((sum, t) => sum + (t.expEarned || 150), 0);
+    data.exp = materiExp + latihanExp + tryoutExp;
   }
 
   // Inisialisasi Gelar (Titles)
@@ -433,8 +437,9 @@ export const markMateriComplete = (babId, stars = 3) => {
   data.materiStars[babId] = Math.max(prevStars, Math.max(1, Math.min(3, stars)));
   saveActivityData(data);
 
-  // Berikan EXP dan nyalakan/tambah streak aktivitas belajar materi
-  recordUserActivity('materi', 60 + stars * 10);
+  // EXP hanya diberikan saat materi dan kuis pemahamannya diselesaikan sampai habis
+  const materiExp = 60 + stars * 10;
+  recordUserActivity('materi', materiExp);
 };
 
 export const unlockLatihan = (latihanId) => {
@@ -446,7 +451,7 @@ export const unlockLatihan = (latihanId) => {
   }
 };
 
-export const markLatihanComplete = (latihanId, stars = 3) => {
+export const markLatihanComplete = (latihanId, stars = 3, awardExp = true) => {
   const data = getActivityData();
   if (!data.latihanCompleted) data.latihanCompleted = [];
   if (!data.latihanCompleted.includes(latihanId)) {
@@ -461,8 +466,10 @@ export const markLatihanComplete = (latihanId, stars = 3) => {
   data.latihanStars[latihanId] = Math.max(prevStars, Math.max(1, Math.min(3, stars)));
   saveActivityData(data);
 
-  // Berikan EXP dan nyalakan/tambah streak aktivitas latihan soal
-  recordUserActivity('latihan', 80 + stars * 15);
+  // Berikan EXP hanya jika awardExp bernilai true
+  if (awardExp) {
+    recordUserActivity('latihan', 80 + stars * 15);
+  }
 };
 
 export const resetLatihanProgress = (subject = null) => {
@@ -491,8 +498,17 @@ export const resetLatihanProgress = (subject = null) => {
   return data;
 };
 
-export const recordLatihan = ({ subject, level, score, correct, total }) => {
+export const recordLatihan = ({
+  subject,
+  level,
+  score,
+  correct,
+  total,
+  isCompletedAll = false,
+  expEarned = 0,
+}) => {
   const data = getActivityData();
+  const finalExp = isCompletedAll ? expEarned : 0;
   const newRecord = {
     id: `lat_${Date.now()}`,
     subject,
@@ -500,20 +516,33 @@ export const recordLatihan = ({ subject, level, score, correct, total }) => {
     score,
     correct,
     total,
+    isCompletedAll,
+    expEarned: finalExp,
     date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
   };
   data.latihanHistory.unshift(newRecord);
   saveActivityData(data);
 
-  // Catat aktivitas dan bonus EXP berdasarkan perolehan nilai latihan
-  const bonusExp = Math.round((score || 0) * 0.5);
-  recordUserActivity('latihan', Math.max(50, 40 + bonusExp));
+  // EXP HANYA DIBERIKAN JIKA USER MENYELESAIKAN SEMUA SOAL LATIHAN
+  if (isCompletedAll && finalExp > 0) {
+    recordUserActivity('latihan', finalExp);
+  }
 
   return newRecord;
 };
 
-export const recordTryout = ({ subject, packageNum, score, correct, total, userAnswers = {} }) => {
+export const recordTryout = ({
+  subject,
+  packageNum,
+  score,
+  correct,
+  total,
+  userAnswers = {},
+  isCompletedAll = false,
+  expEarned = 0,
+}) => {
   const data = getActivityData();
+  const finalExp = isCompletedAll ? expEarned : 0;
   const newRecord = {
     id: `to_${Date.now()}`,
     subject,
@@ -522,14 +551,17 @@ export const recordTryout = ({ subject, packageNum, score, correct, total, userA
     correct,
     total,
     userAnswers,
+    isCompletedAll,
+    expEarned: finalExp,
     date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
   };
   data.tryoutHistory.unshift(newRecord);
   saveActivityData(data);
 
-  // Berikan EXP besar untuk penyelesaian simulasi Tryout dan nyalakan streak
-  const tryoutExp = Math.round(150 + (score || 0));
-  recordUserActivity('tryout', tryoutExp);
+  // EXP HANYA DIBERIKAN JIKA USER MENJAWAB SEMUA SOAL DARI TRYOUT
+  if (isCompletedAll && finalExp > 0) {
+    recordUserActivity('tryout', finalExp);
+  }
 
   return newRecord;
 };

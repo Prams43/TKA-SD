@@ -2,36 +2,24 @@ import React from 'react';
 import { ChevronRight } from 'lucide-react';
 
 /**
- * Komponen Tombol Kapsul Interaktif (Pill Button)
- * Didesain responsif agar tetap rapi saat berdampingan dengan karakter di mobile
+ * Komponen Tombol Menu Dashboard yang Bersih dan Terstruktur
  */
 const PillMenuButton = ({ label, icon: Icon, onClick, accentColor = 'blue', badgeText }) => {
-  // Mapping warna glow & aksen di atas latar belakang Navy
   const colorStyles = {
     blue: {
-      glow: 'hover:shadow-[0_12px_30px_rgba(37,99,235,0.45)] hover:border-blue-400',
-      iconBg: 'bg-blue-500/25 text-blue-300 border border-blue-400/30',
-      badge: 'bg-blue-500/20 text-blue-200 border-blue-400/40',
+      iconBg: 'bg-[#FAECE6] text-[#C25E38] border-[#F2CBBF]',
     },
     emerald: {
-      glow: 'hover:shadow-[0_12px_30px_rgba(16,185,129,0.45)] hover:border-emerald-400',
-      iconBg: 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/30',
-      badge: 'bg-emerald-500/20 text-emerald-200 border-emerald-400/40',
+      iconBg: 'bg-[#E8F2EF] text-[#286657] border-[#C5DDD6]',
     },
     amber: {
-      glow: 'hover:shadow-[0_12px_30px_rgba(245,158,11,0.45)] hover:border-amber-400',
-      iconBg: 'bg-amber-500/25 text-amber-300 border border-amber-400/30',
-      badge: 'bg-amber-500/20 text-amber-200 border-amber-400/40',
+      iconBg: 'bg-[#FEF7EE] text-[#D97E26] border-[#FCD9BD]',
     },
     purple: {
-      glow: 'hover:shadow-[0_12px_30px_rgba(168,85,247,0.45)] hover:border-purple-400',
-      iconBg: 'bg-purple-500/25 text-purple-300 border border-purple-400/30',
-      badge: 'bg-purple-500/20 text-purple-200 border-purple-400/40',
+      iconBg: 'bg-[#EFF6F9] text-[#2C6E8F] border-[#CDE1EB]',
     },
     yellow: {
-      glow: 'hover:shadow-[0_12px_30px_rgba(234,179,8,0.5)] hover:border-yellow-400',
-      iconBg: 'bg-yellow-500/25 text-yellow-300 border border-yellow-400/40',
-      badge: 'bg-yellow-500/20 text-yellow-200 border-yellow-400/40',
+      iconBg: 'bg-[#FAECE6] text-[#C25E38] border-[#F2CBBF]',
     },
   };
 
@@ -40,36 +28,31 @@ const PillMenuButton = ({ label, icon: Icon, onClick, accentColor = 'blue', badg
   return (
     <button
       onClick={onClick}
-      className={`group relative w-full py-2.5 sm:py-3.5 md:py-4 px-3 sm:px-5 md:px-7 rounded-full bg-gradient-to-r from-[#0a1e4a] via-[#0f285d] to-[#08183c] text-white font-bold text-xs sm:text-base md:text-xl tracking-wide shadow-[0_6px_20px_rgba(10,30,74,0.3)] sm:shadow-[0_10px_25px_rgba(10,30,74,0.35)] border border-blue-400/30 sm:border-2 transition-all duration-300 ease-out transform hover:-translate-y-1 hover:scale-[1.02] active:scale-95 cursor-pointer overflow-hidden flex items-center justify-between select-none ${currentStyle.glow}`}
+      className="group w-full py-2.5 sm:py-3.5 px-3.5 sm:px-5 rounded-lg bg-white hover:bg-[#FAF7F2] text-[#261C14] border border-[#E6DFD5] hover:border-[#D8CDC2] transition-colors cursor-pointer flex items-center justify-between shadow-xs select-none"
     >
-      {/* Efek Shimmer Kilatan Cahaya saat Hover */}
-      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out bg-gradient-to-r from-transparent via-white/15 to-transparent pointer-events-none" />
-
       {/* Konten Kiri: Ikon & Teks Label */}
-      <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4 z-10 min-w-0">
+      <div className="flex items-center space-x-2.5 sm:space-x-3.5 min-w-0">
         {Icon && (
           <div
-            className={`w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full flex-shrink-0 flex items-center justify-center transition-transform duration-300 group-hover:scale-110 ${currentStyle.iconBg}`}
+            className={`w-7 h-7 sm:w-9 sm:h-9 rounded-md flex-shrink-0 flex items-center justify-center border ${currentStyle.iconBg}`}
           >
-            <Icon className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5" />
+            <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         )}
-        <span className="truncate transition-colors duration-200 text-white group-hover:text-blue-100 font-poppins">
+        <span className="truncate text-xs sm:text-base font-semibold text-[#261C14] group-hover:text-[#C25E38] transition-colors">
           {label}
         </span>
       </div>
 
       {/* Konten Kanan: Badge & Arrow Indicator */}
-      <div className="flex items-center space-x-1 sm:space-x-2 z-10 flex-shrink-0">
+      <div className="flex items-center space-x-1.5 sm:space-x-2 flex-shrink-0">
         {badgeText && (
-          <span
-            className={`hidden md:inline-block text-[10px] md:text-[11px] font-semibold px-2.5 py-0.5 rounded-full border shadow-sm ${currentStyle.badge}`}
-          >
+          <span className="hidden sm:inline-block text-[11px] font-medium px-2 py-0.5 rounded bg-[#F2ECE4] text-[#6E6258] border border-[#E6DFD5]">
             {badgeText}
           </span>
         )}
-        <div className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 rounded-full bg-white/10 group-hover:bg-blue-500/30 border border-white/15 flex items-center justify-center transition-all duration-300 shadow-sm group-hover:shadow group-hover:translate-x-0.5">
-          <ChevronRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-blue-200 group-hover:text-white transition-colors" />
+        <div className="w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-[#A89F95] group-hover:text-[#C25E38] transition-colors">
+          <ChevronRight className="w-4 h-4" />
         </div>
       </div>
     </button>

@@ -215,17 +215,21 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-doodle-pattern flex flex-col justify-center items-center p-4 sm:p-6">
+    <div className="min-h-screen bg-[#FAF7F2] flex flex-col justify-center items-center p-4 sm:p-6">
       <div className="w-full max-w-md">
         {/* Header Identitas */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-500/30 mb-4">
-            <GraduationCap className="w-8 h-8" />
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center mb-3">
+            <img
+              src="/logo.png"
+              alt="Logo EDU TKA"
+              className="h-16 w-auto object-contain"
+            />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-2xl font-bold text-[#261C14] tracking-tight">
             {step === 'form' ? 'Daftar Akun TKA SD' : 'Verifikasi Akun'}
           </h1>
-          <p className="text-slate-500 text-sm mt-1.5">
+          <p className="text-[#6E6258] text-sm mt-1">
             {step === 'form'
               ? 'Buat akun baru untuk mulai latihan Tes Kemampuan Akademik'
               : `Kode verifikasi telah dikirimkan ke email Anda`}
@@ -233,14 +237,14 @@ const Register = () => {
         </div>
 
         {/* Card Form Utama */}
-        <div className="bg-white/95 rounded-2xl shadow-xl shadow-blue-950/10 border border-slate-200/90 p-6 sm:p-8 backdrop-blur-md">
+        <div className="bg-white rounded-lg border border-[#E6DFD5] p-6 sm:p-8 shadow-sm">
           {/* STEP 1: FORMULIR PENDAFTARAN */}
           {step === 'form' && (
-            <div className="animate-fade-in">
+            <div>
               {serverError && (
-                <div className="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 flex items-start space-x-3 text-rose-800 text-sm animate-fade-in">
-                  <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
-                  <p className="font-semibold text-rose-900">{serverError}</p>
+                <div className="mb-5 p-3 rounded-lg bg-[#FDF1F1] border border-[#F5C2C2] flex items-start space-x-2.5 text-[#C93B3B] text-sm">
+                  <AlertCircle className="w-4 h-4 text-[#C93B3B] flex-shrink-0 mt-0.5" />
+                  <p className="font-medium text-[#A82828]">{serverError}</p>
                 </div>
               )}
 
@@ -318,12 +322,12 @@ const Register = () => {
               </form>
 
               {/* Link ke Login */}
-              <div className="mt-6 pt-6 border-t border-slate-150 text-center">
-                <p className="text-sm text-slate-600">
+              <div className="mt-6 pt-6 border-t border-[#E6DFD5] text-center">
+                <p className="text-sm text-[#6E6258]">
                   Sudah punya akun?{' '}
                   <Link
                     to="/"
-                    className="font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                    className="font-medium text-[#C25E38] hover:text-[#A94D2B] hover:underline"
                   >
                     Masuk di sini
                   </Link>
@@ -334,23 +338,23 @@ const Register = () => {
 
           {/* STEP 2: VERIFIKASI KODE OTP 6 DIGIT */}
           {step === 'otp' && (
-            <div className="animate-fade-in">
+            <div>
               <div className="text-center mb-6">
-                <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center mx-auto mb-3">
-                  <Mail className="w-7 h-7" />
+                <div className="w-12 h-12 rounded-lg bg-[#FAECE6] border border-[#F2D2C4] text-[#C25E38] flex items-center justify-center mx-auto mb-3">
+                  <Mail className="w-6 h-6" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900">Periksa Email Anda</h3>
-                <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
+                <h3 className="text-base font-bold text-[#261C14]">Periksa Email Anda</h3>
+                <p className="text-xs text-[#6E6258] mt-1 max-w-xs mx-auto">
                   Kami telah mengirimkan 6 digit kode keamanan ke:
                 </p>
-                <div className="inline-flex items-center space-x-1.5 px-3 py-1 bg-slate-100 rounded-full text-slate-800 font-semibold text-xs mt-2 border border-slate-200">
+                <div className="inline-flex items-center space-x-1 px-2.5 py-0.5 bg-[#F2ECE4] rounded text-[#261C14] font-medium text-xs mt-2 border border-[#E6DFD5]">
                   <span>{registeredEmail}</span>
                 </div>
               </div>
 
               {otpError && (
-                <div className="mb-5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center space-x-2 animate-fade-in">
-                  <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+                <div className="mb-5 p-3 rounded-lg bg-[#FDF1F1] border border-[#F5C2C2] text-[#C93B3B] text-xs flex items-center space-x-2">
+                  <AlertCircle className="w-4 h-4 text-[#C93B3B] flex-shrink-0" />
                   <span>{otpError}</span>
                 </div>
               )}
@@ -368,10 +372,10 @@ const Register = () => {
                       value={digit}
                       onChange={(e) => handleOtpDigitChange(index, e.target.value)}
                       onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                      className={`w-12 h-14 sm:w-14 sm:h-16 text-center text-xl sm:text-2xl font-bold rounded-xl border transition-all outline-none ${
+                      className={`w-11 h-13 sm:w-12 sm:h-14 text-center text-xl font-bold rounded-lg border outline-none transition-colors ${
                         digit
-                          ? 'border-blue-600 bg-blue-50/30 text-blue-900 shadow-sm shadow-blue-500/10 ring-2 ring-blue-500/20'
-                          : 'border-slate-300 bg-white text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+                          ? 'border-[#C25E38] bg-white text-[#261C14]'
+                          : 'border-[#E6DFD5] bg-white text-[#261C14] focus:border-[#C25E38] focus:ring-1 focus:ring-[#C25E38]'
                       }`}
                     />
                   ))}
@@ -390,15 +394,15 @@ const Register = () => {
 
                 {/* Kirim Ulang Kode OTP */}
                 <div className="mt-5 text-center">
-                  <p className="text-xs text-slate-500 mb-2">Tidak menerima kode verifikasi?</p>
+                  <p className="text-xs text-[#6E6258] mb-2">Tidak menerima kode verifikasi?</p>
                   <button
                     type="button"
                     onClick={handleResendOtp}
                     disabled={resendCountdown > 0 || isResending}
-                    className={`inline-flex items-center space-x-1.5 text-xs font-semibold ${
+                    className={`inline-flex items-center space-x-1.5 text-xs font-medium cursor-pointer ${
                       resendCountdown > 0
-                        ? 'text-slate-400 cursor-not-allowed'
-                        : 'text-blue-600 hover:text-blue-700 hover:underline'
+                        ? 'text-[#8C7E72] cursor-not-allowed'
+                        : 'text-[#C25E38] hover:text-[#A94D2B] hover:underline'
                     }`}
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${isResending ? 'animate-spin' : ''}`} />
@@ -412,14 +416,14 @@ const Register = () => {
               </form>
 
               {/* Kembali ke Step 1 (Ubah Email) */}
-              <div className="mt-6 pt-5 border-t border-slate-150 text-center">
+              <div className="mt-6 pt-5 border-t border-[#E6DFD5] text-center">
                 <button
                   type="button"
                   onClick={() => {
                     setStep('form');
                     setOtpError('');
                   }}
-                  className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors"
+                  className="inline-flex items-center space-x-1.5 text-xs font-medium text-[#6E6258] hover:text-[#261C14] transition-colors cursor-pointer"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Ubah alamat email atau data pendaftaran</span>
@@ -430,7 +434,7 @@ const Register = () => {
         </div>
 
         {/* Footer info */}
-        <p className="text-center text-xs text-slate-400 mt-6">
+        <p className="text-center text-xs text-[#8C7E72] mt-6">
           &copy; {new Date().getFullYear()} TKA SD. Seluruh hak cipta dilindungi.
         </p>
       </div>

@@ -221,6 +221,26 @@ const getDisplayUserAnswer = (q, userVal) => {
   return String(userVal);
 };
 
+// Helper cek apakah soal tryout sudah terjawab lengkap
+export const isTryoutQuestionAnswered = (q, ans) => {
+  if (ans === undefined || ans === null || ans === '') return false;
+  const qType = q?.type || q?.tipe || 'mcq';
+  if (qType === 'mcma') {
+    return Array.isArray(ans) && ans.length > 0;
+  }
+  if (qType === 'category') {
+    if (typeof ans !== 'object' || ans === null) return false;
+    if (Array.isArray(q.statements) && q.statements.length > 0) {
+      return q.statements.every((_, sIdx) => ans[sIdx] !== undefined);
+    }
+    return Object.keys(ans).length > 0;
+  }
+  if (qType === 'isian') {
+    return typeof ans === 'string' && ans.trim().length > 0;
+  }
+  return true;
+};
+
 const Tryout = () => {
   const navigate = useNavigate();
   const [selectedSubject, setSelectedSubject] = useState(null); // 'bahasa_indonesia' | 'matematika'
@@ -252,6 +272,8 @@ const Tryout = () => {
                 correctCount: h.correct,
                 totalCount: h.total || 30,
                 userAnswers: h.userAnswers || {},
+                isCompletedAll: h.isCompletedAll,
+                expEarned: h.expEarned,
               };
             }
           }
@@ -317,6 +339,8 @@ const Tryout = () => {
       totalCount: pkg.soal.length,
       wrongCount: pkg.soal.length - (completedInfo?.correctCount || 0),
       timeSpentSeconds: 0,
+      isCompletedAll: completedInfo?.isCompletedAll ?? true,
+      expEarned: completedInfo?.expEarned || 0,
     });
     setIsExamRunning(false);
     setIsFinished(true);
@@ -343,19 +367,27 @@ const Tryout = () => {
       if (isCorrect) correctCount++;
     });
 
+    const isCompletedAll = questions.every((q, idx) => isTryoutQuestionAnswered(q, userAnswers[idx]));
+    const answeredCount = questions.filter((q, idx) => isTryoutQuestionAnswered(q, userAnswers[idx])).length;
+
     const score = Number(((correctCount / (questions.length || 1)) * 100).toFixed(1));
+    const expEarned = isCompletedAll ? Math.round(150 + score) : 0;
+
     const result = {
       score,
       correctCount,
       totalCount: questions.length,
       wrongCount: questions.length - correctCount,
       timeSpentSeconds: activePackage.durasiMenit * 60 - timeLeftSeconds,
+      isCompletedAll,
+      answeredCount,
+      expEarned,
     };
 
     setScoreResult(result);
     setIsFinished(true);
 
-    // Rekam ke tracker aktivitas
+    // Rekam ke tracker aktivitas (EXP hanya diberikan jika isCompletedAll === true)
     recordTryout({
       subject: selectedSubject,
       packageNum: activePackage.nomorPaket,
@@ -363,6 +395,8 @@ const Tryout = () => {
       correct: correctCount,
       total: questions.length,
       userAnswers,
+      isCompletedAll,
+      expEarned,
     });
 
     // Simpan ke status paket selesai
@@ -372,6 +406,8 @@ const Tryout = () => {
       correctCount,
       totalCount: questions.length,
       userAnswers,
+      isCompletedAll,
+      expEarned,
       updatedAt: Date.now(),
     };
     try {
@@ -396,36 +432,36 @@ const Tryout = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-doodle-pattern text-slate-800 selection:bg-amber-200 selection:text-amber-900">
+    <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#261C14]">
       {/* 1. Navbar Bagian Atas */}
       <Navbar />
 
       {/* 2. Konten Utama Halaman Tryout */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-6 py-5 sm:py-8 flex flex-col animate-fade-in">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 flex flex-col">
         {/* Breadcrumb & Tombol Kembali ke Dashboard */}
         <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-xs text-slate-600">
+          <div className="flex items-center space-x-2 text-xs text-[#6E6258]">
             <button
               onClick={handleBackToDashboard}
-              className="hover:text-amber-700 font-semibold flex items-center space-x-1"
+              className="hover:text-[#261C14] font-medium flex items-center space-x-1 cursor-pointer"
             >
               <LayoutDashboard className="w-3.5 h-3.5" />
               <span>Dashboard</span>
             </button>
-            <span>/</span>
-            <span className="font-bold text-[#0a1e4a]">Simulasi Tryout</span>
+            <span className="text-[#8C7E72]">/</span>
+            <span className="font-semibold text-[#261C14]">Simulasi Tryout</span>
             {selectedSubject && (
               <>
-                <span>/</span>
-                <span className="text-amber-700 font-medium">
+                <span className="text-[#8C7E72]">/</span>
+                <span className="text-[#6E6258] font-medium">
                   {PUSMENDIK_TRYOUT[selectedSubject].nama}
                 </span>
               </>
             )}
             {activePackage && (
               <>
-                <span>/</span>
-                <span className="text-slate-800 font-bold">
+                <span className="text-[#8C7E72]">/</span>
+                <span className="text-[#261C14] font-semibold">
                   {activePackage.namaPaket}
                 </span>
               </>
@@ -434,7 +470,7 @@ const Tryout = () => {
 
           <button
             onClick={handleBackToDashboard}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 shadow-sm text-slate-700 hover:text-amber-700 text-xs font-semibold transition-all"
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#FAF7F2] border border-[#E6DFD5] text-[#261C14] text-xs font-medium transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Kembali ke Dashboard</span>
@@ -443,12 +479,9 @@ const Tryout = () => {
         </div>
 
         {/* Kartu Utama Tryout */}
-        <div className="bg-white border border-slate-200/90 rounded-3xl w-full flex-1 flex flex-col shadow-xl text-slate-800 overflow-hidden relative">
-          {/* Ambient Glow */}
-          <div className="absolute top-0 right-1/4 w-80 h-32 bg-amber-400/10 blur-3xl pointer-events-none" />
-
+        <div className="bg-white border border-[#E6DFD5] rounded-xl w-full flex-1 flex flex-col shadow-xs overflow-hidden relative">
           {/* Header Bar */}
-          <div className="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
+          <div className="p-4 border-b border-[#E6DFD5] flex items-center justify-between bg-[#FAF7F2]">
             <div className="flex items-center space-x-3">
               {activePackage && !isExamRunning ? (
                 <button
@@ -457,26 +490,26 @@ const Tryout = () => {
                     setIsFinished(false);
                     setIsReviewMode(false);
                   }}
-                  className="w-8 h-8 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 transition-colors shadow-sm"
+                  className="w-7 h-7 rounded-md bg-white hover:bg-[#F2ECE4] border border-[#E6DFD5] flex items-center justify-center text-[#261C14] transition-colors cursor-pointer"
                   title="Pilih Paket Lain"
                 >
-                  <ArrowLeft className="w-4 h-4" />
+                  <ArrowLeft className="w-3.5 h-3.5" />
                 </button>
               ) : selectedSubject && !isExamRunning ? (
                 <button
                   onClick={() => setSelectedSubject(null)}
-                  className="w-8 h-8 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 transition-colors shadow-sm"
+                  className="w-7 h-7 rounded-md bg-white hover:bg-[#F2ECE4] border border-[#E6DFD5] flex items-center justify-center text-[#261C14] transition-colors cursor-pointer"
                   title="Pilih Mapel Lain"
                 >
-                  <ArrowLeft className="w-4 h-4" />
+                  <ArrowLeft className="w-3.5 h-3.5" />
                 </button>
               ) : null}
 
               <div>
-                <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center space-x-2">
-                  <span>🏆 Simulasi Tryout TKA SD</span>
+                <h2 className="text-base font-semibold text-[#261C14] flex items-center space-x-2">
+                  <span>Simulasi Tryout TKA SD</span>
                 </h2>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-[#6E6258]">
                   {activePackage
                     ? `${PUSMENDIK_TRYOUT[selectedSubject].nama} - ${activePackage.namaPaket}`
                     : selectedSubject
@@ -488,8 +521,8 @@ const Tryout = () => {
 
             {/* Timer Display saat ujian berlangsung */}
             {isExamRunning && (
-              <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-800 text-xs font-mono font-bold shadow-sm">
-                <Clock className="w-3.5 h-3.5 text-amber-600 animate-pulse" />
+              <div className="flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-[#FAECE6] text-[#C25E38] border border-[#F4D3C4] text-xs font-mono font-semibold">
+                <Clock className="w-3.5 h-3.5 text-[#C25E38]" />
                 <span>{formatTime(timeLeftSeconds)}</span>
               </div>
             )}
@@ -499,55 +532,52 @@ const Tryout = () => {
           <div className="flex-1 p-4 sm:p-6 bg-white">
             {/* TAHAP 1: Pilih Mata Pelajaran (BI / MTK) */}
             {!selectedSubject && (
-              <div className="max-w-2xl mx-auto py-6 sm:py-10">
-                <div className="text-center mb-8">
-                  <span className="px-3.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-300">
-                    Simulasi Ujian Nasional TKA SD
-                  </span>
-                  <h3 className="text-2xl font-bold text-slate-900 mt-3">
+              <div className="max-w-2xl mx-auto py-4 sm:py-8">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-bold text-[#261C14]">
                     Pilih Mata Pelajaran Tryout
                   </h3>
-                  <p className="text-sm text-slate-500 mt-1">
-                    Masing-masing mapel memiliki 5 Paket Tryout lengkap berstandar Pusmendik.
+                  <p className="text-xs sm:text-sm text-[#6E6258] mt-1">
+                    Pilih mata pelajaran untuk melihat 5 paket simulasi ujian.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div
                     onClick={() => setSelectedSubject('bahasa_indonesia')}
-                    className="p-6 rounded-2xl bg-gradient-to-br from-blue-50/80 via-white to-blue-50/40 border-2 border-blue-200 hover:border-blue-500 transition-all cursor-pointer group hover:scale-[1.02] shadow-md hover:shadow-xl"
+                    className="p-5 rounded-lg border border-[#E6DFD5] bg-white hover:border-[#286657] hover:bg-[#FAF7F2] transition-colors cursor-pointer group shadow-xs"
                   >
-                    <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                      <BookOpen className="w-6 h-6" />
+                    <div className="w-10 h-10 rounded-md bg-[#E8F2EF] border border-[#C5DDD6] text-[#286657] flex items-center justify-center mb-3">
+                      <BookOpen className="w-5 h-5" />
                     </div>
-                    <h4 className="text-lg font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+                    <h4 className="text-base font-semibold text-[#261C14] group-hover:text-[#286657] transition-colors">
                       Tryout Bahasa Indonesia
                     </h4>
-                    <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                    <p className="text-xs text-[#6E6258] mt-1.5 leading-relaxed">
                       5 Paket Tryout Nasional: 30 Soal (PG & Isian), durasi 60 menit, variasi HOTS & Sedang.
                     </p>
-                    <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-blue-600 font-semibold">
+                    <div className="mt-4 pt-3 border-t border-[#E6DFD5] flex items-center justify-between text-xs text-[#286657] font-medium">
                       <span>Pilih Paket 1 s.d. 5</span>
-                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      <ChevronRight className="w-3.5 h-3.5" />
                     </div>
                   </div>
 
                   <div
                     onClick={() => setSelectedSubject('matematika')}
-                    className="p-6 rounded-2xl bg-gradient-to-br from-amber-50/80 via-white to-amber-50/40 border-2 border-amber-200 hover:border-amber-500 transition-all cursor-pointer group hover:scale-[1.02] shadow-md hover:shadow-xl"
+                    className="p-5 rounded-lg border border-[#E6DFD5] bg-white hover:border-[#C25E38] hover:bg-[#FAF7F2] transition-colors cursor-pointer group shadow-xs"
                   >
-                    <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                      <Calculator className="w-6 h-6" />
+                    <div className="w-10 h-10 rounded-md bg-[#FAECE6] border border-[#F4D3C4] text-[#C25E38] flex items-center justify-center mb-3">
+                      <Calculator className="w-5 h-5" />
                     </div>
-                    <h4 className="text-lg font-bold text-slate-900 group-hover:text-amber-700 transition-colors">
+                    <h4 className="text-base font-semibold text-[#261C14] group-hover:text-[#C25E38] transition-colors">
                       Tryout Matematika
                     </h4>
-                    <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                    <p className="text-xs text-[#6E6258] mt-1.5 leading-relaxed">
                       5 Paket Tryout Nasional: 30 Soal (PG & Isian), durasi 60 menit, penerapan problem solving nyata.
                     </p>
-                    <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-amber-600 font-semibold">
+                    <div className="mt-4 pt-3 border-t border-[#E6DFD5] flex items-center justify-between text-xs text-[#C25E38] font-medium">
                       <span>Pilih Paket 1 s.d. 5</span>
-                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      <ChevronRight className="w-3.5 h-3.5" />
                     </div>
                   </div>
                 </div>
@@ -556,26 +586,26 @@ const Tryout = () => {
 
             {/* TAHAP 2: Pilih dari 5 Paket Tryout */}
             {selectedSubject && !activePackage && (
-              <div className="space-y-6">
-                <div className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between bg-[#FAF7F2] p-3.5 rounded-lg border border-[#E6DFD5]">
                   <div>
-                    <h3 className="text-base sm:text-lg font-bold text-slate-900">
+                    <h3 className="text-sm sm:text-base font-semibold text-[#261C14]">
                       Pilihan Paket Tryout {PUSMENDIK_TRYOUT[selectedSubject].nama}
                     </h3>
-                    <p className="text-xs text-slate-500 mt-0.5">
+                    <p className="text-xs text-[#6E6258] mt-0.5">
                       Standar TKA SD Nasional: 30 Soal (PG + Isian), 60 Menit.
                     </p>
                   </div>
                   <button
                     onClick={() => setSelectedSubject(null)}
-                    className="text-xs text-slate-500 hover:text-slate-800 underline font-medium"
+                    className="text-xs text-[#6E6258] hover:text-[#261C14] underline font-medium cursor-pointer"
                   >
                     Ganti Mapel
                   </button>
                 </div>
 
                 {/* Grid 5 Paket Tryout */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
                   {PUSMENDIK_TRYOUT[selectedSubject].paket.map((pkg) => {
                     const completionKey = `${selectedSubject}_${pkg.nomorPaket}`;
                     const completedInfo = completedTryouts[completionKey];
@@ -584,63 +614,47 @@ const Tryout = () => {
                     return (
                       <div
                         key={pkg.id || pkg.nomorPaket}
-                        className={`p-5 rounded-2xl border-2 transition-all flex flex-col justify-between group shadow-sm hover:shadow-md ${
-                          isCompleted
-                            ? 'bg-blue-50/20 hover:bg-blue-50/40 border-blue-200 hover:border-blue-400'
-                            : 'bg-white hover:bg-amber-50/20 border-slate-200 hover:border-amber-400'
-                        }`}
+                        className="p-4 rounded-lg border border-[#E6DFD5] bg-white hover:border-[#8C7E72] transition-colors flex flex-col justify-between shadow-xs"
                       >
                         <div>
                           <div className="flex items-center justify-between mb-2">
-                            <span
-                              className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
-                                isCompleted
-                                  ? 'bg-blue-100 text-blue-800 border-blue-300'
-                                  : 'bg-amber-100 text-amber-800 border-amber-300'
-                              }`}
-                            >
+                            <span className="text-xs font-semibold px-2 py-0.5 rounded bg-[#F2ECE4] text-[#261C14] border border-[#E6DFD5]">
                               {pkg.namaPaket}
                             </span>
                             {isCompleted ? (
-                              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center space-x-1">
-                                <Check className="w-3 h-3 stroke-[3]" />
+                              <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-[#E8F2EF] text-[#286657] border border-[#C5DDD6] flex items-center space-x-1">
+                                <Check className="w-3 h-3 stroke-[2.5]" />
                                 <span>Skor: {completedInfo.score}</span>
                               </span>
                             ) : (
-                              <span className="text-[11px] text-slate-500 flex items-center space-x-1">
+                              <span className="text-[11px] text-[#6E6258] flex items-center space-x-1">
                                 <Clock className="w-3 h-3" />
                                 <span>60 Menit</span>
                               </span>
                             )}
                           </div>
 
-                          <h4
-                            className={`text-sm font-bold transition-colors ${
-                              isCompleted
-                                ? 'text-slate-900 group-hover:text-blue-700'
-                                : 'text-slate-900 group-hover:text-amber-700'
-                            }`}
-                          >
+                          <h4 className="text-sm font-semibold text-[#261C14]">
                             Simulasi TKA SD
                           </h4>
-                          <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
-                            {pkg.totalSoal || pkg.soal.length} Soal campuran tingkat HOTS, Sedang, Mudah (Pilihan Ganda & Isian).
+                          <p className="text-xs text-[#6E6258] mt-1 leading-relaxed">
+                            {pkg.totalSoal || pkg.soal.length} Soal campuran tingkat HOTS, Sedang, Mudah (PG & Isian).
                           </p>
                         </div>
 
-                        <div className="mt-5 pt-3 border-t border-slate-100 space-y-2">
+                        <div className="mt-4 pt-3 border-t border-[#E6DFD5] space-y-1.5">
                           {isCompleted ? (
                             <>
                               <button
                                 onClick={() => handleOpenReview(pkg, completedInfo)}
-                                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs transition-all shadow-md shadow-blue-500/20 hover:scale-[1.02] active:scale-95 flex items-center justify-center space-x-1.5 cursor-pointer"
+                                className="w-full py-2 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white font-medium text-xs transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
                               >
                                 <Eye className="w-3.5 h-3.5" />
-                                <span>Lihat Review dan Pembahasan</span>
+                                <span>Lihat Review & Pembahasan</span>
                               </button>
                               <button
                                 onClick={() => handleStartExam(pkg)}
-                                className="w-full py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 font-semibold text-[11px] transition-all flex items-center justify-center space-x-1 cursor-pointer"
+                                className="w-full py-1.5 rounded-lg bg-white hover:bg-[#FAF7F2] border border-[#E6DFD5] text-[#261C14] font-medium text-xs transition-colors flex items-center justify-center space-x-1 cursor-pointer"
                               >
                                 <RotateCcw className="w-3 h-3" />
                                 <span>Ulangi Tryout</span>
@@ -649,10 +663,10 @@ const Tryout = () => {
                           ) : (
                             <button
                               onClick={() => handleStartExam(pkg)}
-                              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs transition-all shadow-md shadow-amber-500/20 hover:scale-[1.02] active:scale-95 flex items-center justify-center space-x-1.5 cursor-pointer"
+                              className="w-full py-2 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white font-semibold text-xs transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
                             >
-                              <Sparkles className="w-3.5 h-3.5" />
-                              <span>Mulai Tryout Sekarang</span>
+                              <Sparkles className="w-3.5 h-3.5 text-[#E5A875]" />
+                              <span>Mulai Tryout</span>
                             </button>
                           )}
                         </div>
@@ -666,7 +680,7 @@ const Tryout = () => {
             {/* TAHAP 3: Ruang Ujian Tryout (Timer 60 Menit, PG + Isian Singkat) */}
             {activePackage && isExamRunning && !isFinished && (
               <div className="space-y-4">
-                {/* Navigator Kotak Nomor Soal (1 - 30) - 1 Baris Scroll Samping */}
+                {/* Navigator Kotak Nomor Soal (1 - 30) */}
                 {(() => {
                   const checkAnswered = (q, ans) => {
                     if (ans === undefined || ans === null || ans === '') return false;
@@ -690,19 +704,19 @@ const Tryout = () => {
                   );
 
                   return (
-                    <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                    <div className="p-3.5 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] space-y-2">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-slate-600 font-semibold">
+                        <span className="text-[#6E6258] font-medium">
                           Lembar Navigasi Soal ({activePackage.soal.length} Soal):
                         </span>
-                        <span className="text-amber-700 font-bold">
+                        <span className="text-[#261C14] font-medium">
                           Terjawab: <strong>{answeredCount}</strong> / {activePackage.soal.length}{' '}
-                          <span className="text-slate-400 font-medium">({answeredPercent}%)</span>
+                          <span className="text-[#8C7E72]">({answeredPercent}%)</span>
                         </span>
                       </div>
 
                       {/* Baris Tunggal Navigasi dengan Horizontal Scroll */}
-                      <div className="flex items-center space-x-1.5 overflow-x-auto pb-1.5 pt-0.5 scrollbar-thin">
+                      <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 pt-0.5">
                         {activePackage.soal.map((q, idx) => {
                           const isAnswered = checkAnswered(q, userAnswers[idx]);
                           const isCurrent = currentQuestionIndex === idx;
@@ -711,19 +725,16 @@ const Tryout = () => {
                             <button
                               key={idx}
                               onClick={() => setCurrentQuestionIndex(idx)}
-                              className={`w-8 h-8 rounded-xl text-xs font-bold transition-all flex-shrink-0 cursor-pointer flex items-center justify-center relative ${
+                              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-md text-xs font-medium transition-colors flex-shrink-0 cursor-pointer flex items-center justify-center relative ${
                                 isCurrent
-                                  ? 'ring-2 ring-amber-500 bg-amber-500 text-white font-extrabold shadow-sm scale-105'
+                                  ? 'bg-[#C25E38] text-white font-bold ring-2 ring-[#FAECE6]'
                                   : isAnswered
-                                  ? 'bg-blue-600 text-white shadow-xs hover:bg-blue-700'
-                                  : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
+                                  ? 'bg-[#261C14] text-white'
+                                  : 'bg-white text-[#261C14] border border-[#E6DFD5] hover:bg-[#F2ECE4]'
                               }`}
                               title={`Soal ${idx + 1} (${isAnswered ? 'Sudah Terjawab' : 'Belum Dijawab'})`}
                             >
                               <span>{idx + 1}</span>
-                              {isAnswered && !isCurrent && (
-                                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-400 border border-white" />
-                              )}
                             </button>
                           );
                         })}
@@ -740,25 +751,17 @@ const Tryout = () => {
                   const options = currentQ.options || currentQ.pilihan || [];
 
                   return (
-                    <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-md space-y-4">
+                    <div className="p-4 sm:p-5 rounded-lg bg-white border border-[#E6DFD5] shadow-xs space-y-4">
                       {/* Header Soal: Nomor, Tipe, & Tingkat Kesulitan */}
-                      <div className="flex items-center justify-between text-xs pb-3 border-b border-slate-100 flex-wrap gap-2">
-                        <span className="font-bold text-slate-900">
+                      <div className="flex items-center justify-between text-xs pb-3 border-b border-[#E6DFD5] flex-wrap gap-2">
+                        <span className="font-semibold text-[#261C14]">
                           Nomor {currentQuestionIndex + 1} dari {activePackage.soal.length}
                         </span>
                         <div className="flex items-center space-x-2">
-                          <span
-                            className={`px-2 py-0.5 rounded-md font-semibold text-[10px] ${
-                              currentQ.kesulitan === 'HOTS'
-                                ? 'bg-rose-100 text-rose-800 border border-rose-300'
-                                : currentQ.kesulitan === 'Sedang'
-                                ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                                : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                            }`}
-                          >
+                          <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-[#F2ECE4] text-[#261C14] border border-[#E6DFD5]">
                             Level: {currentQ.level || 3} ({currentQ.kesulitan})
                           </span>
-                          <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-semibold border border-slate-200">
+                          <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-[#F2ECE4] text-[#261C14] border border-[#E6DFD5]">
                             {qType === 'mcma'
                               ? 'PG Kompleks'
                               : qType === 'category'
@@ -772,13 +775,13 @@ const Tryout = () => {
 
                       {/* Stimulus Bacaan / Konteks (jika ada) */}
                       {currentQ.stimulus && (
-                        <div className="p-4 rounded-xl bg-amber-50/50 border-l-4 border-amber-500 text-slate-800 text-xs sm:text-sm leading-relaxed space-y-1.5 shadow-2xs">
-                          <div className="flex items-center space-x-1.5 text-amber-900 font-bold text-xs">
-                            <BookOpen className="w-3.5 h-3.5" />
+                        <div className="p-3.5 rounded-lg bg-[#FEF7EE] border border-[#F4D3C4] text-[#261C14] text-xs sm:text-sm leading-relaxed space-y-1">
+                          <div className="flex items-center space-x-1.5 text-[#D97E26] font-semibold text-xs">
+                            <BookOpen className="w-3.5 h-3.5 text-[#D97E26]" />
                             <span>Konteks Bacaan / Stimulus:</span>
                           </div>
                           <div
-                            className="text-slate-700 leading-relaxed font-normal"
+                            className="text-[#261C14] leading-relaxed font-normal"
                             dangerouslySetInnerHTML={{ __html: formatMath(currentQ.stimulus) }}
                           />
                         </div>
@@ -786,32 +789,32 @@ const Tryout = () => {
 
                       {/* Teks Pertanyaan */}
                       <div
-                        className="text-sm sm:text-base font-bold text-slate-900 leading-relaxed"
+                        className="text-xs sm:text-sm font-semibold text-[#261C14] leading-relaxed"
                         dangerouslySetInnerHTML={{ __html: formatMath(currentQ.question || currentQ.pertanyaan) }}
                       />
 
                       {/* OPSI JAWABAN */}
                       {/* 1. MCQ (Pilihan Ganda Tunggal) */}
                       {qType === 'mcq' && (
-                        <div className="space-y-2.5 pt-2">
+                        <div className="space-y-2 pt-1">
                           {options.map((opt, oIdx) => {
                             const isSelected = currentAnswer === opt || currentAnswer === oIdx;
                             return (
                               <button
                                 key={oIdx}
                                 onClick={() => handleAnswerChange(opt)}
-                                className={`w-full p-3.5 rounded-xl text-left text-xs sm:text-sm font-medium border transition-all flex items-center justify-between ${
+                                className={`w-full p-3 rounded-lg text-left text-xs sm:text-sm font-medium border transition-colors flex items-center justify-between cursor-pointer ${
                                   isSelected
-                                    ? 'bg-amber-50 border-2 border-amber-500 text-slate-900 shadow-sm font-semibold'
-                                    : 'bg-slate-50/70 border-slate-200 text-slate-700 hover:bg-slate-100'
+                                    ? 'bg-[#FAECE6] border-[#C25E38] text-[#261C14] font-semibold'
+                                    : 'bg-white border-[#E6DFD5] text-[#261C14] hover:bg-[#FAF7F2]'
                                 }`}
                               >
                                 <span dangerouslySetInnerHTML={{ __html: formatMath(opt) }} />
                                 <div
-                                  className={`w-6 h-6 rounded-full border flex items-center justify-center text-xs font-bold flex-shrink-0 ml-2 ${
+                                  className={`w-5 h-5 rounded-md border flex items-center justify-center text-[10px] font-semibold flex-shrink-0 ml-2 ${
                                     isSelected
-                                      ? 'border-amber-500 bg-amber-500 text-white'
-                                      : 'border-slate-300 text-slate-500 bg-white'
+                                      ? 'border-[#C25E38] bg-[#C25E38] text-white'
+                                      : 'border-[#E6DFD5] text-[#6E6258] bg-[#FAF7F2]'
                                   }`}
                                 >
                                   {String.fromCharCode(65 + oIdx)}
@@ -824,9 +827,9 @@ const Tryout = () => {
 
                       {/* 2. MCMA (Pilihan Ganda Kompleks - Multi select) */}
                       {qType === 'mcma' && (
-                        <div className="space-y-2.5 pt-2">
-                          <div className="p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-800 font-medium flex items-center space-x-2">
-                            <CheckCircle2 className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                        <div className="space-y-2 pt-1">
+                          <div className="p-2.5 rounded-lg bg-[#FAECE6] border border-[#F4D3C4] text-xs text-[#C25E38] font-medium flex items-center space-x-2">
+                            <CheckCircle2 className="w-4 h-4 text-[#C25E38] flex-shrink-0" />
                             <span>Pilihan Ganda Kompleks: Anda dapat memilih lebih dari satu jawaban yang benar.</span>
                           </div>
                           {options.map((opt, oIdx) => {
@@ -841,21 +844,21 @@ const Tryout = () => {
                                     : [...selectedList, opt];
                                   handleAnswerChange(nextList);
                                 }}
-                                className={`w-full p-3.5 rounded-xl text-left text-xs sm:text-sm font-medium border transition-all flex items-center justify-between ${
+                                className={`w-full p-3 rounded-lg text-left text-xs sm:text-sm font-medium border transition-colors flex items-center justify-between cursor-pointer ${
                                   isSelected
-                                    ? 'bg-blue-50 border-2 border-blue-500 text-blue-900 shadow-sm font-semibold'
-                                    : 'bg-slate-50/70 border-slate-200 text-slate-700 hover:bg-slate-100'
+                                    ? 'bg-[#FAECE6] border-[#C25E38] text-[#261C14] font-semibold'
+                                    : 'bg-white border-[#E6DFD5] text-[#261C14] hover:bg-[#FAF7F2]'
                                 }`}
                               >
                                 <span dangerouslySetInnerHTML={{ __html: formatMath(opt) }} />
                                 <div
-                                  className={`w-5 h-5 rounded-md border flex items-center justify-center text-xs font-bold flex-shrink-0 ml-2 ${
+                                  className={`w-5 h-5 rounded-md border flex items-center justify-center text-xs font-semibold flex-shrink-0 ml-2 ${
                                     isSelected
-                                      ? 'border-blue-500 bg-blue-600 text-white'
-                                      : 'border-slate-300 text-slate-400 bg-white'
+                                      ? 'border-[#C25E38] bg-[#C25E38] text-white'
+                                      : 'border-[#E6DFD5] text-[#8C7E72] bg-white'
                                   }`}
                                 >
-                                  {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                                  {isSelected && <Check className="w-3.5 h-3.5 stroke-[2.5]" />}
                                 </div>
                               </button>
                             );
@@ -865,12 +868,12 @@ const Tryout = () => {
 
                       {/* 3. CATEGORY (Benar / Salah per baris pernyataan) */}
                       {qType === 'category' && (
-                        <div className="space-y-3 pt-2">
-                          <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 font-medium flex items-center space-x-2">
-                            <HelpCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                        <div className="space-y-2.5 pt-1">
+                          <div className="p-2.5 rounded-lg bg-[#FEF7EE] border border-[#F4D3C4] text-xs text-[#D97E26] font-medium flex items-center space-x-2">
+                            <HelpCircle className="w-4 h-4 text-[#D97E26] flex-shrink-0" />
                             <span>Tentukan apakah setiap pernyataan berikut bernilai <strong>Benar</strong> atau <strong>Salah</strong>.</span>
                           </div>
-                          <div className="divide-y divide-slate-200 border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs">
+                          <div className="divide-y divide-[#E6DFD5] border border-[#E6DFD5] rounded-lg overflow-hidden bg-white">
                             {currentQ.statements?.map((stmt, sIdx) => {
                               const stmtVal =
                                 typeof currentAnswer === 'object' && currentAnswer !== null
@@ -879,10 +882,10 @@ const Tryout = () => {
                               return (
                                 <div
                                   key={sIdx}
-                                  className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/80"
+                                  className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:bg-[#FAF7F2]"
                                 >
                                   <span
-                                    className="text-xs sm:text-sm text-slate-800 flex-1 leading-relaxed"
+                                    className="text-xs sm:text-sm text-[#261C14] flex-1 leading-relaxed"
                                     dangerouslySetInnerHTML={{ __html: formatMath(stmt.text) }}
                                   />
                                   <div className="flex items-center space-x-2 flex-shrink-0">
@@ -894,10 +897,10 @@ const Tryout = () => {
                                             : {};
                                         handleAnswerChange({ ...obj, [sIdx]: true });
                                       }}
-                                      className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                      className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
                                         stmtVal === true
-                                          ? 'bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-400'
-                                          : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200'
+                                          ? 'bg-[#286657] text-white'
+                                          : 'bg-white hover:bg-[#FAF7F2] text-[#6E6258] border border-[#E6DFD5]'
                                       }`}
                                     >
                                       Benar
@@ -910,10 +913,10 @@ const Tryout = () => {
                                             : {};
                                         handleAnswerChange({ ...obj, [sIdx]: false });
                                       }}
-                                      className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                      className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
                                         stmtVal === false
-                                          ? 'bg-rose-600 text-white shadow-sm ring-2 ring-rose-400'
-                                          : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200'
+                                          ? 'bg-[#C93B3B] text-white'
+                                          : 'bg-white hover:bg-[#FAF7F2] text-[#6E6258] border border-[#E6DFD5]'
                                       }`}
                                     >
                                       Salah
@@ -926,10 +929,10 @@ const Tryout = () => {
                         </div>
                       )}
 
-                      {/* 4. ISIAN SINGKAT (Fallback) */}
+                      {/* 4. ISIAN SINGKAT */}
                       {qType === 'isian' && (
-                        <div className="space-y-2 pt-2">
-                          <label className="block text-xs font-medium text-slate-700">
+                        <div className="space-y-1.5 pt-1">
+                          <label className="block text-xs font-medium text-[#261C14]">
                             Ketik jawaban singkat Anda di bawah ini:
                           </label>
                           <input
@@ -937,20 +940,20 @@ const Tryout = () => {
                             value={currentAnswer || ''}
                             onChange={(e) => handleAnswerChange(e.target.value)}
                             placeholder="Ketik jawabanmu di sini..."
-                            className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 text-sm focus:bg-white focus:border-amber-500 focus:outline-none transition-colors"
+                            className="w-full px-3.5 py-2.5 rounded-lg bg-white border border-[#E6DFD5] text-[#261C14] text-xs sm:text-sm focus:border-[#C25E38] focus:ring-1 focus:ring-[#C25E38] focus:outline-hidden transition-colors"
                           />
                         </div>
                       )}
 
                       {/* Navigasi Bawah */}
-                      <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                      <div className="mt-5 pt-3.5 border-t border-[#E6DFD5] flex items-center justify-between">
                         <button
                           disabled={currentQuestionIndex === 0}
                           onClick={() => setCurrentQuestionIndex((prev) => prev - 1)}
-                          className={`px-4 py-2 rounded-xl text-xs font-semibold ${
+                          className={`px-3.5 py-2 rounded-lg text-xs font-medium transition-colors ${
                             currentQuestionIndex === 0
-                              ? 'text-slate-300 bg-slate-50 cursor-not-allowed'
-                              : 'text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200'
+                              ? 'text-[#8C7E72] bg-[#FAF7F2] cursor-not-allowed border border-[#E6DFD5]'
+                              : 'text-[#261C14] hover:bg-[#F2ECE4] bg-white border border-[#E6DFD5] cursor-pointer'
                           }`}
                         >
                           &larr; Sebelumnya
@@ -960,22 +963,37 @@ const Tryout = () => {
                           {currentQuestionIndex < activePackage.soal.length - 1 ? (
                             <button
                               onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
-                              className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-md cursor-pointer hover:scale-105 active:scale-95"
+                              className="px-4 py-2 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white text-xs font-semibold transition-colors cursor-pointer"
                             >
                               Selanjutnya &rarr;
                             </button>
                           ) : (
                             <button
                               onClick={() => {
-                                if (
-                                  window.confirm(
-                                    'Apakah Anda yakin ingin mengumpulkan lembar jawaban Tryout sekarang?'
-                                  )
-                                ) {
-                                  handleFinishExam();
+                                const answered = activePackage.soal.filter((q, idx) =>
+                                  isTryoutQuestionAnswered(q, userAnswers[idx])
+                                ).length;
+                                const unanswered = activePackage.soal.length - answered;
+
+                                if (unanswered > 0) {
+                                  if (
+                                    window.confirm(
+                                      `Perhatian: Masih ada ${unanswered} soal yang belum kamu jawab!\n\nSesuai sistem kenaikan level, jika kamu TIDAK MENJAWAB SEMUA SOAL (${activePackage.soal.length}/${activePackage.soal.length}), kamu TIDAK AKAN MENDAPATKAN EXP.\n\nApakah kamu tetap ingin mengumpulkan lembar ujian sekarang?`
+                                    )
+                                  ) {
+                                    handleFinishExam();
+                                  }
+                                } else {
+                                  if (
+                                    window.confirm(
+                                      'Hebat! Seluruh soal telah terjawab. Apakah Anda yakin ingin mengumpulkan lembar jawaban Tryout sekarang?'
+                                    )
+                                  ) {
+                                    handleFinishExam();
+                                  }
                                 }
                               }}
-                              className="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-extrabold transition-all shadow-lg shadow-emerald-600/20 hover:scale-105 active:scale-95 cursor-pointer"
+                              className="px-4 py-2 rounded-lg bg-[#286657] hover:bg-[#1E5044] text-white text-xs font-semibold transition-colors cursor-pointer"
                             >
                               Kumpulkan Ujian
                             </button>
@@ -990,48 +1008,62 @@ const Tryout = () => {
 
             {/* TAHAP 4: Hasil Skor Tryout di Akhir */}
             {activePackage && isFinished && !isReviewMode && (
-              <div className="max-w-md mx-auto py-6 text-center space-y-5 animate-fade-in">
-                <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-amber-400 to-orange-400 text-white flex items-center justify-center mx-auto shadow-xl shadow-amber-500/20 font-black text-3xl">
-                  <Trophy className="w-10 h-10 text-white" />
+              <div className="max-w-md mx-auto py-6 text-center space-y-4">
+                <div className="w-14 h-14 rounded-lg bg-[#FEF7EE] border border-[#F4D3C4] text-[#D97E26] flex items-center justify-center mx-auto shadow-2xs">
+                  <Trophy className="w-7 h-7 text-[#D97E26]" />
                 </div>
 
                 <div>
-                  <span className="text-xs font-bold text-amber-700 uppercase tracking-wider">
+                  <span className="text-xs font-semibold text-[#6E6258] uppercase tracking-wider">
                     Hasil Tryout Nasional
                   </span>
-                  <h3 className="text-2xl font-black text-slate-900 mt-1">
+                  <h3 className="text-xl font-bold text-[#261C14] mt-0.5">
                     Skor {activePackage.namaPaket}
                   </h3>
                 </div>
 
                 {/* Skor Card */}
-                <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200 shadow-md space-y-4">
-                  <div className="text-4xl font-extrabold text-slate-900">
+                <div className="p-5 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] space-y-3">
+                  <div className="text-3xl font-extrabold text-[#261C14]">
                     {scoreResult?.score}
-                    <span className="text-sm text-slate-500 font-normal"> / 100</span>
+                    <span className="text-xs text-[#6E6258] font-normal"> / 100</span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-200 text-xs">
-                    <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800">
-                      <span className="block font-bold text-base text-emerald-700">
+                  {/* Status EXP Sesuai Kelengkapan Soal */}
+                  <div className="pt-0.5">
+                    {scoreResult?.isCompletedAll ? (
+                      <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#E8F2EF] text-[#286657] border border-[#BCD9D0] text-xs font-bold shadow-2xs">
+                        <Sparkles className="w-3.5 h-3.5 text-[#286657]" />
+                        <span>+{scoreResult?.expEarned} EXP Didapatkan! (Semua Soal Terjawab)</span>
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FDF1F1] text-[#C93B3B] border border-[#F4C7C7] text-xs font-medium">
+                        <span>0 EXP (EXP hanya didapat jika menjawab semua {scoreResult?.totalCount} soal)</span>
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2.5 pt-2 border-t border-[#E6DFD5] text-xs">
+                    <div className="p-2.5 rounded-lg bg-white border border-[#E6DFD5] text-[#286657]">
+                      <span className="block font-bold text-base text-[#286657]">
                         {scoreResult?.correctCount} / {scoreResult?.totalCount}
                       </span>
-                      <span>Soal Terjawab Benar</span>
+                      <span className="text-[#6E6258]">Jawaban Benar</span>
                     </div>
-                    <div className="p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-800">
-                      <span className="block font-bold text-base text-blue-700">
+                    <div className="p-2.5 rounded-lg bg-white border border-[#E6DFD5] text-[#261C14]">
+                      <span className="block font-bold text-base text-[#261C14]">
                         {Math.round((scoreResult?.timeSpentSeconds || 0) / 60)} Menit
                       </span>
-                      <span>Waktu Pengerjaan</span>
+                      <span className="text-[#6E6258]">Waktu Pengerjaan</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Tombol Aksi */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-2">
                   <button
                     onClick={() => setIsReviewMode(true)}
-                    className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-lg shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center space-x-2"
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white font-semibold text-xs transition-colors flex items-center justify-center space-x-2 cursor-pointer"
                   >
                     <Eye className="w-4 h-4" />
                     <span>Lihat Review & Pembahasan</span>
@@ -1039,7 +1071,7 @@ const Tryout = () => {
 
                   <button
                     onClick={() => handleStartExam(activePackage)}
-                    className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-all flex items-center justify-center space-x-1.5"
+                    className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-white hover:bg-[#FAF7F2] border border-[#E6DFD5] text-[#261C14] text-xs font-medium transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
                   >
                     <RotateCcw className="w-4 h-4" />
                     <span>Ulangi Tryout</span>
@@ -1050,25 +1082,25 @@ const Tryout = () => {
 
             {/* TAHAP 5: Review Lengkap 30 Soal dengan Pembahasan */}
             {activePackage && isFinished && isReviewMode && (
-              <div className="max-w-3xl mx-auto space-y-6">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <div className="max-w-3xl mx-auto space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-[#E6DFD5]">
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900">
+                    <h3 className="text-base font-semibold text-[#261C14]">
                       Pembahasan 30 Soal {activePackage.namaPaket}
                     </h3>
-                    <p className="text-xs text-slate-500">
-                      Simak solusi langkah demi langkah untuk setiap nomor soal berikut.
+                    <p className="text-xs text-[#6E6258]">
+                      Simak solusi langkah demi langkah untuk setiap nomor soal.
                     </p>
                   </div>
                   <button
                     onClick={() => setIsReviewMode(false)}
-                    className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-700 transition-colors"
+                    className="px-3 py-1.5 rounded-lg bg-white hover:bg-[#FAF7F2] border border-[#E6DFD5] text-xs font-medium text-[#261C14] transition-colors cursor-pointer"
                   >
                     Kembali ke Skor
                   </button>
                 </div>
 
-                <div className="space-y-5">
+                <div className="space-y-4">
                   {activePackage.soal.map((q, idx) => {
                     const userVal = userAnswers[idx];
                     const qType = q.type || q.tipe || 'mcq';
@@ -1078,30 +1110,28 @@ const Tryout = () => {
                     return (
                       <div
                         key={q.id || idx}
-                        className={`p-5 rounded-2xl border-2 ${
-                          isCorrect
-                            ? 'bg-emerald-50/40 border-emerald-200'
-                            : 'bg-rose-50/40 border-rose-200'
+                        className={`p-4 rounded-lg border bg-white ${
+                          isCorrect ? 'border-[#C5DDD6]' : 'border-[#F4C7C7]'
                         }`}
                       >
                         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                           <div className="flex items-center space-x-2">
-                            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-white">
+                            <span className="text-xs font-semibold px-2 py-0.5 rounded bg-[#261C14] text-white">
                               Soal #{idx + 1}
                             </span>
-                            <span className="text-[10px] px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-200 font-medium">
+                            <span className="text-[11px] px-2 py-0.5 rounded bg-[#FAF7F2] text-[#6E6258] border border-[#E6DFD5] font-medium">
                               {q.kesulitan} • {qType === 'mcma' ? 'PG Kompleks' : qType === 'category' ? 'Benar / Salah' : qType === 'isian' ? 'Isian' : 'PG'}
                             </span>
                           </div>
 
                           {isCorrect ? (
-                            <span className="inline-flex items-center space-x-1 text-xs font-bold text-emerald-600">
-                              <CheckCircle2 className="w-4 h-4" />
+                            <span className="inline-flex items-center space-x-1 text-xs font-medium text-[#286657] bg-[#E8F2EF] px-2 py-0.5 rounded border border-[#C5DDD6]">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-[#286657]" />
                               <span>Benar</span>
                             </span>
                           ) : (
-                            <span className="inline-flex items-center space-x-1 text-xs font-bold text-rose-600">
-                              <XCircle className="w-4 h-4" />
+                            <span className="inline-flex items-center space-x-1 text-xs font-medium text-[#C93B3B] bg-[#FDF1F1] px-2 py-0.5 rounded border border-[#F4C7C7]">
+                              <XCircle className="w-3.5 h-3.5 text-[#C93B3B]" />
                               <span>Salah</span>
                             </span>
                           )}
@@ -1109,24 +1139,24 @@ const Tryout = () => {
 
                         {/* Stimulus jika ada */}
                         {q.stimulus && (
-                          <div className="p-3.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-700 mb-3 leading-relaxed shadow-2xs">
-                            <strong className="text-amber-800 block text-[11px] mb-1 font-bold">Konteks Bacaan / Stimulus:</strong>
+                          <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] text-xs text-[#261C14] mb-3 leading-relaxed">
+                            <strong className="text-[#261C14] block text-xs mb-1 font-semibold">Konteks Bacaan / Stimulus:</strong>
                             <div dangerouslySetInnerHTML={{ __html: formatMath(q.stimulus) }} />
                           </div>
                         )}
 
                         <h4
-                          className="text-sm font-semibold text-slate-900 mb-3 leading-relaxed"
+                          className="text-xs sm:text-sm font-semibold text-[#261C14] mb-3 leading-relaxed"
                           dangerouslySetInnerHTML={{ __html: formatMath(q.question || q.pertanyaan) }}
                         />
 
                         {/* List Opsi Jawaban Lengkap dengan badge A, B, C, D (untuk MCQ & MCMA) */}
                         {(qType === 'mcq' || qType === 'mcma') && options.length > 0 && (
-                          <div className="space-y-2 mb-3 pt-1">
-                            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
+                          <div className="space-y-1.5 mb-3 pt-1">
+                            <span className="text-[11px] font-semibold text-[#6E6258] uppercase tracking-wider block">
                               Pilihan Jawaban:
                             </span>
-                            <div className="grid grid-cols-1 gap-2">
+                            <div className="grid grid-cols-1 gap-1.5">
                               {options.map((opt, oIdx) => {
                                 const letter = getOptionLetter(oIdx);
                                 const isKey =
@@ -1141,34 +1171,34 @@ const Tryout = () => {
                                     : Array.isArray(userVal) &&
                                       userVal.some((u) => String(u).trim().toLowerCase() === String(opt).trim().toLowerCase());
 
-                                let containerClass = 'bg-white border-slate-200 text-slate-700';
-                                let badgeClass = 'bg-slate-100 text-slate-600 border-slate-300';
+                                let containerClass = 'bg-white border-[#E6DFD5] text-[#261C14]';
+                                let badgeClass = 'bg-[#FAF7F2] text-[#6E6258] border-[#E6DFD5]';
                                 let statusTag = null;
 
                                 if (isKey && isUserChoice) {
-                                  containerClass = 'bg-emerald-50 border-emerald-400 text-emerald-950 font-medium shadow-2xs';
-                                  badgeClass = 'bg-emerald-600 text-white border-emerald-600';
+                                  containerClass = 'bg-[#E8F2EF] border-[#C5DDD6] text-[#286657] font-medium';
+                                  badgeClass = 'bg-[#286657] text-white border-[#286657]';
                                   statusTag = (
-                                    <span className="inline-flex items-center space-x-1 text-[11px] font-bold text-emerald-700 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-md">
-                                      <Check className="w-3 h-3 stroke-[3]" />
+                                    <span className="inline-flex items-center space-x-1 text-[11px] font-semibold text-[#286657] bg-[#E8F2EF] border border-[#C5DDD6] px-2 py-0.5 rounded">
+                                      <Check className="w-3 h-3 stroke-[2.5]" />
                                       <span>Pilihan Anda (Benar)</span>
                                     </span>
                                   );
                                 } else if (isKey && !isUserChoice) {
-                                  containerClass = 'bg-emerald-50/70 border-emerald-300 text-emerald-950 font-medium';
-                                  badgeClass = 'bg-emerald-500 text-white border-emerald-500';
+                                  containerClass = 'bg-[#E8F2EF]/70 border-[#C5DDD6] text-[#286657] font-medium';
+                                  badgeClass = 'bg-[#286657] text-white border-[#286657]';
                                   statusTag = (
-                                    <span className="inline-flex items-center space-x-1 text-[11px] font-bold text-emerald-700 bg-emerald-100/90 border border-emerald-300 px-2 py-0.5 rounded-md">
-                                      <Check className="w-3 h-3 stroke-[3]" />
+                                    <span className="inline-flex items-center space-x-1 text-[11px] font-semibold text-[#286657] bg-[#E8F2EF] border border-[#C5DDD6] px-2 py-0.5 rounded">
+                                      <Check className="w-3 h-3 stroke-[2.5]" />
                                       <span>Kunci Jawaban</span>
                                     </span>
                                   );
                                 } else if (!isKey && isUserChoice) {
-                                  containerClass = 'bg-rose-50 border-rose-300 text-rose-950';
-                                  badgeClass = 'bg-rose-600 text-white border-rose-600';
+                                  containerClass = 'bg-[#FDF1F1] border-[#F4C7C7] text-[#C93B3B]';
+                                  badgeClass = 'bg-[#C93B3B] text-white border-[#C93B3B]';
                                   statusTag = (
-                                    <span className="inline-flex items-center space-x-1 text-[11px] font-bold text-rose-700 bg-rose-100 border border-rose-300 px-2 py-0.5 rounded-md">
-                                      <X className="w-3 h-3 stroke-[3]" />
+                                    <span className="inline-flex items-center space-x-1 text-[11px] font-semibold text-[#C93B3B] bg-[#FDF1F1] border border-[#F4C7C7] px-2 py-0.5 rounded">
+                                      <X className="w-3 h-3 stroke-[2.5]" />
                                       <span>Pilihan Anda (Salah)</span>
                                     </span>
                                   );
@@ -1177,11 +1207,11 @@ const Tryout = () => {
                                 return (
                                   <div
                                     key={oIdx}
-                                    className={`p-3 rounded-xl border flex items-center justify-between text-xs sm:text-sm transition-all ${containerClass}`}
+                                    className={`p-2.5 rounded-lg border flex items-center justify-between text-xs sm:text-sm transition-colors ${containerClass}`}
                                   >
                                     <div className="flex items-center space-x-2.5 flex-1 pr-2">
                                       <span
-                                        className={`w-6 h-6 rounded-lg border font-bold text-xs flex items-center justify-center flex-shrink-0 shadow-2xs ${badgeClass}`}
+                                        className={`w-5 h-5 rounded-md border font-semibold text-xs flex items-center justify-center flex-shrink-0 ${badgeClass}`}
                                       >
                                         {letter}
                                       </span>
@@ -1196,10 +1226,10 @@ const Tryout = () => {
                         )}
 
                         {/* Info Jawaban Siswa & Kunci */}
-                        <div className="p-3.5 rounded-xl bg-white border border-slate-200 text-xs space-y-2 mb-3 shadow-2xs">
+                        <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] text-xs space-y-1.5 mb-2.5">
                           {qType === 'category' ? (
                             <div className="space-y-1.5">
-                              <span className="text-slate-500 font-bold block uppercase tracking-wider text-[11px]">
+                              <span className="text-[#6E6258] font-semibold block uppercase tracking-wider text-[11px]">
                                 Rincian Pernyataan (Benar / Salah):
                               </span>
                               {q.statements?.map((stmt, sIdx) => {
@@ -1211,15 +1241,15 @@ const Tryout = () => {
                                 return (
                                   <div
                                     key={sIdx}
-                                    className="flex items-center justify-between text-[11px] py-1.5 border-b border-slate-100 last:border-0 flex-wrap gap-2"
+                                    className="flex items-center justify-between text-[11px] py-1 border-b border-[#E6DFD5] last:border-0 flex-wrap gap-2"
                                   >
                                     <span
-                                      className="flex-1 pr-2 leading-relaxed text-slate-800"
+                                      className="flex-1 pr-2 leading-relaxed text-[#261C14]"
                                       dangerouslySetInnerHTML={{ __html: formatMath(stmt.text) }}
                                     />
-                                    <span className="font-semibold flex-shrink-0">
+                                    <span className="font-medium flex-shrink-0">
                                       Anda:{' '}
-                                      <strong className={isStmtCorrect ? 'text-emerald-700' : 'text-rose-700'}>
+                                      <strong className={isStmtCorrect ? 'text-[#286657]' : 'text-[#C93B3B]'}>
                                         {uPick === true
                                           ? 'Benar'
                                           : uPick === false
@@ -1227,7 +1257,7 @@ const Tryout = () => {
                                           : '(Belum dijawab)'}
                                       </strong>{' '}
                                       | Kunci:{' '}
-                                      <strong className="text-emerald-700">
+                                      <strong className="text-[#286657]">
                                         {stmt.answer ? 'Benar' : 'Salah'}
                                       </strong>
                                     </span>
@@ -1236,12 +1266,12 @@ const Tryout = () => {
                               })}
                             </div>
                           ) : (
-                            <div className="space-y-1.5">
+                            <div className="space-y-1">
                               <div className="flex items-center space-x-1.5 flex-wrap">
-                                <span className="text-slate-500 font-medium">Jawaban Anda:</span>
+                                <span className="text-[#6E6258] font-medium">Jawaban Anda:</span>
                                 <strong
                                   className={`inline-flex items-center space-x-1 ${
-                                    isCorrect ? 'text-emerald-700' : 'text-rose-700'
+                                    isCorrect ? 'text-[#286657]' : 'text-[#C93B3B]'
                                   }`}
                                 >
                                   <span
@@ -1252,8 +1282,8 @@ const Tryout = () => {
                                 </strong>
                               </div>
                               <div className="flex items-center space-x-1.5 flex-wrap">
-                                <span className="text-slate-500 font-medium">Kunci Jawaban:</span>
-                                <strong className="text-emerald-700 inline-flex items-center space-x-1">
+                                <span className="text-[#6E6258] font-medium">Kunci Jawaban:</span>
+                                <strong className="text-[#286657] inline-flex items-center space-x-1">
                                   <span
                                     dangerouslySetInnerHTML={{
                                       __html: formatMath(getDisplayKeyAnswer(q)),
@@ -1267,22 +1297,22 @@ const Tryout = () => {
 
                         {/* Indikator Pusmendik */}
                         {q.indicator && (
-                          <div className="p-2.5 rounded-xl bg-blue-50/60 border border-blue-200 text-xs text-blue-900 mb-2">
-                            <strong>Indikator Capaian: </strong>
+                          <div className="p-2 rounded-lg bg-[#FAECE6] border border-[#F4D3C4] text-xs text-[#C25E38] mb-2">
+                            <strong>Indikator: </strong>
                             <span>{q.indicator}</span>
                           </div>
                         )}
 
                         {/* Pembahasan */}
                         {(q.explanation || q.pembahasan) && (
-                          <div className="p-4 rounded-xl bg-amber-50/80 border border-amber-200 text-xs shadow-2xs">
-                            <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-amber-200/60 flex-wrap gap-2">
-                              <strong className="text-amber-900 flex items-center space-x-1.5 font-bold">
-                                <HelpCircle className="w-3.5 h-3.5 text-amber-600" />
-                                <span>Pembahasan Langkah-demi-Langkah:</span>
+                          <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] text-xs">
+                            <div className="flex items-center justify-between mb-1.5 pb-1.5 border-b border-[#E6DFD5] flex-wrap gap-2">
+                              <strong className="text-[#261C14] flex items-center space-x-1.5 font-semibold">
+                                <HelpCircle className="w-3.5 h-3.5 text-[#C25E38]" />
+                                <span>Pembahasan:</span>
                               </strong>
                               {(qType === 'mcq' || qType === 'mcma') && (
-                                <span className="px-2.5 py-1 rounded-lg bg-emerald-100 border border-emerald-300 text-emerald-800 font-bold text-xs flex items-center space-x-1">
+                                <span className="px-2 py-0.5 rounded bg-[#E8F2EF] border border-[#C5DDD6] text-[#286657] font-semibold text-xs flex items-center space-x-1">
                                   <span>Kunci:</span>
                                   <span
                                     className="ml-1"
@@ -1294,7 +1324,7 @@ const Tryout = () => {
                               )}
                             </div>
                             <div
-                              className="text-slate-700 leading-relaxed"
+                              className="text-[#6E6258] leading-relaxed"
                               dangerouslySetInnerHTML={{ __html: formatMath(q.explanation || q.pembahasan) }}
                             />
                           </div>

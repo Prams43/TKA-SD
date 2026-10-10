@@ -708,7 +708,7 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
     subtitle: 'Pengenalan & Tujuan Belajar',
     icon: BookOpen,
     render: () => (
-      <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-4 animate-fade-in">
+      <div className="p-5 sm:p-6 rounded-lg bg-white border border-slate-200 shadow-sm space-y-4 animate-fade-in">
         {/* Header Bersih & Elegan */}
         <div className="pb-3 border-b border-slate-100">
           <div className="flex items-center space-x-2 text-xs font-bold text-blue-700 uppercase tracking-wider mb-1.5">
@@ -760,7 +760,7 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
       subtitle: 'Pondasi Utama Materi',
       icon: Lightbulb,
       render: () => (
-        <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-4 animate-fade-in">
+        <div className="p-5 sm:p-6 rounded-lg bg-white border border-slate-200 shadow-sm space-y-4 animate-fade-in">
           {/* Header Konsisten */}
           <div className="flex items-center space-x-3 pb-3 border-b border-slate-100">
             <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 border border-blue-200/60 flex items-center justify-center flex-shrink-0 font-bold">
@@ -806,7 +806,7 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
         subtitle: 'Penjelasan & Contoh Detail',
         icon: Layers,
         render: () => (
-          <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-4 animate-fade-in">
+          <div className="p-5 sm:p-6 rounded-lg bg-white border border-slate-200 shadow-sm space-y-4 animate-fade-in">
             {/* Header Subtopik Konsisten */}
             <div className="flex items-center space-x-3 pb-3 border-b border-slate-100">
               <span className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 border border-blue-200/60 flex items-center justify-center text-xs font-bold flex-shrink-0">
@@ -925,7 +925,7 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
       subtitle: 'Standar Kamus Besar Bahasa Indonesia (KBBI)',
       icon: FileText,
       render: () => (
-        <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-4 animate-fade-in">
+        <div className="p-5 sm:p-6 rounded-lg bg-white border border-slate-200 shadow-sm space-y-4 animate-fade-in">
           <div className="pb-3 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <span className="text-[11px] font-bold text-blue-700 uppercase tracking-wider block">
@@ -992,7 +992,7 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
       subtitle: 'Analisis & Cara Penyelesaian Rinci',
       icon: HelpCircle,
       render: () => (
-        <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-4 animate-fade-in">
+        <div className="p-5 sm:p-6 rounded-lg bg-white border border-slate-200 shadow-sm space-y-4 animate-fade-in">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center space-x-2.5">
               <span className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 border border-blue-200/60 flex items-center justify-center text-xs font-bold">
@@ -1071,7 +1071,7 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
     subtitle: 'Siap Meraih 3 Bintang Emas!',
     icon: Award,
     render: () => (
-      <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-4 animate-fade-in">
+      <div className="p-5 sm:p-6 rounded-lg bg-white border border-slate-200 shadow-sm space-y-4 animate-fade-in">
         {/* Tips Juara */}
         {bab.tipsJuara && (
           <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200/80 flex items-start space-x-3">
@@ -1113,9 +1113,9 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
         </div>
 
         {/* Banner CTA Kuis Pemahaman */}
-        <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-center sm:text-left">
+        <div className="p-4 sm:p-5 rounded-lg bg-blue-600 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-center sm:text-left">
           <div>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/20 text-yellow-300 inline-block mb-1">
+            <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-blue-700 text-blue-100 inline-block mb-1 border border-blue-500">
               Uji 3 Bintang Emas
             </span>
             <h4 className="text-sm sm:text-base font-bold">
@@ -1128,7 +1128,7 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
 
           <button
             onClick={onStartQuiz}
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-bold text-xs sm:text-sm shadow-md hover:scale-105 active:scale-95 transition-all flex items-center justify-center space-x-1.5 cursor-pointer flex-shrink-0"
+            className="w-full sm:w-auto px-4 py-2 rounded-lg bg-white hover:bg-blue-50 text-blue-700 font-semibold text-xs sm:text-sm shadow-xs transition-colors flex items-center justify-center space-x-1.5 cursor-pointer flex-shrink-0"
           >
             <span>Mulai 3 Soal Kuis</span>
             <ArrowRight className="w-4 h-4" />
@@ -1145,13 +1145,13 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
   return (
     <div className="max-w-3xl mx-auto space-y-4 pb-2 text-slate-800 animate-fade-in">
       {/* 1. Header Bar Navigasi Slide & Progress Bar */}
-      <div className="p-3.5 sm:p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-2.5">
+      <div className="p-3.5 sm:p-4 rounded-lg bg-white border border-slate-200 shadow-sm space-y-2.5">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center space-x-2">
-            <span className="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200/60">
+            <span className="px-2.5 py-0.5 rounded text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
               Slide {currentSlide + 1} dari {totalSlides}
             </span>
-            <span className="text-xs font-bold text-slate-700 hidden sm:inline">
+            <span className="text-xs font-semibold text-slate-700 hidden sm:inline">
               {currentSlideData.subtitle}
             </span>
           </div>
@@ -1188,7 +1188,7 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center space-x-2">
           <currentSlideData.icon className="w-4 h-4 text-blue-600" />
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
             {currentSlideData.badge}
           </span>
         </div>
@@ -1208,10 +1208,10 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
         <button
           onClick={() => setCurrentSlide((prev) => Math.max(0, prev - 1))}
           disabled={currentSlide === 0}
-          className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all ${
+          className={`px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-colors ${
             currentSlide === 0
               ? 'opacity-40 cursor-not-allowed bg-slate-100 text-slate-400'
-              : 'bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 shadow-2xs hover:shadow-xs cursor-pointer'
+              : 'bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 cursor-pointer'
           }`}
         >
           <ChevronLeft className="w-4 h-4" />
@@ -1227,13 +1227,13 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
         {currentSlide < totalSlides - 1 ? (
           <button
             onClick={() => setCurrentSlide((prev) => Math.min(totalSlides - 1, prev + 1))}
-            className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md transition-all hover:scale-105 active:scale-95 flex items-center space-x-1.5 cursor-pointer"
+            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition-colors flex items-center space-x-1.5 cursor-pointer"
           >
             <span>Lanjut Slide Berikutnya</span>
             <ChevronRight className="w-4 h-4" />
           </button>
         ) : (
-          <div className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-slate-100 text-slate-500 text-xs font-semibold select-none border border-slate-200/60">
+          <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-semibold select-none border border-slate-200">
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             <span>Slide Terakhir</span>
           </div>

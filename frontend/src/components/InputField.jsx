@@ -47,13 +47,13 @@ const InputField = ({
           disabled={disabled}
           autoComplete={autoComplete}
           {...restProps}
-          className={`w-full px-4 py-2.5 rounded-lg border text-sm transition-all duration-200 outline-none
+          className={`w-full px-3.5 py-2.5 rounded-lg border text-sm transition-colors outline-none
             ${
               error
-                ? 'border-red-500 bg-red-50/60 text-red-900 placeholder-red-300 ring-2 ring-red-500/20 focus:border-red-600 focus:ring-4 focus:ring-red-500/25'
-                : 'border-slate-300 bg-white text-slate-800 focus:border-blue-600 focus:ring-2 focus:ring-blue-100'
+                ? 'border-[#C93B3B] bg-white text-[#C93B3B] placeholder-red-300 focus:border-[#C93B3B] focus:ring-1 focus:ring-[#C93B3B]'
+                : 'border-[#E6DFD5] bg-white text-[#261C14] placeholder-[#A89F95] focus:border-[#C25E38] focus:ring-1 focus:ring-[#C25E38]'
             }
-            ${disabled ? 'bg-slate-100 cursor-not-allowed text-slate-400' : ''}
+            ${disabled ? 'bg-[#F2ECE4] cursor-not-allowed text-[#A89F95]' : ''}
             ${showPasswordToggle ? 'pr-11' : ''}
           `}
         />

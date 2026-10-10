@@ -63,13 +63,13 @@ const SUBJECTS_CONFIG = {
     totalLevels: 21,
     levels: PUSMENDIK_MATERI.bahasa_indonesia.elemen.flatMap((e) => e.bab),
     theme: {
-      gradient: 'from-blue-600 via-indigo-600 to-blue-700',
-      border: 'border-blue-400/30',
-      badgeBg: 'bg-blue-100 text-blue-800 border-blue-200',
-      activeRing: 'ring-blue-300/80',
-      activeBtn: 'from-blue-500 to-indigo-600 border-indigo-800',
-      pillCompleted: 'bg-emerald-50 border-emerald-200 text-emerald-900',
-      pillActive: 'bg-blue-50 border-blue-300 text-blue-900',
+      gradient: 'from-slate-900 to-slate-900',
+      border: 'border-[#33261D]',
+      badgeBg: 'bg-[#E8F2EF] text-[#286657] border-[#BCD9D0]',
+      activeRing: 'ring-[#286657]/20',
+      activeBtn: 'from-[#286657] to-[#286657] border-[#1E5044]',
+      pillCompleted: 'bg-[#E8F2EF] border-[#BCD9D0] text-[#286657]',
+      pillActive: 'bg-[#E8F2EF] border-[#BCD9D0] text-[#286657]',
     },
     milestones: {
       5: {
@@ -107,13 +107,13 @@ const SUBJECTS_CONFIG = {
     totalLevels: 12,
     levels: PUSMENDIK_MATERI.matematika.elemen.flatMap((e) => e.bab),
     theme: {
-      gradient: 'from-emerald-600 via-teal-600 to-emerald-700',
-      border: 'border-emerald-400/30',
-      badgeBg: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-      activeRing: 'ring-emerald-300/80',
-      activeBtn: 'from-emerald-500 to-teal-600 border-teal-800',
-      pillCompleted: 'bg-emerald-50 border-emerald-200 text-emerald-900',
-      pillActive: 'bg-emerald-50 border-emerald-300 text-emerald-900',
+      gradient: 'from-slate-900 to-slate-900',
+      border: 'border-[#33261D]',
+      badgeBg: 'bg-[#FAECE6] text-[#C25E38] border-[#F2D2C4]',
+      activeRing: 'ring-[#C25E38]/20',
+      activeBtn: 'from-[#C25E38] to-[#C25E38] border-[#A94D2B]',
+      pillCompleted: 'bg-[#FAECE6] border-[#F2D2C4] text-[#C25E38]',
+      pillActive: 'bg-[#FAECE6] border-[#F2D2C4] text-[#C25E38]',
     },
     milestones: {
       4: {
@@ -265,10 +265,6 @@ const Materi = () => {
     setQuizMistakes(0);
     isQuizTransitioningRef.current = false;
     setIsQuizTransitioning(false);
-
-    // Nyalakan streak harian dan berikan EXP awal membaca materi
-    recordUserActivity('materi_read', 25);
-    refreshActivity();
   };
 
   // Submit Kuis Normal (Setelah Membaca Materi)
@@ -427,18 +423,18 @@ const Materi = () => {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-doodle-pattern text-slate-800 selection:bg-blue-200 selection:text-blue-900 pb-12">
+    <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#261C14] selection:bg-[#FAECE6] selection:text-[#C25E38] pb-12">
       {/* 1. Navbar Utama */}
       <Navbar />
 
       {/* 2. Konten Utama */}
       <main className="flex-1 max-w-4xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 flex flex-col animate-fade-in">
         {/* Navigasi Breadcrumb */}
-        <div className="mb-3 flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-xs text-slate-600">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center space-x-2 text-xs text-[#6E6258]">
             <button
               onClick={() => navigate('/dashboard')}
-              className="hover:text-blue-600 font-semibold flex items-center space-x-1 transition-colors"
+              className="hover:text-[#C25E38] font-medium flex items-center space-x-1 transition-colors"
             >
               <LayoutDashboard className="w-3.5 h-3.5" />
               <span>Dashboard</span>
@@ -450,8 +446,8 @@ const Materi = () => {
                 setJumpChallengeBab(null);
                 setSelectedSubject(null);
               }}
-              className={`font-semibold hover:text-blue-600 transition-colors ${
-                !selectedSubject ? 'text-[#0a1e4a] font-bold' : ''
+              className={`font-medium hover:text-[#C25E38] transition-colors ${
+                !selectedSubject ? 'text-[#261C14] font-semibold' : ''
               }`}
             >
               Modul Materi Pembelajaran
@@ -459,7 +455,7 @@ const Materi = () => {
             {selectedSubject && (
               <>
                 <span>/</span>
-                <span className="text-[#0a1e4a] font-bold">
+                <span className="text-[#261C14] font-semibold">
                   {currentSubject?.title}
                 </span>
               </>
@@ -467,7 +463,7 @@ const Materi = () => {
             {activeBab && (
               <>
                 <span>/</span>
-                <span className="text-blue-600 font-semibold truncate max-w-[150px] sm:max-w-xs">
+                <span className="text-[#C25E38] font-medium truncate max-w-[150px] sm:max-w-xs">
                   Materi {activeBab.no}: {activeBab.judul}
                 </span>
               </>
@@ -485,7 +481,7 @@ const Materi = () => {
                 navigate('/dashboard');
               }
             }}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 shadow-xs text-slate-700 hover:text-blue-700 text-xs font-semibold transition-all cursor-pointer"
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#F2ECE4] border border-[#E6DFD5] text-[#261C14] hover:text-[#C25E38] text-xs font-medium transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>
@@ -503,15 +499,11 @@ const Materi = () => {
           <div className="max-w-3xl mx-auto w-full py-4 sm:py-8 space-y-6 animate-fade-in">
             {/* Header Pilihan */}
             <div className="text-center space-y-2">
-              <div className="inline-flex items-center space-x-1.5 px-3.5 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold border border-blue-200">
-                <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                <span>Petualangan Materi Resmi Pusmendik Kemendikdasmen</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              <h2 className="text-2xl font-bold text-[#261C14] tracking-tight">
                 Pilih Mata Pelajaran
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto leading-relaxed">
-                Setiap mata pelajaran memiliki peta materi terstruktur dengan tantangan soal, buka gembok materi berikutnya, dan kumpulkan piala penghargaan!
+              <p className="text-xs sm:text-sm text-[#6E6258] max-w-md mx-auto">
+                Pilih mata pelajaran untuk melihat peta materi terstruktur dan latihan berjenjang.
               </p>
             </div>
 
@@ -529,45 +521,43 @@ const Materi = () => {
                       setSelectedSubject('bahasa_indonesia');
                       setSearchQuery('');
                     }}
-                    className="p-6 rounded-3xl bg-gradient-to-br from-blue-50/80 via-white to-indigo-50/50 border-2 border-blue-200 hover:border-blue-500 shadow-md hover:shadow-xl transition-all cursor-pointer group hover:scale-[1.02] flex flex-col justify-between relative overflow-hidden"
+                    className="p-6 rounded-lg bg-white border border-[#E6DFD5] hover:border-[#286657] shadow-sm transition-colors cursor-pointer flex flex-col justify-between"
                   >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
-
                     <div>
                       <div className="flex items-center justify-between mb-4">
-                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                          <BookOpen className="w-7 h-7" />
+                        <div className="w-12 h-12 rounded-lg bg-[#E8F2EF] text-[#286657] border border-[#BCD9D0] flex items-center justify-center">
+                          <BookOpen className="w-6 h-6" />
                         </div>
-                        <span className="px-3 py-1 rounded-full text-xs font-black bg-blue-100 text-blue-800 border border-blue-200">
+                        <span className="px-2.5 py-0.5 rounded text-xs font-semibold bg-[#E8F2EF] text-[#286657] border border-[#BCD9D0]">
                           21 Topik Materi
                         </span>
                       </div>
 
-                      <h3 className="text-xl font-black text-slate-900 group-hover:text-blue-700 transition-colors">
+                      <h3 className="text-lg font-bold text-[#261C14]">
                         Bahasa Indonesia
                       </h3>
-                      <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                      <p className="text-xs text-[#6E6258] mt-2 leading-relaxed">
                         Huruf kapital, kata depan, tanda baca, kalimat efektif, sinonim/antonim, puisi, prosa, hingga analisis inferensial teks.
                       </p>
 
                       {/* Bar Progres */}
-                      <div className="mt-4 pt-3 border-t border-blue-100">
-                        <div className="flex items-center justify-between text-[11px] mb-1 font-semibold text-slate-600">
+                      <div className="mt-4 pt-3 border-t border-[#E6DFD5]">
+                        <div className="flex items-center justify-between text-[11px] mb-1.5 font-medium text-[#6E6258]">
                           <span>Progres: {biDone} dari 21 Materi</span>
-                          <span className="text-blue-700 font-bold">{biPercent}%</span>
+                          <span className="text-[#286657] font-semibold">{biPercent}%</span>
                         </div>
-                        <div className="w-full bg-blue-100/70 rounded-full h-2 overflow-hidden">
+                        <div className="w-full bg-[#F2ECE4] rounded-full h-2 overflow-hidden">
                           <div
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+                            className="bg-[#286657] h-2 rounded-full transition-all duration-300"
                             style={{ width: `${Math.max(4, biPercent)}%` }}
                           />
                         </div>
                       </div>
                     </div>
 
-                    <div className="mt-5 pt-3 border-t border-blue-100 flex items-center justify-between text-xs text-blue-600 font-bold group-hover:translate-x-0.5 transition-transform">
+                    <div className="mt-5 pt-3 border-t border-[#E6DFD5] flex items-center justify-between text-xs text-[#286657] font-medium">
                       <span>Buka Peta 21 Materi Bahasa Indonesia</span>
-                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      <ChevronRight className="w-4 h-4" />
                     </div>
                   </div>
                 );
@@ -585,45 +575,43 @@ const Materi = () => {
                       setSelectedSubject('matematika');
                       setSearchQuery('');
                     }}
-                    className="p-6 rounded-3xl bg-gradient-to-br from-emerald-50/80 via-white to-teal-50/50 border-2 border-emerald-200 hover:border-emerald-500 shadow-md hover:shadow-xl transition-all cursor-pointer group hover:scale-[1.02] flex flex-col justify-between relative overflow-hidden"
+                    className="p-6 rounded-lg bg-white border border-[#E6DFD5] hover:border-[#C25E38] shadow-sm transition-colors cursor-pointer flex flex-col justify-between"
                   >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
-
                     <div>
                       <div className="flex items-center justify-between mb-4">
-                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                          <Calculator className="w-7 h-7" />
+                        <div className="w-12 h-12 rounded-lg bg-[#FAECE6] text-[#C25E38] border border-[#F2D2C4] flex items-center justify-center">
+                          <Calculator className="w-6 h-6" />
                         </div>
-                        <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        <span className="px-2.5 py-0.5 rounded text-xs font-semibold bg-[#FAECE6] text-[#C25E38] border border-[#F2D2C4]">
                           12 Topik Materi
                         </span>
                       </div>
 
-                      <h3 className="text-xl font-black text-slate-900 group-hover:text-emerald-700 transition-colors">
+                      <h3 className="text-lg font-bold text-[#261C14]">
                         Matematika
                       </h3>
-                      <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                      <p className="text-xs text-[#6E6258] mt-2 leading-relaxed">
                         Operasi hitung campuran, skala & perbandingan, KPK/FPB, bilangan pangkat, kecepatan, geometri, sudut, dan pengelolaan data.
                       </p>
 
                       {/* Bar Progres */}
-                      <div className="mt-4 pt-3 border-t border-emerald-100">
-                        <div className="flex items-center justify-between text-[11px] mb-1 font-semibold text-slate-600">
+                      <div className="mt-4 pt-3 border-t border-[#E6DFD5]">
+                        <div className="flex items-center justify-between text-[11px] mb-1.5 font-medium text-[#6E6258]">
                           <span>Progres: {mtkDone} dari 12 Materi</span>
-                          <span className="text-emerald-700 font-bold">{mtkPercent}%</span>
+                          <span className="text-[#C25E38] font-semibold">{mtkPercent}%</span>
                         </div>
-                        <div className="w-full bg-emerald-100/70 rounded-full h-2 overflow-hidden">
+                        <div className="w-full bg-[#F2ECE4] rounded-full h-2 overflow-hidden">
                           <div
-                            className="bg-emerald-600 h-2 rounded-full transition-all duration-500"
+                            className="bg-[#C25E38] h-2 rounded-full transition-all duration-300"
                             style={{ width: `${Math.max(4, mtkPercent)}%` }}
                           />
                         </div>
                       </div>
                     </div>
 
-                    <div className="mt-5 pt-3 border-t border-emerald-100 flex items-center justify-between text-xs text-emerald-600 font-bold group-hover:translate-x-0.5 transition-transform">
+                    <div className="mt-5 pt-3 border-t border-[#E6DFD5] flex items-center justify-between text-xs text-[#C25E38] font-medium">
                       <span>Buka Peta 12 Materi Matematika</span>
-                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      <ChevronRight className="w-4 h-4" />
                     </div>
                   </div>
                 );
@@ -634,25 +622,25 @@ const Materi = () => {
 
         {/* --- TAHAP 2: PEMBELAJARAN MATERI ATAU KUIS PADA LEVEL TERPILIH --- */}
         {selectedSubject && activeBab && (
-          <div className="bg-white border border-slate-200 rounded-3xl w-full shadow-xl overflow-hidden p-4 sm:p-6 animate-fade-in">
+          <div className="bg-white border border-slate-200 rounded-lg w-full shadow-sm overflow-hidden p-4 sm:p-6 animate-fade-in">
             {/* Header Baca Materi */}
             <div className="flex items-center justify-between pb-4 border-b border-slate-200 mb-6">
               <div className="flex items-center space-x-3">
                 <button
                   onClick={() => setActiveBab(null)}
-                  className="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors cursor-pointer"
                   title="Kembali ke Peta Petualangan"
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </button>
                 <div>
                   <div className="flex items-center space-x-2">
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
                       MATERI {activeBab.no} DARI {currentLevels.length} • {currentSubject.title.toUpperCase()}
                     </span>
                     {isLevelCompleted(activeBab.id) && (
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center space-x-1">
-                        <Check className="w-3 h-3 stroke-[3]" />
+                      <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center space-x-1">
+                        <Check className="w-3 h-3 stroke-[2.5]" />
                         <span>Tuntas</span>
                       </span>
                     )}
@@ -695,9 +683,9 @@ const Materi = () => {
                     {activeBab.soalLatihan.map((_, i) => (
                       <div
                         key={i}
-                        className={`w-7 h-2 rounded-full transition-colors ${
+                        className={`w-7 h-1.5 rounded-full transition-colors ${
                           i < currentQuizIndex
-                            ? 'bg-emerald-500'
+                            ? 'bg-emerald-600'
                             : i === currentQuizIndex
                             ? 'bg-blue-600'
                             : 'bg-slate-200'
@@ -708,14 +696,14 @@ const Materi = () => {
                 </div>
 
                 {/* Kartu Soal */}
-                <div className="p-5 sm:p-6 rounded-2xl bg-slate-50 border border-slate-200 shadow-md relative">
+                <div className="p-5 sm:p-6 rounded-lg bg-slate-50 border border-slate-200 shadow-sm relative">
                   {quizFinished ? (
-                    <div className="text-center py-8 space-y-4 animate-fade-in">
-                      <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto border-2 border-emerald-300 shadow-md animate-bounce-subtle">
-                        <Trophy className="w-8 h-8" />
+                    <div className="text-center py-6 space-y-4 animate-fade-in">
+                      <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto border border-emerald-200">
+                        <Trophy className="w-7 h-7" />
                       </div>
-                      <h4 className="text-xl font-black text-slate-900">
-                        Materi {activeBab.no} Tuntas! 🎉
+                      <h4 className="text-lg font-bold text-slate-900">
+                        Materi {activeBab.no} Tuntas!
                       </h4>
 
                       {/* Tampilan Bintang yang Didapatkan */}
@@ -726,16 +714,16 @@ const Materi = () => {
                           return (
                             <div
                               key={starNum}
-                              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${
+                              className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                                 isEarned
-                                  ? 'bg-amber-100 border-2 border-amber-400 shadow-md scale-105'
+                                  ? 'bg-amber-50 border border-amber-300'
                                   : 'bg-slate-100 border border-slate-200 opacity-40'
                               }`}
                             >
                               <Star
-                                className={`w-6 h-6 ${
+                                className={`w-5 h-5 ${
                                   isEarned
-                                    ? 'text-amber-500 fill-amber-400 drop-shadow-xs'
+                                    ? 'text-amber-500 fill-amber-400'
                                     : 'text-slate-300 fill-slate-200'
                                 }`}
                               />
@@ -744,26 +732,33 @@ const Materi = () => {
                         })}
                       </div>
 
-                      <p className="text-xs sm:text-sm font-bold text-amber-700">
+                      <p className="text-xs sm:text-sm font-semibold text-amber-800">
                         {quizMistakes === 0
-                          ? '⭐⭐⭐ Sempurna! Kamu meraih 3 Bintang Emas!'
+                          ? 'Sempurna! Kamu meraih 3 Bintang Emas.'
                           : quizMistakes === 1
-                          ? '⭐⭐☆ Hebat! Kamu meraih 2 Bintang Emas!'
-                          : '⭐☆☆ Bagus! Kamu berhasil meraih 1 Bintang!'}
+                          ? 'Hebat! Kamu meraih 2 Bintang Emas.'
+                          : 'Bagus! Kamu berhasil meraih 1 Bintang.'}
                       </p>
 
                       <p className="text-xs sm:text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
-                        Luar biasa! Kamu berhasil menjawab semua soal dengan tepat. Materi berikutnya kini telah terbuka di peta petualangan!
+                        Kamu berhasil menjawab semua soal dengan tepat. Materi berikutnya kini telah terbuka di peta materi!
                       </p>
+
+                      <div className="pt-2">
+                        <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#E8F2EF] text-[#286657] border border-[#BCD9D0] text-xs font-bold shadow-2xs">
+                          <Sparkles className="w-3.5 h-3.5 text-[#286657]" />
+                          <span>+{quizMistakes === 0 ? 90 : quizMistakes === 1 ? 80 : 70} EXP Didapatkan (Materi Selesai)!</span>
+                        </span>
+                      </div>
                     </div>
                   ) : (
                     <>
-                      <h4 className="text-sm sm:text-base font-bold text-slate-900 leading-relaxed mb-4">
+                      <h4 className="text-sm sm:text-base font-semibold text-slate-900 leading-relaxed mb-4">
                         {activeBab.soalLatihan[currentQuizIndex].pertanyaan}
                       </h4>
 
                       {/* Pilihan Jawaban */}
-                      <div className="space-y-2.5">
+                      <div className="space-y-2">
                         {activeBab.soalLatihan[currentQuizIndex].pilihan.map((opt, idx) => {
                           const isSelected = selectedAnswer === idx;
                           const isWrongSubmitted = hasSubmittedAnswer && !isAnswerCorrect && selectedAnswer === idx;
@@ -779,23 +774,23 @@ const Materi = () => {
                                 setHasSubmittedAnswer(false);
                                 setIsAnswerCorrect(false);
                               }}
-                              className={`w-full p-3.5 rounded-xl text-left text-xs sm:text-sm font-medium border transition-all flex items-center justify-between ${
+                              className={`w-full p-3 rounded-lg text-left text-xs sm:text-sm font-medium border transition-colors flex items-center justify-between ${
                                 isLocked ? 'cursor-not-allowed opacity-80' : 'cursor-pointer'
                               } ${
                                 isWrongSubmitted
-                                  ? 'bg-rose-50 border-rose-400 text-rose-900 shadow-xs'
+                                  ? 'bg-red-50 border-red-500 text-red-900'
                                   : isSelected
-                                  ? 'bg-blue-50 border-blue-500 text-blue-900 shadow-xs'
-                                  : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
+                                  ? 'bg-blue-50 border-blue-600 text-blue-900'
+                                  : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
                               }`}
                             >
                               <span>{opt}</span>
                               <div
-                                className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-bold ${
+                                className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-semibold ${
                                   isWrongSubmitted
-                                    ? 'border-rose-500 bg-rose-600 text-white'
+                                    ? 'border-red-500 bg-red-600 text-white'
                                     : isSelected
-                                    ? 'border-blue-500 bg-blue-600 text-white'
+                                    ? 'border-blue-600 bg-blue-600 text-white'
                                     : 'border-slate-300 text-slate-400'
                                 }`}
                               >
@@ -808,10 +803,10 @@ const Materi = () => {
 
                       {/* Petunjuk jika salah */}
                       {(showQuizHint || (hasSubmittedAnswer && !isAnswerCorrect)) && (
-                        <div className="mt-4 p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs animate-fade-in flex items-start space-x-2.5">
+                        <div className="mt-4 p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs animate-fade-in flex items-start space-x-2.5">
                           <HelpCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
                           <div>
-                            <strong className="block font-bold">Jawaban belum tepat! Ini petunjuknya:</strong>
+                            <strong className="block font-semibold">Petunjuk Soal:</strong>
                             <span className="text-slate-700 mt-0.5 block leading-relaxed">
                               {activeBab.soalLatihan[currentQuizIndex].hint}
                             </span>
@@ -821,14 +816,14 @@ const Materi = () => {
 
                       {/* Notifikasi benar */}
                       {hasSubmittedAnswer && isAnswerCorrect && (
-                        <div className="mt-4 p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs animate-fade-in flex items-center space-x-2">
+                        <div className="mt-4 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs animate-fade-in flex items-center space-x-2">
                           <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                           <span className="font-semibold">Jawaban Benar! Melanjutkan ke soal berikutnya...</span>
                         </div>
                       )}
 
                       {/* Tombol Aksi Kuis */}
-                      <div className="mt-6 pt-4 border-t border-slate-200 flex items-center justify-between">
+                      <div className="mt-5 pt-4 border-t border-slate-200 flex items-center justify-between">
                         <button
                           onClick={() => setInQuizMode(false)}
                           className="inline-flex items-center space-x-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
@@ -848,13 +843,13 @@ const Materi = () => {
                             (hasSubmittedAnswer && isAnswerCorrect) ||
                             (!hasSubmittedAnswer && selectedAnswer === null)
                           }
-                          className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md ${
+                          className={`px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
                             isQuizTransitioning || (hasSubmittedAnswer && isAnswerCorrect)
                               ? 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
                               : hasSubmittedAnswer && !isAnswerCorrect
-                              ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 font-black hover:scale-105 active:scale-95 cursor-pointer'
+                              ? 'bg-amber-500 hover:bg-amber-600 text-slate-950 cursor-pointer'
                               : selectedAnswer !== null
-                              ? 'bg-blue-600 hover:bg-blue-500 text-white hover:scale-105 active:scale-95 cursor-pointer'
+                              ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
                               : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                           }`}
                         >
@@ -877,50 +872,45 @@ const Materi = () => {
         {selectedSubject && !activeBab && (
           <div className="space-y-5">
             {/* Header Banner Dinamis Sesuai Mapel */}
-            <div
-              className={`bg-gradient-to-r ${currentSubject.theme.gradient} rounded-3xl p-5 sm:p-6 text-white shadow-xl relative overflow-hidden border ${currentSubject.theme.border}`}
-            >
-              <div className="absolute -right-8 -top-8 w-40 h-40 bg-white/10 rounded-full blur-xl pointer-events-none" />
-              <div className="absolute -left-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full blur-lg pointer-events-none" />
-
+            <div className="bg-white rounded-xl p-5 sm:p-6 text-[#261C14] border border-[#E6DFD5] shadow-xs relative">
               <div className="relative z-10 space-y-4">
                 {/* Baris Atas Banner */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
-                    <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-xs text-[11px] font-bold tracking-wider uppercase border border-white/20 mb-2">
-                      <currentSubject.icon className="w-3.5 h-3.5" />
+                    <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#FAF7F2] text-[11px] font-semibold text-[#6E6258] border border-[#E6DFD5] mb-2">
+                      <currentSubject.icon className={`w-3.5 h-3.5 ${selectedSubject === 'bahasa_indonesia' ? 'text-[#286657]' : 'text-[#C25E38]'}`} />
                       <span>{currentSubject.title} • {currentLevels.length} Topik Materi</span>
                     </div>
 
-                    <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white drop-shadow-xs">
-                      Peta Materi {currentSubject.title} TKA SD
+                    <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#261C14]">
+                      Peta Materi {currentSubject.title}
                     </h1>
-                    <p className="text-xs sm:text-sm text-white/90 max-w-xl mt-0.5 leading-relaxed">
-                      Pelajari materi secara bertahap untuk membuka materi berikutnya, atau buka lebih awal dengan{' '}
-                      <strong className="underline decoration-yellow-300 decoration-2">Tantangan Lompat Materi</strong>!
+                    <p className="text-xs sm:text-sm text-[#6E6258] max-w-xl mt-0.5 leading-relaxed">
+                      Pelajari materi secara bertahap atau buka lebih awal dengan{' '}
+                      <strong className={selectedSubject === 'bahasa_indonesia' ? 'text-[#286657]' : 'text-[#C25E38]'}>Tantangan Lompat Materi</strong>.
                     </p>
                   </div>
 
                   {/* Tombol Panduan & Mode Tampilan */}
                   <div className="flex flex-col items-stretch sm:items-end space-y-2 flex-shrink-0 self-start sm:self-center">
-                    {/* Tombol Buku Panduan (Rapi, Lebar Simetris, & Terpusat) */}
+                    {/* Tombol Buku Panduan */}
                     <button
                       onClick={() => setShowGuideModal(true)}
-                      className="w-full sm:w-auto min-w-[148px] px-3.5 py-2 rounded-2xl bg-white/20 hover:bg-white/30 backdrop-blur-xs text-xs font-bold text-white transition-all flex items-center justify-center space-x-2 border border-white/30 shadow-xs cursor-pointer active:scale-95 hover:shadow-md"
+                      className="w-full sm:w-auto min-w-[130px] px-3.5 py-2 rounded-lg bg-white hover:bg-[#FAF7F2] text-xs font-medium text-[#261C14] transition-colors flex items-center justify-center space-x-2 border border-[#E6DFD5] cursor-pointer shadow-xs"
                       title="Buku Panduan Aturan Main"
                     >
-                      <BookOpen className="w-4 h-4 drop-shadow-xs" />
-                      <span className="tracking-wide">Buku Panduan</span>
+                      <BookOpen className="w-4 h-4 text-[#8C7E72]" />
+                      <span>Buku Panduan</span>
                     </button>
 
                     {/* Switcher Mode Tampilan (Peta / Daftar) */}
-                    <div className="w-full sm:w-auto min-w-[148px] bg-black/25 p-1 rounded-2xl flex items-center justify-between border border-white/20 shadow-xs">
+                    <div className="w-full sm:w-auto min-w-[130px] bg-[#FAF7F2] p-1 rounded-lg flex items-center justify-between border border-[#E6DFD5]">
                       <button
                         onClick={() => setViewMode('roadmap')}
-                        className={`flex-1 py-1.5 px-2.5 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 transition-all cursor-pointer ${
+                        className={`flex-1 py-1 px-2.5 rounded-md text-xs font-medium flex items-center justify-center space-x-1.5 transition-colors cursor-pointer ${
                           viewMode === 'roadmap'
-                            ? 'bg-white text-slate-900 shadow-xs'
-                            : 'text-white/80 hover:text-white'
+                            ? 'bg-white text-[#C25E38] font-semibold shadow-xs'
+                            : 'text-[#6E6258] hover:text-[#261C14]'
                         }`}
                         title="Tampilan Peta Jalan"
                       >
@@ -929,12 +919,12 @@ const Materi = () => {
                       </button>
                       <button
                         onClick={() => setViewMode('grid')}
-                        className={`flex-1 py-1.5 px-2.5 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 transition-all cursor-pointer ${
+                        className={`flex-1 py-1 px-2.5 rounded-md text-xs font-medium flex items-center justify-center space-x-1.5 transition-colors cursor-pointer ${
                           viewMode === 'grid'
-                            ? 'bg-white text-slate-900 shadow-xs'
-                            : 'text-white/80 hover:text-white'
+                            ? 'bg-white text-[#C25E38] font-semibold shadow-xs'
+                            : 'text-[#6E6258] hover:text-[#261C14]'
                         }`}
-                        title="Tampilan Daftar Kartu"
+                        title="Tampilan Daftar Grid"
                       >
                         <List className="w-3.5 h-3.5" />
                         <span>Daftar</span>
@@ -944,25 +934,25 @@ const Materi = () => {
                 </div>
 
                 {/* Progress Bar & Indikator Status */}
-                <div className="pt-2 border-t border-white/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+                <div className="pt-3 border-t border-[#E6DFD5] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
                   <div className="flex-1 max-w-md">
-                    <div className="flex items-center justify-between mb-1 text-[11px] font-semibold text-white/90">
+                    <div className="flex items-center justify-between mb-1.5 text-[11px] font-medium text-[#6E6258]">
                       <span>Progres {currentSubject.title}</span>
-                      <span className="font-bold text-white">
-                        {completedCount} dari {currentLevels.length} Materi Tuntas ({progressPercent}%)
+                      <span className="font-semibold text-[#261C14]">
+                        {completedCount} dari {currentLevels.length} Selesai ({progressPercent}%)
                       </span>
                     </div>
-                    <div className="w-full bg-black/25 rounded-full h-2.5 p-0.5 overflow-hidden border border-white/10">
+                    <div className="w-full bg-[#F2ECE4] rounded-full h-2 overflow-hidden">
                       <div
-                        className="bg-gradient-to-r from-yellow-300 to-amber-400 h-1.5 rounded-full transition-all duration-700 shadow-xs"
+                        className={`${selectedSubject === 'bahasa_indonesia' ? 'bg-[#286657]' : 'bg-[#C25E38]'} h-2 rounded-full transition-all duration-500`}
                         style={{ width: `${Math.max(4, progressPercent)}%` }}
                       />
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-2 text-[11px]">
-                    <span className="px-2.5 py-1 rounded-xl bg-white/15 border border-white/20 font-semibold text-white flex items-center space-x-1">
-                      <Sparkles className="w-3 h-3 text-yellow-300" />
+                    <span className="px-2.5 py-1 rounded-md bg-[#FAF7F2] border border-[#E6DFD5] font-medium text-[#6E6258] flex items-center space-x-1">
+                      <Sparkles className="w-3 h-3 text-[#D97E26]" />
                       <span>
                         Fokus: Materi{' '}
                         {currentActiveLevelIndex !== -1
@@ -971,8 +961,8 @@ const Materi = () => {
                       </span>
                     </span>
 
-                    <span className="px-2.5 py-1 rounded-xl bg-amber-400/25 border border-amber-300/40 font-bold text-amber-100 flex items-center space-x-1">
-                      <Star className="w-3 h-3 text-yellow-300 fill-yellow-300" />
+                    <span className="px-2.5 py-1 rounded-md bg-[#FEF7EE] border border-[#FCD9BD] font-medium text-[#D97E26] flex items-center space-x-1">
+                      <Star className="w-3 h-3 fill-[#E5A875] text-[#D97E26]" />
                       <span>
                         {currentLevels.reduce((acc, bab) => acc + getLevelStars(bab.id), 0)}/{currentLevels.length * 3} Bintang
                       </span>
@@ -980,10 +970,10 @@ const Materi = () => {
 
                     <button
                       onClick={() => setShowResetConfirm(true)}
-                      className="text-white/70 hover:text-white transition-colors text-[10px] underline ml-1 cursor-pointer"
+                      className="text-[#8C7E72] hover:text-[#C93B3B] transition-colors text-[10px] underline ml-1 cursor-pointer"
                       title="Reset progres untuk mulai dari awal"
                     >
-                      Reset Progres
+                      Reset
                     </button>
                   </div>
                 </div>
@@ -992,18 +982,18 @@ const Materi = () => {
 
             {/* Pencarian Materi Instan */}
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-[#8C7E72] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Cari topik..."
-                className="w-full pl-11 pr-10 py-3 rounded-2xl bg-white border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-hidden focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-xs transition-all"
+                className="w-full pl-10 pr-9 py-2.5 rounded-lg bg-white border border-[#E6DFD5] text-xs sm:text-sm text-[#261C14] placeholder-[#8C7E72] focus:outline-hidden focus:border-[#C25E38] focus:ring-1 focus:ring-[#C25E38] shadow-xs transition-colors"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8C7E72] hover:text-[#261C14] cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -1023,26 +1013,26 @@ const Materi = () => {
                     <div
                       key={bab.id}
                       onClick={() => setSelectedLevelModal(bab)}
-                      className={`p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between ${
+                      className={`p-4 rounded-lg border transition-colors cursor-pointer flex flex-col justify-between ${
                         isCompleted
-                          ? 'bg-gradient-to-br from-emerald-50/70 to-white border-emerald-300 hover:border-emerald-500 shadow-xs'
+                          ? 'bg-white border-[#BCD9D0] hover:border-[#286657]'
                           : isCurrent
-                          ? 'bg-gradient-to-br from-blue-50/80 to-white border-blue-400 hover:border-blue-600 shadow-md ring-2 ring-blue-400/30'
+                          ? 'bg-white border-[#C25E38] ring-1 ring-[#C25E38]'
                           : isUnlocked
-                          ? 'bg-white border-slate-200 hover:border-blue-300 shadow-2xs'
-                          : 'bg-slate-50/80 border-slate-200 hover:border-slate-300 text-slate-400'
+                          ? 'bg-white border-[#E6DFD5] hover:border-[#C25E38]/50'
+                          : 'bg-[#FAF7F2] border-[#E6DFD5] text-[#8C7E72]'
                       }`}
                     >
                       <div>
                         <div className="flex items-center justify-between mb-2.5">
                           <span
-                            className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black shadow-2xs ${
+                            className={`w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold ${
                               isCompleted
-                                ? 'bg-emerald-500 text-white'
+                                ? 'bg-emerald-600 text-white'
                                 : isCurrent
                                 ? 'bg-blue-600 text-white'
                                 : isUnlocked
-                                ? 'bg-sky-100 text-sky-800'
+                                ? 'bg-blue-50 text-blue-700 border border-blue-200'
                                 : 'bg-slate-200 text-slate-500'
                             }`}
                           >
@@ -1050,20 +1040,20 @@ const Materi = () => {
                           </span>
 
                           {isCompleted ? (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center space-x-1">
-                              <Check className="w-3 h-3 stroke-[3]" />
+                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center space-x-1">
+                              <Check className="w-3 h-3 stroke-[2.5]" />
                               <span>Tuntas</span>
                             </span>
                           ) : isCurrent ? (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200 animate-pulse">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
                               Fokus Belajar
                             </span>
                           ) : isUnlocked ? (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                               Terbuka
                             </span>
                           ) : (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-600 flex items-center space-x-1">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-500 border border-slate-200 flex items-center space-x-1">
                               <Lock className="w-2.5 h-2.5" />
                               <span>Terkunci</span>
                             </span>
@@ -1071,9 +1061,9 @@ const Materi = () => {
                         </div>
 
                         <h4
-                          className={`text-sm font-bold leading-snug ${
+                          className={`text-sm font-semibold leading-snug ${
                             isCompleted
-                              ? 'text-emerald-950'
+                              ? 'text-slate-900'
                               : isUnlocked
                               ? 'text-slate-900'
                               : 'text-slate-500'
@@ -1095,13 +1085,13 @@ const Materi = () => {
                                 key={s}
                                 className={`w-3.5 h-3.5 ${
                                   s <= stars
-                                    ? 'text-amber-500 fill-amber-400 drop-shadow-xs'
+                                    ? 'text-amber-500 fill-amber-400'
                                     : 'text-slate-300 fill-slate-100 stroke-slate-300'
                                 }`}
                               />
                             );
                           })}
-                          <span className="text-[10px] font-bold text-slate-500 ml-1">
+                          <span className="text-[10px] font-semibold text-slate-500 ml-1">
                             {getLevelStars(bab.id) > 0 ? `${getLevelStars(bab.id)}/3 ⭐` : '0/3'}
                           </span>
                         </div>
@@ -1118,17 +1108,15 @@ const Materi = () => {
                 })}
               </div>
             ) : (
-              /* --- Winding Path Petualangan (Duolingo Path Style) --- */
-              <div className="bg-white/80 backdrop-blur-xs rounded-3xl border border-slate-200 p-4 sm:p-8 shadow-lg relative overflow-hidden">
-                <div className="absolute inset-0 bg-radial from-blue-50/30 via-transparent to-transparent pointer-events-none" />
-
+              /* --- Winding Path Petualangan --- */
+              <div className="bg-white rounded-lg border border-slate-200 p-4 sm:p-8 shadow-sm relative">
                 {/* Subtitle Alur */}
                 <div className="text-center mb-6">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Peta Belajar {currentLevels.length} Materi • {currentSubject.title}
                   </span>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Klik lingkaran materi untuk belajar slide per slide, atau raih 3 bintang di setiap kuis pemahaman!
+                  <p className="text-xs text-slate-600 mt-0.5">
+                    Klik materi untuk belajar bertahap, atau raih 3 bintang di setiap kuis pemahaman.
                   </p>
                 </div>
 
@@ -1153,24 +1141,38 @@ const Materi = () => {
                         >
                           {/* Balon Tag Level Aktif Sekarang */}
                           {isCurrent && (
-                            <div className="absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap px-3.5 py-1 rounded-full bg-blue-600 text-white font-bold text-[11px] shadow-lg flex items-center space-x-1.5 z-20 animate-bounce-subtle border-2 border-white">
-                              <Sparkles className="w-3 h-3 text-yellow-300" />
-                              <span>Mulai di Sini!</span>
-                              <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-6 border-t-blue-600" />
+                            <div
+                              className={`absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1 rounded-full ${
+                                selectedSubject === 'bahasa_indonesia'
+                                  ? 'bg-[#286657] border-[#1E5044]'
+                                  : 'bg-[#C25E38] border-[#A94D2B]'
+                              } text-white font-bold text-[11px] shadow-md flex items-center space-x-1.5 z-20 border animate-bounce select-none pointer-events-none`}
+                            >
+                              <Sparkles className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
+                              <span>Mulai di Sini</span>
+                              <div
+                                className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-[6px] ${
+                                  selectedSubject === 'bahasa_indonesia'
+                                    ? 'border-t-[#286657]'
+                                    : 'border-t-[#C25E38]'
+                                }`}
+                              />
                             </div>
                           )}
 
-                          {/* Tombol Lingkaran 3D Duolingo-Style */}
+                          {/* Tombol Lingkaran Interaktif Tactile 3D Node */}
                           <button
                             onClick={() => setSelectedLevelModal(bab)}
-                            className={`w-18 h-18 sm:w-20 sm:h-20 rounded-full flex flex-col items-center justify-center font-black transition-all duration-200 transform cursor-pointer relative z-10 ${
+                            className={`w-18 h-18 sm:w-20 sm:h-20 rounded-full flex flex-col items-center justify-center font-bold border-2 transition-all duration-150 cursor-pointer relative z-10 select-none group ${
                               isCompleted
-                                ? 'bg-gradient-to-b from-emerald-400 to-emerald-600 border-b-[6px] border-emerald-700 text-white shadow-emerald-200 shadow-xl hover:scale-105 active:translate-y-1 active:border-b-2'
+                                ? 'bg-[#286657] border-[#1E5044] text-white shadow-[0_6px_0_0_#163C33] hover:shadow-[0_7px_0_0_#163C33] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#163C33]'
                                 : isCurrent
-                                ? `bg-gradient-to-b ${currentSubject.theme.activeBtn} border-b-[6px] text-white shadow-blue-300 shadow-2xl hover:scale-105 ring-4 ${currentSubject.theme.activeRing} ring-offset-2 active:translate-y-1 active:border-b-2`
+                                ? selectedSubject === 'bahasa_indonesia'
+                                  ? 'bg-[#286657] border-[#1E5044] text-white shadow-[0_6px_0_0_#163C33] hover:shadow-[0_7px_0_0_#163C33] ring-4 ring-offset-2 ring-[#286657]/30 hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#163C33]'
+                                  : 'bg-[#C25E38] border-[#A94D2B] text-white shadow-[0_6px_0_0_#8D391B] hover:shadow-[0_7px_0_0_#8D391B] ring-4 ring-offset-2 ring-[#C25E38]/30 hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#8D391B]'
                                 : isUnlocked
-                                ? 'bg-gradient-to-b from-sky-400 to-blue-500 border-b-[6px] border-blue-700 text-white shadow-md hover:scale-105 active:translate-y-1 active:border-b-2'
-                                : 'bg-slate-200 border-b-[6px] border-slate-300 text-slate-400 hover:bg-slate-300/90 hover:text-slate-600 shadow-2xs hover:scale-105 active:translate-y-1 active:border-b-2'
+                                ? 'bg-white border-[#D8CDC2] text-[#261C14] shadow-[0_6px_0_0_#C5B8AC] hover:border-[#C25E38] hover:text-[#C25E38] hover:shadow-[0_7px_0_0_#A94D2B] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#C5B8AC]'
+                                : 'bg-[#F2ECE4] border-[#E6DFD5] text-[#8C7E72] shadow-[0_5px_0_0_#D8CDC2] hover:bg-[#EAE2D8] hover:text-[#6E6258] hover:shadow-[0_6px_0_0_#C5B8AC] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#D8CDC2]'
                             }`}
                             title={`Materi ${bab.no}: ${bab.judul} (${
                               isCompleted ? 'Tuntas' : isUnlocked ? 'Terbuka' : 'Terkunci - Klik untuk Lompat'
@@ -1178,54 +1180,56 @@ const Materi = () => {
                           >
                             {/* Ikon di dalam node */}
                             {isCompleted ? (
-                              <Check className="w-8 h-8 sm:w-9 sm:h-9 stroke-[3.5] drop-shadow-xs" />
+                              <Check className="w-8 h-8 stroke-[3] group-hover:scale-110 transition-transform" />
                             ) : isCurrent ? (
-                              <BookOpen className="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-xs" />
+                              <BookOpen className="w-7 h-7 group-hover:scale-110 transition-transform" />
                             ) : isUnlocked ? (
-                              <div className="flex flex-col items-center">
-                                <span className="text-xl sm:text-2xl font-black leading-none">{bab.no}</span>
-                                <span className="text-[9px] font-bold uppercase opacity-85 mt-0.5">Materi</span>
+                              <div className="flex flex-col items-center group-hover:scale-105 transition-transform">
+                                <span className="text-xl font-black leading-none">{bab.no}</span>
+                                <span className="text-[9px] font-bold uppercase opacity-75 mt-0.5">Materi</span>
                               </div>
                             ) : (
-                              <div className="flex flex-col items-center">
-                                <Lock className="w-6 h-6 sm:w-7 sm:h-7 mb-0.5" />
-                                <span className="text-[9px] font-bold opacity-80">{bab.no}</span>
+                              <div className="flex flex-col items-center opacity-75 group-hover:opacity-100 transition-opacity">
+                                <Lock className="w-5 h-5 mb-0.5" />
+                                <span className="text-[9px] font-bold">{bab.no}</span>
                               </div>
                             )}
 
                             {/* Badge Bintang jika Tuntas */}
                             {isCompleted && (
-                              <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-yellow-400 text-yellow-900 border-2 border-white flex items-center justify-center text-[10px] font-black shadow-xs">
+                              <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-amber-400 text-amber-950 border-2 border-white flex items-center justify-center text-xs font-black shadow-xs">
                                 ★
                               </div>
                             )}
                           </button>
 
-                          {/* Pill Judul Level */}
+                          {/* Pill Judul Level (Hanya Indikator, Bukan Tombol) */}
                           <div
-                            onClick={() => setSelectedLevelModal(bab)}
-                            className={`mt-2 px-3 py-1 rounded-xl text-center cursor-pointer transition-all max-w-[160px] sm:max-w-[190px] border shadow-2xs ${
+                            className={`mt-2.5 px-3.5 py-1.5 rounded-lg text-center select-none max-w-[170px] sm:max-w-[200px] border shadow-2xs ${
                               isCompleted
-                                ? currentSubject.theme.pillCompleted
+                                ? 'bg-[#E8F2EF] border-[#C5DDD6] text-[#286657]'
                                 : isCurrent
-                                ? `${currentSubject.theme.pillActive} font-bold`
+                                ? `${
+                                    selectedSubject === 'bahasa_indonesia'
+                                      ? 'bg-[#E8F2EF] border-[#BCD9D0] text-[#286657]'
+                                      : 'bg-[#FAECE6] border-[#F2D2C4] text-[#C25E38]'
+                                  } font-bold shadow-xs`
                                 : isUnlocked
-                                ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'
-                                : 'bg-slate-100/80 border-slate-200 text-slate-400 hover:text-slate-600'
+                                ? 'bg-white border-[#E6DFD5] text-[#261C14]'
+                                : 'bg-[#FAF7F2] border-[#E6DFD5] text-[#8C7E72]'
                             }`}
                           >
-                            <span className="block text-[10px] font-bold uppercase tracking-wider opacity-75">
+                            <span className="block text-[10px] font-semibold uppercase tracking-wider opacity-75">
                               Materi {bab.no}
                             </span>
-                            <span className="block text-xs font-semibold truncate">
+                            <span className="block text-xs font-medium truncate">
                               {bab.judul}
                             </span>
                           </div>
 
-                          {/* 3 Bintang Horizontal Capaian Materi (Pengganti 3 Titik Vertikal) */}
+                          {/* 3 Bintang Horizontal Capaian Materi (Indikator Saja) */}
                           <div
-                            onClick={() => setSelectedLevelModal(bab)}
-                            className="flex items-center justify-center space-x-1.5 mt-2 cursor-pointer transition-transform hover:scale-110 select-none py-1 px-2.5 rounded-full bg-white/80 backdrop-blur-2xs border border-slate-200/80 shadow-2xs hover:shadow-xs"
+                            className="flex items-center justify-center space-x-1.5 mt-2 select-none py-1 px-2.5 rounded-full bg-white border border-[#E6DFD5] shadow-2xs"
                             title={`Materi ${bab.no}: Meraih ${starsEarned} dari 3 Bintang`}
                           >
                             {[1, 2, 3].map((starIdx) => {
@@ -1233,10 +1237,10 @@ const Materi = () => {
                               return (
                                 <Star
                                   key={starIdx}
-                                  className={`w-4 h-4 transition-all duration-300 ${
+                                  className={`w-3.5 h-3.5 transition-colors ${
                                     isFilled
-                                      ? 'text-amber-500 fill-amber-400 drop-shadow-[0_1px_2px_rgba(245,158,11,0.5)] scale-105'
-                                      : 'text-slate-300 fill-slate-200/40 stroke-slate-300'
+                                      ? 'text-amber-500 fill-amber-400'
+                                      : 'text-[#D4C8BC] fill-[#FAF7F2] stroke-[#D4C8BC]'
                                   }`}
                                 />
                               );
@@ -1259,18 +1263,18 @@ const Materi = () => {
                             className="relative flex flex-col items-center my-3 cursor-pointer group"
                           >
                             <div
-                              className={`w-16 h-16 sm:w-18 sm:h-18 rounded-2xl flex items-center justify-center border-b-4 transition-all duration-200 transform group-hover:scale-110 shadow-lg ${
+                              className={`w-14 h-14 rounded-2xl flex items-center justify-center border-2 transition-all duration-150 cursor-pointer ${
                                 completedCount >= milestoneItem.requiredLevel
-                                  ? 'bg-gradient-to-b from-amber-300 to-yellow-500 border-yellow-600 text-yellow-950 shadow-yellow-200'
-                                  : 'bg-slate-100 border-slate-300 text-slate-400'
+                                  ? 'bg-[#FEF7EE] border-amber-300 text-amber-700 shadow-[0_5px_0_0_#D97E26] hover:shadow-[0_6px_0_0_#D97E26] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none'
+                                  : 'bg-[#F2ECE4] border-[#E6DFD5] text-[#8C7E72] shadow-[0_4px_0_0_#D8CDC2] hover:bg-[#EAE2D8] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none'
                               }`}
                             >
-                              <Gift className="w-8 h-8 sm:w-9 sm:h-9" />
+                              <Gift className="w-7 h-7 group-hover:scale-110 transition-transform" />
                             </div>
-                            <div className="mt-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-[10px] font-bold text-slate-600">
+                            <div className="mt-2 px-2.5 py-0.5 rounded-full bg-white border border-[#E6DFD5] text-[10px] font-bold text-[#6E6258] shadow-2xs group-hover:border-[#8C7E72]">
                               {completedCount >= milestoneItem.requiredLevel
-                                ? '🎁 Peti Terbuka!'
-                                : `🔒 Peti Materi ${milestoneItem.requiredLevel}`}
+                                ? '🎁 Peti Terbuka'
+                                : `Peti Materi ${milestoneItem.requiredLevel}`}
                             </div>
                           </div>
                         )}
@@ -1281,29 +1285,29 @@ const Materi = () => {
                             onClick={() =>
                               setMilestoneModal({
                                 title: milestoneItem?.title || `Piala Juara ${currentSubject.title}`,
-                                desc: milestoneItem?.desc || `Piala kebanggaan setelah menuntaskan seluruh ${currentLevels.length} Materi ${currentSubject.title}.`,
+                                desc: milestoneItem?.desc || `Piala penghargaan setelah menuntaskan seluruh ${currentLevels.length} Materi ${currentSubject.title}.`,
                                 requiredLevel: currentLevels.length,
                                 unlocked: completedCount === currentLevels.length,
-                                reward: milestoneItem?.reward || `👑 Gelar Maestro ${currentSubject.title} TKA SD 100%`,
+                                reward: milestoneItem?.reward || `Gelar Maestro ${currentSubject.title} TKA SD 100%`,
                               })
                             }
                             className="relative flex flex-col items-center pt-4 pb-2 cursor-pointer group animate-fade-in"
                           >
                             <div
-                              className={`w-20 h-20 sm:w-24 sm:h-24 rounded-3xl flex items-center justify-center border-b-[6px] transition-all duration-200 transform group-hover:scale-110 shadow-xl ${
+                              className={`w-16 h-16 rounded-2xl flex items-center justify-center border-2 transition-all duration-150 cursor-pointer ${
                                 completedCount === currentLevels.length
-                                  ? 'bg-gradient-to-b from-yellow-300 via-amber-400 to-yellow-600 border-yellow-700 text-amber-950 shadow-yellow-300 animate-wiggle'
-                                  : 'bg-slate-100 border-slate-300 text-slate-400'
+                                  ? 'bg-amber-100 border-amber-400 text-amber-800 shadow-[0_6px_0_0_#B8731E] hover:shadow-[0_7px_0_0_#B8731E] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none ring-4 ring-amber-300/40'
+                                  : 'bg-[#F2ECE4] border-[#E6DFD5] text-[#8C7E72] shadow-[0_4px_0_0_#D8CDC2] hover:bg-[#EAE2D8] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none'
                               }`}
                             >
-                              <Trophy className="w-10 h-10 sm:w-12 sm:h-12" />
+                              <Trophy className="w-8 h-8 group-hover:scale-110 transition-transform" />
                             </div>
                             <div className="mt-2 text-center">
                               <span
-                                className={`text-xs font-black px-3 py-1 rounded-full border shadow-2xs ${
+                                className={`text-xs font-bold px-3 py-1 rounded-full border shadow-2xs inline-block transition-transform group-hover:scale-105 ${
                                   completedCount === currentLevels.length
-                                    ? 'bg-yellow-100 text-yellow-900 border-yellow-300'
-                                    : 'bg-slate-100 text-slate-500 border-slate-200'
+                                    ? 'bg-amber-50 text-amber-900 border-amber-300'
+                                    : 'bg-[#F2ECE4] text-[#6E6258] border-[#E6DFD5]'
                                 }`}
                               >
                                 {completedCount === currentLevels.length
@@ -1331,58 +1335,50 @@ const Materi = () => {
         const prevBab = modalIndex > 0 ? currentLevels[modalIndex - 1] : null;
 
         return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full overflow-hidden relative animate-fade-in">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#1F1914]/50 backdrop-blur-xs animate-fade-in">
+            <div className="bg-white rounded-lg border border-[#E6DFD5] shadow-xl max-w-md w-full overflow-hidden relative animate-fade-in">
               {/* Header Modal */}
-              <div
-                className={`p-5 text-white relative ${
-                  isCompleted
-                    ? 'bg-gradient-to-r from-emerald-600 to-teal-600'
-                    : isUnlocked
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600'
-                    : 'bg-gradient-to-r from-slate-700 to-slate-800'
-                }`}
-              >
+              <div className="p-5 bg-[#1F1914] text-white relative border-b border-[#33261D]">
                 <button
                   onClick={() => setSelectedLevelModal(null)}
-                  className="absolute right-4 top-4 w-7 h-7 rounded-full bg-black/20 hover:bg-black/30 text-white flex items-center justify-center transition-colors cursor-pointer"
+                  className="absolute right-4 top-4 w-7 h-7 rounded-lg bg-[#2D241C] hover:bg-[#3D2E22] text-[#D4C8BC] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
 
                 <div className="flex items-center space-x-2 mb-1.5">
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-white/20">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-[#2D241C] text-[#D4C8BC] border border-[#3D3126]">
                     MATERI {selectedLevelModal.no} DARI {currentLevels.length} • {currentSubject?.title.toUpperCase()}
                   </span>
                   {isCompleted ? (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-400 text-emerald-950 flex items-center space-x-1">
-                      <span>✓ Tuntas</span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#E8F2EF] text-[#286657] border border-[#BCD9D0] flex items-center space-x-1">
+                      <span>Tuntas</span>
                       <span>•</span>
                       <span>{getLevelStars(selectedLevelModal.id)}/3 ⭐</span>
                     </span>
                   ) : isUnlocked ? (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-200 text-blue-900">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FAECE6] text-[#C25E38] border border-[#F2D2C4]">
                       Terbuka
                     </span>
                   ) : (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500 text-white">
-                      🔒 Terkunci
+                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#2D241C] text-[#8C7E72] border border-[#3D3126]">
+                      Terkunci
                     </span>
                   )}
                 </div>
 
-                <h3 className="text-xl font-black text-white">{selectedLevelModal.judul}</h3>
+                <h3 className="text-lg font-bold text-white">{selectedLevelModal.judul}</h3>
               </div>
 
               {/* Body Modal */}
               <div className="p-5 space-y-4">
                 {/* Capaian Bintang Materi */}
-                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <div className="p-3.5 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] flex items-center justify-between">
                   <div>
-                    <span className="text-[11px] text-slate-500 font-semibold block uppercase tracking-wider">
+                    <span className="text-[11px] text-[#6E6258] font-medium block uppercase tracking-wider">
                       Capaian Kuis Pemahaman
                     </span>
-                    <span className="text-xs font-bold text-slate-800">
+                    <span className="text-xs font-semibold text-[#261C14]">
                       {isCompleted
                         ? `${getLevelStars(selectedLevelModal.id)} dari 3 Bintang Terkumpul`
                         : isUnlocked
@@ -1396,17 +1392,17 @@ const Materi = () => {
                       return (
                         <div
                           key={starIdx}
-                          className={`w-7 h-7 rounded-xl flex items-center justify-center transition-all ${
+                          className={`w-7 h-7 rounded-md flex items-center justify-center ${
                             isFilled
-                              ? 'bg-amber-100 border border-amber-300 shadow-2xs'
-                              : 'bg-slate-200/60 border border-slate-200'
+                              ? 'bg-amber-50 border border-amber-300'
+                              : 'bg-[#F2ECE4] border border-[#E6DFD5]'
                           }`}
                         >
                           <Star
                             className={`w-4 h-4 ${
                               isFilled
-                                ? 'text-amber-500 fill-amber-400 drop-shadow-xs'
-                                : 'text-slate-300 fill-slate-200/50 stroke-slate-300'
+                                ? 'text-amber-500 fill-amber-400'
+                                : 'text-[#8C7E72] fill-[#FAF7F2]'
                             }`}
                           />
                         </div>
@@ -1416,34 +1412,34 @@ const Materi = () => {
                 </div>
 
                 <div>
-                  <h5 className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  <h5 className="text-[11px] font-semibold uppercase tracking-wider text-[#6E6258]">
                     Ringkasan Materi
                   </h5>
-                  <p className="text-xs sm:text-sm text-slate-700 mt-1 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-[#261C14] mt-1 leading-relaxed">
                     {selectedLevelModal.ringkasan}
                   </p>
                 </div>
 
                 {selectedLevelModal.konsepKunci && (
-                  <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-slate-700">
-                    <strong className="text-amber-900 block font-bold mb-0.5">Konsep Inti:</strong>
+                  <div className="p-3 rounded-lg bg-[#FEF7EE] border border-[#F6D8B8] text-xs text-[#261C14]">
+                    <strong className="text-[#D97E26] block font-semibold mb-0.5">Konsep Inti:</strong>
                     <span>{selectedLevelModal.konsepKunci}</span>
                   </div>
                 )}
 
                 {/* Status Penjelasan */}
                 {!isUnlocked && (
-                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-2">
+                  <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] text-xs text-[#6E6258] space-y-2">
                     <div className="flex items-start space-x-2">
-                      <Lock className="w-4 h-4 text-slate-500 flex-shrink-0 mt-0.5" />
+                      <Lock className="w-4 h-4 text-[#8C7E72] flex-shrink-0 mt-0.5" />
                       <div>
-                        <strong className="block font-bold text-slate-800">
+                        <strong className="block font-semibold text-[#261C14]">
                           Materi ini masih terkunci!
                         </strong>
-                        <p className="mt-0.5 text-slate-600 leading-relaxed">
+                        <p className="mt-0.5 text-[#6E6258] leading-relaxed">
                           Selesaikan Materi {prevBab?.no} ({prevBab?.judul}) terlebih dahulu,{' '}
-                          <strong className="text-blue-700">ATAU kamu dapat langsung melompat</strong>{' '}
-                          ke materi ini dengan menjawab soal tantangan pemahaman materi!
+                          <strong className="text-[#C25E38]">atau kamu dapat langsung melompat</strong>{' '}
+                          ke materi ini dengan menjawab tantangan soal pemahaman materi!
                         </p>
                       </div>
                     </div>
@@ -1451,11 +1447,11 @@ const Materi = () => {
                 )}
 
                 {/* Tombol Aksi */}
-                <div className="pt-2 space-y-2.5">
+                <div className="pt-2 space-y-2">
                   {isUnlocked ? (
                     <button
                       onClick={() => handleOpenBab(selectedLevelModal)}
-                      className="w-full py-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2 cursor-pointer active:scale-98"
+                      className="w-full py-2.5 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white font-semibold text-xs sm:text-sm transition-colors flex items-center justify-center space-x-2 cursor-pointer shadow-xs"
                     >
                       <BookOpen className="w-4 h-4" />
                       <span>{isCompleted ? 'Pelajari Ulang Materi' : 'Mulai Belajar Materi'}</span>
@@ -1464,7 +1460,7 @@ const Materi = () => {
                     /* Opsi Lompat Materi */
                     <button
                       onClick={() => handleStartJumpChallenge(selectedLevelModal)}
-                      className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-xs sm:text-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2 cursor-pointer active:scale-98"
+                      className="w-full py-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold text-xs sm:text-sm transition-colors flex items-center justify-center space-x-2 cursor-pointer shadow-xs"
                     >
                       <Zap className="w-4 h-4 fill-current" />
                       <span>Lompat ke Materi Ini (Tantangan Kuis)</span>
@@ -1473,7 +1469,7 @@ const Materi = () => {
 
                   <button
                     onClick={() => setSelectedLevelModal(null)}
-                    className="w-full py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs transition-colors cursor-pointer"
+                    className="w-full py-2 rounded-lg bg-[#F2ECE4] hover:bg-[#E6DFD5] text-[#261C14] font-medium text-xs transition-colors cursor-pointer"
                   >
                     Tutup
                   </button>
@@ -1486,26 +1482,26 @@ const Materi = () => {
 
       {/* --- MODAL 2: TANTANGAN LOMPAT MATERI (JUMP CHALLENGE) --- */}
       {jumpChallengeBab && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/70 backdrop-blur-xs animate-fade-in overflow-y-auto">
-          <div className="bg-white rounded-3xl border border-amber-300 shadow-2xl max-w-lg w-full overflow-hidden relative animate-fade-in my-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#1F1914]/50 backdrop-blur-xs animate-fade-in overflow-y-auto">
+          <div className="bg-white rounded-lg border border-[#E6DFD5] shadow-xl max-w-lg w-full overflow-hidden relative animate-fade-in my-auto">
             {/* Header Tantangan Lompat */}
-            <div className="p-5 bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 text-white relative">
+            <div className="p-5 bg-[#1F1914] text-white relative border-b border-[#33261D]">
               <button
                 onClick={() => setJumpChallengeBab(null)}
-                className="absolute right-4 top-4 w-7 h-7 rounded-full bg-black/20 hover:bg-black/30 text-white flex items-center justify-center transition-colors cursor-pointer"
+                className="absolute right-4 top-4 w-7 h-7 rounded-lg bg-[#2D241C] hover:bg-[#3D2E22] text-[#D4C8BC] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
 
-              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-xs text-[10px] font-black uppercase tracking-wider mb-2">
-                <Zap className="w-3 h-3 fill-current text-yellow-200" />
+              <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded bg-[#2D241C] text-[10px] font-semibold text-[#E5A875] border border-[#3D3126] uppercase tracking-wider mb-2">
+                <Zap className="w-3 h-3 fill-current text-[#E5A875]" />
                 <span>Tantangan Lompat Materi • {currentSubject?.title}</span>
               </div>
-              <h3 className="text-lg sm:text-xl font-black">
+              <h3 className="text-base sm:text-lg font-bold text-white">
                 Uji Pemahaman: Materi {jumpChallengeBab.no} ({jumpChallengeBab.judul})
               </h3>
-              <p className="text-xs text-amber-100 mt-1">
-                Jawab soal materi ini untuk langsung membuka Materi {jumpChallengeBab.no} lebih awal!
+              <p className="text-xs text-[#D4C8BC] mt-0.5">
+                Jawab soal materi ini untuk langsung membuka Materi {jumpChallengeBab.no} lebih awal.
               </p>
             </div>
 
@@ -1513,52 +1509,52 @@ const Materi = () => {
             <div className="p-5 sm:p-6">
               {jumpFinished ? (
                 <div className="text-center py-6 space-y-4 animate-fade-in">
-                  <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto border-2 border-emerald-300 shadow-md animate-bounce-subtle">
-                    <Trophy className="w-8 h-8" />
+                  <div className="w-14 h-14 rounded-full bg-[#E8F2EF] text-[#286657] flex items-center justify-center mx-auto border border-[#BCD9D0]">
+                    <Trophy className="w-7 h-7" />
                   </div>
                   <div>
-                    <h4 className="text-xl font-black text-slate-900">
-                      Tantangan Berhasil Dituntaskan! 🎉
+                    <h4 className="text-lg font-bold text-[#261C14]">
+                      Tantangan Berhasil Dituntaskan!
                     </h4>
-                    <p className="text-xs sm:text-sm text-slate-600 max-w-sm mx-auto mt-1 leading-relaxed">
-                      Hebat! Kamu telah membuktikan kemampuanmu. <strong>Materi {jumpChallengeBab.no} ({jumpChallengeBab.judul})</strong> kini resmi <strong>TERBUKA</strong> untukmu!
+                    <p className="text-xs sm:text-sm text-[#6E6258] max-w-sm mx-auto mt-1 leading-relaxed">
+                      Kamu telah membuktikan kemampuanmu. <strong>Materi {jumpChallengeBab.no} ({jumpChallengeBab.judul})</strong> kini resmi <strong>TERBUKA</strong> untukmu!
                     </p>
                   </div>
 
-                  <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-2.5">
+                  <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-2">
                     <button
                       onClick={() => {
                         const target = jumpChallengeBab;
                         setJumpChallengeBab(null);
                         handleOpenBab(target);
                       }}
-                      className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+                      className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white font-semibold text-xs transition-colors cursor-pointer shadow-xs"
                     >
-                      📖 Langsung Baca Materi
+                      Langsung Baca Materi
                     </button>
                     <button
                       onClick={() => setJumpChallengeBab(null)}
-                      className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+                      className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#F2ECE4] hover:bg-[#E6DFD5] text-[#261C14] font-medium text-xs transition-colors cursor-pointer"
                     >
-                      🗺️ Kembali ke Peta Materi
+                      Kembali ke Peta Materi
                     </button>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {/* Stepper Progress */}
-                  <div className="flex items-center justify-between text-xs font-semibold text-slate-500 border-b border-slate-100 pb-2">
+                  <div className="flex items-center justify-between text-xs font-medium text-[#6E6258] border-b border-[#E6DFD5] pb-2">
                     <span>Soal Tantangan {jumpQuizIndex + 1} dari {jumpChallengeBab.soalLatihan.length}</span>
                     <div className="flex space-x-1.5">
                       {jumpChallengeBab.soalLatihan.map((_, i) => (
                         <div
                           key={i}
-                          className={`w-6 h-2 rounded-full transition-colors ${
+                          className={`w-6 h-1.5 rounded-full transition-colors ${
                             i < jumpQuizIndex
-                              ? 'bg-emerald-500'
+                              ? 'bg-[#286657]'
                               : i === jumpQuizIndex
-                              ? 'bg-amber-500'
-                              : 'bg-slate-200'
+                              ? 'bg-[#C25E38]'
+                              : 'bg-[#E6DFD5]'
                           }`}
                         />
                       ))}
@@ -1566,7 +1562,7 @@ const Materi = () => {
                   </div>
 
                   {/* Pertanyaan */}
-                  <h4 className="text-xs sm:text-sm font-bold text-slate-900 leading-relaxed">
+                  <h4 className="text-xs sm:text-sm font-semibold text-[#261C14] leading-relaxed">
                     {jumpChallengeBab.soalLatihan[jumpQuizIndex].pertanyaan}
                   </h4>
 
@@ -1587,24 +1583,24 @@ const Materi = () => {
                             setJumpHasSubmitted(false);
                             setJumpIsCorrect(false);
                           }}
-                          className={`w-full p-3 rounded-xl text-left text-xs sm:text-sm font-medium border transition-all flex items-center justify-between ${
+                          className={`w-full p-3 rounded-lg text-left text-xs sm:text-sm font-medium border transition-colors flex items-center justify-between ${
                             isLocked ? 'cursor-not-allowed opacity-80' : 'cursor-pointer'
                           } ${
                             isWrongSubmitted
-                              ? 'bg-rose-50 border-rose-400 text-rose-900 shadow-2xs'
+                              ? 'bg-[#FDF1F1] border-[#C93B3B] text-[#A82828]'
                               : isSelected
-                              ? 'bg-amber-50 border-amber-500 text-amber-900 shadow-2xs'
-                              : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                              ? 'bg-[#FAECE6] border-[#C25E38] text-[#261C14]'
+                              : 'bg-white border-[#E6DFD5] text-[#261C14] hover:bg-[#FAF7F2]'
                           }`}
                         >
                           <span>{opt}</span>
                           <div
-                            className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-bold ${
+                            className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-semibold ${
                               isWrongSubmitted
-                                ? 'border-rose-500 bg-rose-600 text-white'
+                                ? 'border-[#C93B3B] bg-[#C93B3B] text-white'
                                 : isSelected
-                                ? 'border-amber-500 bg-amber-500 text-white'
-                                : 'border-slate-300 text-slate-400'
+                                ? 'border-[#C25E38] bg-[#C25E38] text-white'
+                                : 'border-[#E6DFD5] text-[#8C7E72]'
                             }`}
                           >
                             {String.fromCharCode(65 + idx)}
@@ -1616,11 +1612,11 @@ const Materi = () => {
 
                   {/* Hint jika salah */}
                   {(showJumpHint || (jumpHasSubmitted && !jumpIsCorrect)) && (
-                    <div className="p-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs animate-fade-in flex items-start space-x-2">
-                      <HelpCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                    <div className="p-3 rounded-lg bg-[#FEF7EE] border border-[#F6D8B8] text-[#D97E26] text-xs animate-fade-in flex items-start space-x-2">
+                      <HelpCircle className="w-4 h-4 text-[#D97E26] flex-shrink-0 mt-0.5" />
                       <div>
-                        <strong className="block font-bold">Jawaban belum tepat! Petunjuk:</strong>
-                        <span className="text-slate-700 leading-relaxed">
+                        <strong className="block font-semibold">Petunjuk:</strong>
+                        <span className="text-[#261C14] leading-relaxed">
                           {jumpChallengeBab.soalLatihan[jumpQuizIndex].hint}
                         </span>
                       </div>
@@ -1629,17 +1625,17 @@ const Materi = () => {
 
                   {/* Feedback Benar */}
                   {jumpHasSubmitted && jumpIsCorrect && (
-                    <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs animate-fade-in flex items-center space-x-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <div className="p-3 rounded-lg bg-[#E8F2EF] border border-[#BCD9D0] text-[#286657] text-xs animate-fade-in flex items-center space-x-2">
+                      <CheckCircle2 className="w-4 h-4 text-[#286657]" />
                       <span className="font-semibold">Benar! Menuju ke soal berikutnya...</span>
                     </div>
                   )}
 
                   {/* Tombol Periksa */}
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                  <div className="pt-3 border-t border-[#E6DFD5] flex items-center justify-between">
                     <button
                       onClick={() => setJumpChallengeBab(null)}
-                      className="text-xs text-slate-400 hover:text-slate-600 cursor-pointer"
+                      className="text-xs text-[#8C7E72] hover:text-[#261C14] cursor-pointer"
                     >
                       Batal
                     </button>
@@ -1654,14 +1650,14 @@ const Materi = () => {
                         (jumpHasSubmitted && jumpIsCorrect) ||
                         (!jumpHasSubmitted && jumpSelectedAnswer === null)
                       }
-                      className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md ${
+                      className={`px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
                         isJumpTransitioning || (jumpHasSubmitted && jumpIsCorrect)
-                          ? 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
+                          ? 'bg-[#F2ECE4] text-[#8C7E72] cursor-not-allowed border border-[#E6DFD5]'
                           : jumpHasSubmitted && !jumpIsCorrect
-                          ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 font-black cursor-pointer hover:scale-105 active:scale-95'
+                          ? 'bg-amber-500 hover:bg-amber-600 text-slate-950 cursor-pointer shadow-xs'
                           : jumpSelectedAnswer !== null
-                          ? 'bg-blue-600 hover:bg-blue-500 text-white font-bold cursor-pointer'
-                          : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                          ? 'bg-[#C25E38] hover:bg-[#A94D2B] text-white cursor-pointer shadow-xs'
+                          : 'bg-[#F2ECE4] text-[#8C7E72] cursor-not-allowed'
                       }`}
                     >
                       {isJumpTransitioning || (jumpHasSubmitted && jumpIsCorrect)
@@ -1680,65 +1676,61 @@ const Materi = () => {
 
       {/* --- MODAL 3: BUKU PANDUAN CARA BERMAIN --- */}
       {showGuideModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full overflow-hidden relative animate-fade-in">
-            <div
-              className={`p-5 bg-gradient-to-r ${
-                currentSubject?.theme.gradient || 'from-blue-600 to-indigo-600'
-              } text-white`}
-            >
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#1F1914]/50 backdrop-blur-xs animate-fade-in">
+          <div className="bg-white rounded-lg border border-[#E6DFD5] shadow-xl max-w-md w-full overflow-hidden relative animate-fade-in">
+            <div className="p-5 bg-[#1F1914] text-white border-b border-[#33261D] relative">
               <button
                 onClick={() => setShowGuideModal(false)}
-                className="absolute right-4 top-4 w-7 h-7 rounded-full bg-black/20 hover:bg-black/30 text-white flex items-center justify-center transition-colors cursor-pointer"
+                className="absolute right-4 top-4 w-7 h-7 rounded-lg bg-[#2D241C] hover:bg-[#3D2E22] text-[#D4C8BC] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
-              <h3 className="text-lg font-black flex items-center space-x-2">
-                <BookOpen className="w-5 h-5" />
+              <h3 className="text-base sm:text-lg font-bold flex items-center space-x-2 text-white">
+                <BookOpen className="w-5 h-5 text-[#E5A875]" />
                 <span>Buku Panduan Petualangan Materi</span>
               </h3>
-              <p className="text-xs text-white/90 mt-1">
+              <p className="text-xs text-[#D4C8BC] mt-0.5">
                 Aturan & Cara Menuntaskan Materi Pembelajaran TKA SD
               </p>
             </div>
 
-            <div className="p-5 space-y-3.5 text-xs text-slate-700 leading-relaxed">
+            <div className="p-5 space-y-3.5 text-xs text-[#261C14] leading-relaxed">
               <div className="flex items-start space-x-3">
-                <span className="w-6 h-6 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold flex-shrink-0">
+                <span className="w-6 h-6 rounded-md bg-[#F2ECE4] text-[#261C14] border border-[#E6DFD5] flex items-center justify-center font-bold flex-shrink-0">
                   1
                 </span>
                 <div>
-                  <strong className="block text-slate-900 font-bold">Posisi Awal Belajar</strong>
-                  Hanya <strong>Materi 1</strong> pada masing-masing mata pelajaran yang terbuka di awal petualangan. Materi selanjutnya masih terkunci.
+                  <strong className="block text-[#261C14] font-semibold">Posisi Awal Belajar</strong>
+                  Hanya <strong>Materi 1</strong> pada masing-masing mata pelajaran yang terbuka di awal. Materi selanjutnya masih terkunci.
                 </div>
               </div>
 
               <div className="flex items-start space-x-3">
-                <span className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold flex-shrink-0">
+                <span className="w-6 h-6 rounded-md bg-[#F2ECE4] text-[#261C14] border border-[#E6DFD5] flex items-center justify-center font-bold flex-shrink-0">
                   2
                 </span>
                 <div>
-                  <strong className="block text-slate-900 font-bold">Membuka Materi Berurutan</strong>
+                  <strong className="block text-[#261C14] font-semibold">Membuka Materi Berurutan</strong>
                   Untuk membuka materi berikutnya secara bertahap, pelajari slide materi dan selesaikan 3 soal kuis pemahaman di akhir materi hingga benar.
                 </div>
               </div>
 
               <div className="flex items-start space-x-3">
-                <span className="w-6 h-6 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center font-bold flex-shrink-0">
+                <span className="w-6 h-6 rounded-md bg-[#F2ECE4] text-[#261C14] border border-[#E6DFD5] flex items-center justify-center font-bold flex-shrink-0">
                   3
                 </span>
                 <div>
-                  <strong className="block text-slate-900 font-bold">Fitur Tantangan Lompat Materi</strong>
+                  <strong className="block text-[#261C14] font-semibold">Fitur Tantangan Lompat Materi</strong>
                   Ingin langsung belajar topik di materi tertentu? Kamu bisa membuka materi lebih awal dengan menyelesaikan <strong>Tantangan Kuis</strong> dari materi yang dituju!
                 </div>
               </div>
 
               <div className="flex items-start space-x-3">
-                <span className="w-6 h-6 rounded-lg bg-yellow-100 text-yellow-800 flex items-center justify-center font-bold flex-shrink-0">
+                <span className="w-6 h-6 rounded-md bg-[#F2ECE4] text-[#261C14] border border-[#E6DFD5] flex items-center justify-center font-bold flex-shrink-0">
                   4
                 </span>
                 <div>
-                  <strong className="block text-slate-900 font-bold">Milestone Peti & Piala Puncak</strong>
+                  <strong className="block text-[#261C14] font-semibold">Milestone Peti & Piala Puncak</strong>
                   Kumpulkan 3 bintang di setiap materi dan buka peti bonus di setiap tahapan, hingga Piala Maestro di puncak materi terakhir!
                 </div>
               </div>
@@ -1746,9 +1738,9 @@ const Materi = () => {
               <div className="pt-3">
                 <button
                   onClick={() => setShowGuideModal(false)}
-                  className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-colors cursor-pointer"
+                  className="w-full py-2.5 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white font-semibold text-xs transition-colors cursor-pointer shadow-xs"
                 >
-                  Saya Mengerti, Lanjutkan Petualangan!
+                  Saya Mengerti, Lanjutkan Petualangan
                 </button>
               </div>
             </div>
@@ -1758,43 +1750,43 @@ const Materi = () => {
 
       {/* --- MODAL 4: MILESTONE PETI & PIALA --- */}
       {milestoneModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-sm w-full overflow-hidden relative text-center p-6 space-y-4 animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#1F1914]/50 backdrop-blur-xs animate-fade-in">
+          <div className="bg-white rounded-lg border border-[#E6DFD5] shadow-xl max-w-sm w-full overflow-hidden relative text-center p-6 space-y-4 animate-fade-in">
             <div
-              className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto shadow-md ${
+              className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto border ${
                 milestoneModal.unlocked
-                  ? 'bg-gradient-to-b from-yellow-300 to-amber-500 text-amber-950 animate-bounce-subtle'
-                  : 'bg-slate-100 text-slate-400'
+                  ? 'bg-amber-50 border-amber-300 text-amber-700'
+                  : 'bg-[#F2ECE4] border-[#E6DFD5] text-[#8C7E72]'
               }`}
             >
-              {milestoneModal.unlocked ? <Trophy className="w-8 h-8" /> : <Lock className="w-8 h-8" />}
+              {milestoneModal.unlocked ? <Trophy className="w-7 h-7" /> : <Lock className="w-7 h-7" />}
             </div>
 
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#6E6258]">
                 Pencapaian Milestone
               </span>
-              <h3 className="text-lg font-black text-slate-900 mt-0.5">{milestoneModal.title}</h3>
-              <p className="text-xs text-slate-600 mt-1 leading-relaxed">{milestoneModal.desc}</p>
+              <h3 className="text-base font-bold text-[#261C14] mt-0.5">{milestoneModal.title}</h3>
+              <p className="text-xs text-[#6E6258] mt-1 leading-relaxed">{milestoneModal.desc}</p>
             </div>
 
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold">
+            <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] text-xs font-medium">
               {milestoneModal.unlocked ? (
-                <div className="text-emerald-700">
+                <div className="text-[#286657]">
                   <span>Status: <strong>Terbuka!</strong></span>
-                  <div className="text-[11px] text-slate-600 mt-0.5">{milestoneModal.reward}</div>
+                  <div className="text-[11px] text-[#6E6258] mt-0.5">{milestoneModal.reward}</div>
                 </div>
               ) : (
-                <div className="text-slate-500">
+                <div className="text-[#6E6258]">
                   <span>Perlu menyelesaikan minimal <strong>{milestoneModal.requiredLevel} Materi</strong> untuk membuka!</span>
-                  <div className="text-[11px] text-slate-400 mt-0.5">Saat ini: {completedCount} / {milestoneModal.requiredLevel} Materi</div>
+                  <div className="text-[11px] text-[#8C7E72] mt-0.5">Saat ini: {completedCount} / {milestoneModal.requiredLevel} Materi</div>
                 </div>
               )}
             </div>
 
             <button
               onClick={() => setMilestoneModal(null)}
-              className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-colors cursor-pointer"
+              className="w-full py-2 rounded-lg bg-[#261C14] hover:bg-[#3D2E22] text-white font-medium text-xs transition-colors cursor-pointer"
             >
               Tutup
             </button>
@@ -1804,17 +1796,17 @@ const Materi = () => {
 
       {/* --- MODAL 5: KONFIRMASI RESET PROGRES --- */}
       {showResetConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-sm w-full p-5 space-y-4 text-center">
-            <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
-              <RotateCcw className="w-6 h-6" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#1F1914]/50 backdrop-blur-xs animate-fade-in">
+          <div className="bg-white rounded-lg border border-[#E6DFD5] shadow-xl max-w-sm w-full p-5 space-y-4 text-center">
+            <div className="w-10 h-10 rounded-full bg-[#FDF1F1] text-[#C93B3B] border border-[#F5C2C2] flex items-center justify-center mx-auto">
+              <RotateCcw className="w-5 h-5" />
             </div>
 
             <div>
-              <h4 className="text-base font-bold text-slate-900">
+              <h4 className="text-base font-bold text-[#261C14]">
                 Reset Progres {currentSubject?.title || 'Belajar'}?
               </h4>
-              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+              <p className="text-xs text-[#6E6258] mt-1 leading-relaxed">
                 Tindakan ini akan mengunci kembali Materi 2 sampai {currentLevels.length} pada mata pelajaran ini, dan mengembalikan status ke Materi 1 awal.
               </p>
             </div>
@@ -1822,13 +1814,13 @@ const Materi = () => {
             <div className="flex space-x-2 pt-2">
               <button
                 onClick={() => setShowResetConfirm(false)}
-                className="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors cursor-pointer"
+                className="flex-1 py-2 rounded-lg bg-[#F2ECE4] hover:bg-[#E6DFD5] text-[#261C14] font-medium text-xs transition-colors cursor-pointer"
               >
                 Batal
               </button>
               <button
                 onClick={handleResetProgress}
-                className="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition-colors shadow-xs cursor-pointer"
+                className="flex-1 py-2 rounded-lg bg-[#C93B3B] hover:bg-[#A82828] text-white font-semibold text-xs transition-colors shadow-xs cursor-pointer"
               >
                 Ya, Reset
               </button>

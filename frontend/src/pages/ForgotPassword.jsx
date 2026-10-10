@@ -247,34 +247,38 @@ const ForgotPassword = () => {
   const headerInfo = getHeaderInfo();
 
   return (
-    <div className="min-h-screen bg-doodle-pattern flex flex-col justify-center items-center p-4 sm:p-6">
+    <div className="min-h-screen bg-[#FAF7F2] flex flex-col justify-center items-center p-4 sm:p-6">
       <div className="w-full max-w-md">
         {/* Header Identitas */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-500/30 mb-4">
-            {headerInfo.icon}
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center mb-3">
+            <img
+              src="/logo.png"
+              alt="Logo EDU TKA"
+              className="h-14 w-auto object-contain"
+            />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-2xl font-bold text-[#261C14] tracking-tight">
             {headerInfo.title}
           </h1>
-          <p className="text-slate-500 text-sm mt-1.5 max-w-xs mx-auto">
+          <p className="text-[#6E6258] text-sm mt-1 max-w-xs mx-auto">
             {headerInfo.subtitle}
           </p>
         </div>
 
         {/* Card Form Utama */}
-        <div className="bg-white/95 rounded-2xl shadow-xl shadow-blue-950/10 border border-slate-200/90 p-6 sm:p-8 backdrop-blur-md">
+        <div className="bg-white rounded-lg border border-[#E6DFD5] p-6 sm:p-8 shadow-sm">
           {/* Banner Error Server */}
           {serverError && (
-            <div className="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 flex items-start space-x-3 text-rose-800 text-sm animate-fade-in">
-              <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
-              <p className="font-semibold text-rose-900">{serverError}</p>
+            <div className="mb-5 p-3 rounded-lg bg-[#FDF1F1] border border-[#F5C2C2] flex items-start space-x-2.5 text-[#C93B3B] text-sm">
+              <AlertCircle className="w-4 h-4 text-[#C93B3B] flex-shrink-0 mt-0.5" />
+              <p className="font-medium text-[#A82828]">{serverError}</p>
             </div>
           )}
 
           {/* STEP 1: INPUT IDENTIFIER */}
           {step === 'request' && (
-            <div className="animate-fade-in">
+            <div>
               <form onSubmit={handleRequestSubmit} noValidate>
                 <InputField
                   label="Username atau Alamat Email"
@@ -308,10 +312,10 @@ const ForgotPassword = () => {
               </form>
 
               {/* Kembali ke Login */}
-              <div className="mt-6 pt-5 border-t border-slate-150 text-center">
+              <div className="mt-6 pt-5 border-t border-[#E6DFD5] text-center">
                 <Link
                   to="/"
-                  className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-600 hover:text-blue-600 transition-colors"
+                  className="inline-flex items-center space-x-1.5 text-xs font-medium text-[#6E6258] hover:text-[#C25E38] transition-colors"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Kembali ke Halaman Masuk</span>
@@ -322,16 +326,16 @@ const ForgotPassword = () => {
 
           {/* STEP 2: VERIFIKASI KODE OTP (TERPISAH) */}
           {step === 'otp' && (
-            <div className="animate-fade-in">
+            <div>
               <div className="text-center mb-6">
-                <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center mx-auto mb-3">
-                  <Mail className="w-7 h-7" />
+                <div className="w-12 h-12 rounded-lg bg-[#FAECE6] border border-[#F2D2C4] text-[#C25E38] flex items-center justify-center mx-auto mb-3">
+                  <Mail className="w-6 h-6" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900">Periksa Email Anda</h3>
-                <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
+                <h3 className="text-base font-bold text-[#261C14]">Periksa Email Anda</h3>
+                <p className="text-xs text-[#6E6258] mt-1 max-w-xs mx-auto">
                   Kami telah mengirimkan 6 digit kode keamanan ke:
                 </p>
-                <div className="inline-flex items-center space-x-1.5 px-3 py-1 bg-slate-100 rounded-full text-slate-800 font-semibold text-xs mt-2 border border-slate-200">
+                <div className="inline-flex items-center space-x-1 px-2.5 py-0.5 bg-[#F2ECE4] rounded text-[#261C14] font-medium text-xs mt-2 border border-[#E6DFD5]">
                   <span>{maskedEmail}</span>
                 </div>
               </div>
@@ -349,10 +353,10 @@ const ForgotPassword = () => {
                       value={digit}
                       onChange={(e) => handleOtpDigitChange(index, e.target.value)}
                       onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                      className={`w-11 h-13 sm:w-13 sm:h-15 text-center text-xl sm:text-2xl font-bold rounded-xl border transition-all outline-none ${
+                      className={`w-11 h-13 sm:w-12 sm:h-14 text-center text-xl font-bold rounded-lg border outline-none transition-colors ${
                         digit
-                          ? 'border-blue-600 bg-blue-50/30 text-blue-900 shadow-sm shadow-blue-500/10 ring-2 ring-blue-500/20'
-                          : 'border-slate-300 bg-white text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+                          ? 'border-[#C25E38] bg-white text-[#261C14]'
+                          : 'border-[#E6DFD5] bg-white text-[#261C14] focus:border-[#C25E38] focus:ring-1 focus:ring-[#C25E38]'
                       }`}
                     />
                   ))}
@@ -371,15 +375,15 @@ const ForgotPassword = () => {
 
                 {/* Kirim Ulang Kode OTP */}
                 <div className="mt-4 text-center">
-                  <p className="text-xs text-slate-500 mb-1.5">Tidak menerima kode OTP?</p>
+                  <p className="text-xs text-[#6E6258] mb-1.5">Tidak menerima kode OTP?</p>
                   <button
                     type="button"
                     onClick={handleResendOtp}
                     disabled={resendCountdown > 0 || isResending}
-                    className={`inline-flex items-center space-x-1.5 text-xs font-semibold ${
+                    className={`inline-flex items-center space-x-1.5 text-xs font-medium cursor-pointer ${
                       resendCountdown > 0
-                        ? 'text-slate-400 cursor-not-allowed'
-                        : 'text-blue-600 hover:text-blue-700 hover:underline'
+                        ? 'text-[#8C7E72] cursor-not-allowed'
+                        : 'text-[#C25E38] hover:text-[#A94D2B] hover:underline'
                     }`}
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${isResending ? 'animate-spin' : ''}`} />
@@ -393,7 +397,7 @@ const ForgotPassword = () => {
               </form>
 
               {/* Kembali ke Step 1 */}
-              <div className="mt-6 pt-5 border-t border-slate-150 text-center">
+              <div className="mt-6 pt-5 border-t border-[#E6DFD5] text-center">
                 <button
                   type="button"
                   onClick={() => {
@@ -401,7 +405,7 @@ const ForgotPassword = () => {
                     setServerError('');
                     setErrors({});
                   }}
-                  className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors"
+                  className="inline-flex items-center space-x-1.5 text-xs font-medium text-[#6E6258] hover:text-[#261C14] transition-colors cursor-pointer"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Ubah data akun / input ulang</span>
@@ -412,16 +416,16 @@ const ForgotPassword = () => {
 
           {/* STEP 3: ATUR PASSWORD BARU (TERPISAH SETELAH OTP DIVERIFIKASI) */}
           {step === 'new-password' && (
-            <div className="animate-fade-in">
+            <div>
               <div className="text-center mb-6">
-                <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center mx-auto mb-3">
-                  <Lock className="w-7 h-7" />
+                <div className="w-12 h-12 rounded-lg bg-[#FAECE6] border border-[#F2D2C4] text-[#C25E38] flex items-center justify-center mx-auto mb-3">
+                  <Lock className="w-6 h-6" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900">Kata Sandi Baru</h3>
-                <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
+                <h3 className="text-base font-bold text-[#261C14]">Kata Sandi Baru</h3>
+                <p className="text-xs text-[#6E6258] mt-1 max-w-xs mx-auto">
                   Untuk akun terverifikasi:
                 </p>
-                <div className="inline-flex items-center space-x-1.5 px-3 py-1 bg-slate-100 rounded-full text-slate-800 font-semibold text-xs mt-2 border border-slate-200">
+                <div className="inline-flex items-center space-x-1.5 px-3 py-1 bg-[#F2ECE4] rounded-full text-[#261C14] font-semibold text-xs mt-2 border border-[#E6DFD5]">
                   <span>{maskedEmail}</span>
                 </div>
               </div>
@@ -480,10 +484,10 @@ const ForgotPassword = () => {
               </form>
 
               {/* Kembali ke Login */}
-              <div className="mt-6 pt-5 border-t border-slate-150 text-center">
+              <div className="mt-6 pt-5 border-t border-[#E6DFD5] text-center">
                 <Link
                   to="/"
-                  className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-600 hover:text-blue-600 transition-colors"
+                  className="inline-flex items-center space-x-1.5 text-xs font-semibold text-[#6E6258] hover:text-[#C25E38] transition-colors"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Kembali ke Halaman Masuk</span>
@@ -494,7 +498,7 @@ const ForgotPassword = () => {
         </div>
 
         {/* Footer info */}
-        <p className="text-center text-xs text-slate-400 mt-6">
+        <p className="text-center text-xs text-[#8C7E72] mt-6">
           &copy; {new Date().getFullYear()} TKA SD. Seluruh hak cipta dilindungi.
         </p>
       </div>

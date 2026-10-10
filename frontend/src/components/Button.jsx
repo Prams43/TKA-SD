@@ -16,17 +16,19 @@ const Button = ({
   className = '',
 }) => {
   const baseStyles =
-    'inline-flex items-center justify-center font-medium rounded-lg text-sm px-4 py-2.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
+    'inline-flex items-center justify-center font-medium rounded-lg text-sm px-4 py-2.5 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1';
 
   const variants = {
     primary:
-      'bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow focus:ring-blue-500 disabled:bg-blue-400',
+      'bg-[#C25E38] hover:bg-[#A94D2B] text-white focus:ring-[#C25E38]/30 disabled:bg-[#F5D7CC]',
     secondary:
-      'bg-slate-100 hover:bg-slate-200 text-slate-700 focus:ring-slate-400 disabled:bg-slate-50',
+      'bg-[#F2ECE4] hover:bg-[#EAE2D8] text-[#261C14] border border-[#E6DFD5] focus:ring-[#C25E38]/20 disabled:bg-[#FAF7F2] disabled:text-[#A89F95]',
     danger:
-      'bg-rose-600 hover:bg-rose-700 text-white shadow-sm focus:ring-rose-500 disabled:bg-rose-400',
+      'bg-[#C93B3B] hover:bg-[#B32D2D] text-white focus:ring-[#C93B3B]/30 disabled:bg-[#FCD8D8]',
     outline:
-      'border border-slate-300 hover:bg-slate-50 text-slate-700 focus:ring-blue-500 disabled:opacity-50',
+      'border border-[#E6DFD5] hover:bg-[#FAF7F2] text-[#261C14] focus:ring-[#C25E38]/20 disabled:opacity-50',
+    sage:
+      'bg-[#286657] hover:bg-[#1E5044] text-white focus:ring-[#286657]/30 disabled:bg-[#C5DDD6]',
   };
 
   const isDisabled = disabled || isLoading;
@@ -40,7 +42,7 @@ const Button = ({
         ${baseStyles}
         ${variants[variant] || variants.primary}
         ${fullWidth ? 'w-full' : ''}
-        ${isDisabled ? 'cursor-not-allowed opacity-80' : 'cursor-pointer active:scale-[0.99]'}
+        ${isDisabled ? 'cursor-not-allowed opacity-75' : 'cursor-pointer'}
         ${className}
       `}
     >

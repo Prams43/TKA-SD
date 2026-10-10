@@ -160,57 +160,61 @@ const Login = () => {
   const isPromptingSavedUser = savedUser && !useAnotherAccount;
 
   return (
-    <div className="min-h-screen bg-doodle-pattern flex flex-col justify-center items-center p-4 sm:p-6">
+    <div className="min-h-screen bg-[#FAF7F2] text-[#261C14] flex flex-col justify-center items-center p-4 sm:p-6">
       <div className="w-full max-w-md">
         {/* Brand Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-500/30 mb-4">
-            <GraduationCap className="w-8 h-8" />
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center mb-3">
+            <img
+              src="/logo.png"
+              alt="Logo EDU TKA"
+              className="h-16 w-auto object-contain"
+            />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-2xl font-bold text-[#261C14] tracking-tight">
             Portal TKA SD
           </h1>
-          <p className="text-slate-500 text-sm mt-1.5">
+          <p className="text-[#6E6258] text-sm mt-1">
             Masuk untuk mengakses latihan Tes Kemampuan Akademik
           </p>
         </div>
 
         {/* Card Form */}
-        <div className="bg-white/95 rounded-2xl shadow-xl shadow-blue-950/10 border border-slate-200/90 p-6 sm:p-8 backdrop-blur-md">
+        <div className="bg-white rounded-lg border border-[#E6DFD5] p-6 sm:p-8 shadow-xs">
           {/* Notifikasi Registrasi Berhasil */}
           {successNotice && (
-            <div className="mb-5 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start space-x-3 text-emerald-800 text-sm animate-fade-in">
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+            <div className="mb-5 p-3 rounded-lg bg-[#EBF7F0] border border-[#287A54]/30 flex items-start space-x-2.5 text-[#287A54] text-sm font-medium">
+              <CheckCircle2 className="w-4 h-4 text-[#287A54] flex-shrink-0 mt-0.5" />
               <span>{successNotice}</span>
             </div>
           )}
 
           {/* Notifikasi Error dari Server */}
           {serverError && (
-            <div className="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 flex items-start space-x-3 text-rose-800 text-sm animate-fade-in">
-              <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
+            <div className="mb-5 p-3 rounded-lg bg-[#FDF1F1] border border-[#C93B3B]/30 flex items-start space-x-2.5 text-[#C93B3B] text-sm font-medium">
+              <AlertCircle className="w-4 h-4 text-[#C93B3B] flex-shrink-0 mt-0.5" />
               <span>{serverError}</span>
             </div>
           )}
 
           {/* TAMPILAN 1: PERTANYAAN TETAP LOGIN MENGGUNAKAN AKUN TERSIMPAN */}
           {isPromptingSavedUser ? (
-            <div className="animate-fade-in">
+            <div>
               {/* Header Kartu Akun Tersimpan */}
-              <div className="flex flex-col items-center text-center mb-6">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-2xl font-bold shadow-lg shadow-blue-500/25 mb-3.5 transform hover:scale-105 transition-transform">
+              <div className="flex flex-col items-center text-center mb-5">
+                <div className="w-14 h-14 rounded-lg bg-[#2A211A] text-white flex items-center justify-center text-xl font-bold mb-3">
                   {savedUser.username ? savedUser.username.charAt(0).toUpperCase() : 'U'}
                 </div>
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-blue-700 bg-blue-50 px-3 py-0.5 rounded-full border border-blue-200 mb-2">
+                <span className="text-[11px] font-medium text-[#6E6258] bg-[#F2ECE4] px-2 py-0.5 rounded border border-[#E6DFD5] mb-1.5">
                   Akun Tersimpan
                 </span>
-                <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+                <h2 className="text-lg font-bold text-[#261C14]">
                   {savedUser.username || savedUser.identifier}
                 </h2>
                 {savedUser.email && savedUser.email !== savedUser.username && (
-                  <p className="text-xs text-slate-500 mt-0.5">{savedUser.email}</p>
+                  <p className="text-xs text-[#6E6258] mt-0.5">{savedUser.email}</p>
                 )}
-                <p className="text-sm font-medium text-slate-600 mt-3">
+                <p className="text-sm text-[#6E6258] mt-2.5">
                   Tetap login menggunakan akun ini?
                 </p>
               </div>
@@ -236,23 +240,23 @@ const Login = () => {
                 <div className="flex items-center justify-between mt-3 mb-5">
                   <label
                     htmlFor="saved-remember-me"
-                    className="flex items-center space-x-2.5 cursor-pointer group select-none"
+                    className="flex items-center space-x-2 cursor-pointer select-none"
                   >
                     <input
                       type="checkbox"
                       id="saved-remember-me"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
-                      className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer transition-colors"
+                      className="w-4 h-4 text-[#C25E38] border-[#E6DFD5] rounded focus:ring-[#C25E38] focus:ring-1 cursor-pointer"
                     />
-                    <span className="text-sm font-medium text-slate-600 group-hover:text-slate-800 transition-colors">
+                    <span className="text-sm text-[#6E6258]">
                       Ingat akun ini
                     </span>
                   </label>
 
                   <Link
                     to="/forgot-password"
-                    className="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                    className="text-xs font-medium text-[#C25E38] hover:text-[#A94D2B] hover:underline"
                   >
                     Lupa password?
                   </Link>
@@ -278,19 +282,19 @@ const Login = () => {
                     setServerError('');
                     setErrors({});
                   }}
-                  className="w-full mt-3 py-2.5 px-4 text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200/80 active:bg-slate-200 rounded-xl transition-all border border-slate-200/80 flex items-center justify-center space-x-2"
+                  className="w-full mt-2.5 py-2.5 px-4 text-sm font-medium text-[#261C14] bg-[#F2ECE4] hover:bg-[#EAE2D8] rounded-lg transition-colors border border-[#E6DFD5] flex items-center justify-center space-x-2 cursor-pointer"
                 >
-                  <UserPlus className="w-4 h-4 text-slate-500" />
+                  <UserPlus className="w-4 h-4 text-[#6E6258]" />
                   <span>Login Akun Lain</span>
                 </button>
               </form>
 
               {/* Opsi Hapus Akun dari Perangkat */}
-              <div className="mt-6 pt-5 border-t border-slate-150 text-center flex items-center justify-center">
+              <div className="mt-6 pt-5 border-t border-[#E6DFD5] text-center flex items-center justify-center">
                 <button
                   type="button"
                   onClick={handleForgetSavedAccount}
-                  className="text-xs text-slate-400 hover:text-rose-600 transition-colors inline-flex items-center space-x-1.5"
+                  className="text-xs text-[#A89F95] hover:text-[#C93B3B] transition-colors inline-flex items-center space-x-1.5 cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Hapus akun tersimpan dari perangkat ini</span>
@@ -308,7 +312,7 @@ const Login = () => {
                     setServerError('');
                     setErrors({});
                   }}
-                  className="mb-4 inline-flex items-center space-x-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                  className="mb-4 inline-flex items-center space-x-1.5 text-xs font-semibold text-[#C25E38] hover:text-[#A94D2B] hover:underline transition-colors cursor-pointer"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Kembali ke akun {savedUser.username || savedUser.identifier}</span>
@@ -355,16 +359,16 @@ const Login = () => {
                       name="rememberMe"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
-                      className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer transition-colors"
+                      className="w-4 h-4 text-[#C25E38] border-[#E6DFD5] rounded focus:ring-[#C25E38] focus:ring-1 cursor-pointer transition-colors"
                     />
-                    <span className="text-sm font-medium text-slate-600 group-hover:text-slate-800 transition-colors">
+                    <span className="text-sm font-medium text-[#6E6258] group-hover:text-[#261C14] transition-colors">
                       Ingat saya
                     </span>
                   </label>
 
                   <Link
                     to="/forgot-password"
-                    className="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                    className="text-xs font-semibold text-[#C25E38] hover:text-[#A94D2B] hover:underline transition-colors"
                   >
                     Lupa password?
                   </Link>
@@ -384,12 +388,12 @@ const Login = () => {
               </form>
 
               {/* Link ke Registrasi */}
-              <div className="mt-6 pt-6 border-t border-slate-150 text-center">
-                <p className="text-sm text-slate-600">
+              <div className="mt-6 pt-6 border-t border-[#E6DFD5] text-center">
+                <p className="text-sm text-[#6E6258]">
                   Belum punya akun?{' '}
                   <Link
                     to="/register"
-                    className="font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                    className="font-semibold text-[#C25E38] hover:text-[#A94D2B] hover:underline transition-colors"
                   >
                     Daftar di sini
                   </Link>
@@ -400,7 +404,7 @@ const Login = () => {
         </div>
 
         {/* Footer info */}
-        <p className="text-center text-xs text-slate-400 mt-6">
+        <p className="text-center text-xs text-[#A89F95] mt-6">
           &copy; {new Date().getFullYear()} TKA SD. Seluruh hak cipta dilindungi.
         </p>
       </div>
