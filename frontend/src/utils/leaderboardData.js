@@ -1,7 +1,14 @@
 import { AVAILABLE_TITLES, getUserProfileStats } from './activityTracker';
 import { profileService } from '../services/profileService';
 
-const LEADERBOARD_STORAGE_KEY = 'tka_leaderboard_registry_v1';
+const LEADERBOARD_STORAGE_KEY = 'tka_leaderboard_registry_v2';
+
+// Bersihkan cache leaderboard lama
+if (typeof window !== 'undefined') {
+  try {
+    localStorage.removeItem('tka_leaderboard_registry_v1');
+  } catch (_) {}
+}
 
 /**
  * Mengambil data leaderboard langsung dari Cloudflare D1

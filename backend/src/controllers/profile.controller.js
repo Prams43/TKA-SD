@@ -14,14 +14,14 @@ export const getProfile = async (req, res, next) => {
     let profile = await findProfileByUserId(userId);
 
     if (!profile) {
-      // Default profile jika user baru pertama kali mengakses
+      // Default profile jika user baru pertama kali mengakses (bersih total: Level 1, 0 EXP, 0 Streak)
       const defaultData = {
         userId,
-        exp: 120,
-        level: 2,
+        exp: 0,
+        level: 1,
         activeTitle: 'pemula',
         unlockedTitles: ['pemula'],
-        streak: { count: 1, lastActiveDate: null, activeToday: false },
+        streak: { count: 0, lastActiveDate: null, activeToday: false },
         activityData: {
           materiCompleted: [],
           unlockedMateri: ['mtk_1', 'bi_1'],
