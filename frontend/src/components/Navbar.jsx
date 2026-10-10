@@ -85,9 +85,7 @@ const Navbar = () => {
                   🔥
                 </span>
                 <span>{profileStats.streak.count} Hari</span>
-                {profileStats.streak.activeToday ? (
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping hidden md:inline-block ml-0.5" />
-                ) : (
+                {!profileStats.streak.activeToday && (
                   <span className="text-[10px] text-amber-400/80 hidden xl:inline-block font-normal ml-0.5">
                     (Belum aktif)
                   </span>
