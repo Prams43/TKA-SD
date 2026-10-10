@@ -1,8 +1,43 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Trophy, Zap, Sparkles, X, ChevronRight } from 'lucide-react';
+import yippeeSound from '../assets/Yippee Sound Effect.mp3';
 
 /**
- * Audio Synthesizer (Web Audio API) untuk chime perayaan.
+ * Memainkan sound effect Yippee dari assets saat pemain naik level
+ */
+let yippeeAudioInstance = null;
+const getYippeeAudio = () => {
+  if (typeof window === 'undefined') return null;
+  if (!yippeeAudioInstance) {
+    try {
+      yippeeAudioInstance = new Audio(yippeeSound);
+      yippeeAudioInstance.preload = 'auto';
+    } catch {
+      yippeeAudioInstance = null;
+    }
+  }
+  return yippeeAudioInstance;
+};
+
+const playYippeeSound = () => {
+  try {
+    const audio = getYippeeAudio() || new Audio(yippeeSound);
+    audio.currentTime = 0;
+    audio.volume = 0.95;
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch((err) => {
+        console.warn('Autoplay audio Yippee diblokir browser, fallback ke fanfare:', err);
+        playCelebrationChime(true);
+      });
+    }
+  } catch (err) {
+    playCelebrationChime(true);
+  }
+};
+
+/**
+ * Audio Synthesizer (Web Audio API) untuk chime perayaan EXP biasa.
  * Berjalan murni di browser tanpa file audio eksternal.
  */
 const playCelebrationChime = (isLevelUp) => {
@@ -28,7 +63,7 @@ const playCelebrationChime = (isLevelUp) => {
         osc.stop(now + i * 0.11 + 0.45);
       });
     } else {
-      // Chime EXP: E5 -> B5
+      // Chime EXP biasa: E5 -> B5
       const notes = [659.25, 987.77];
       notes.forEach((freq, i) => {
         const osc = ctx.createOscillator();
@@ -50,8 +85,7 @@ const playCelebrationChime = (isLevelUp) => {
 
 /**
  * Komponen Notifikasi Pop-up Perayaan EXP & Naik Level.
- * Menggunakan warna solid datar (flat solid colors) yang harmonis dengan tema TKA SD,
- * tanpa gradient buatan AI.
+ * Menggunakan warna solid datar (flat solid colors) yang harmonis dengan tema TKA SD.
  */
 const RewardModal = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -72,7 +106,12 @@ const RewardModal = () => {
       setIsOpen(true);
       setDismissCountdown(data.leveledUp ? 7 : 5);
 
-      playCelebrationChime(data.leveledUp);
+      // Mainkan Yippee sound jika naik level, atau chime lembut jika hanya tambah EXP biasa
+      if (data.leveledUp) {
+        playYippeeSound();
+      } else {
+        playCelebrationChime(false);
+      }
 
       // Partikel konfeti menggunakan palet warna solid tema TKA SD
       const themeColors = ['#C25E38', '#286657', '#D97E26', '#2C6E8F', '#8C7E72'];
