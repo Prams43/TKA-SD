@@ -3,52 +3,53 @@
 @tailwind utilities;
 
 :root {
-  /* OPSI 1: Warm Editorial & Terracotta */
-  --bg-main: #FAF7F2;
-  --bg-surface: #FFFFFF;
-  --bg-subtle: #F2ECE4;
+  /* Tema Navy Dominan & Clean Slate Gray Surfaces */
+  --bg-main: #0B1A34;
+  --bg-surface: #E2E8F0;
+  --bg-subtle: #CBD5E1;
 
-  --text-main: #261C14;
-  --text-muted: #6E6258;
+  --text-main: #1E293B;
+  --text-muted: #64748B;
 
-  --accent-main: #C25E38;
-  --accent-main-hover: #A94D2B;
-  --accent-main-tint: #FAECE6;
+  --accent-main: #1D4ED8;
+  --accent-main-hover: #1E40AF;
+  --accent-main-tint: #EFF6FF;
 
-  --accent-sec: #286657;
-  --accent-sec-hover: #1E5044;
-  --accent-sec-tint: #E8F2EF;
+  --accent-sec: #0D9488;
+  --accent-sec-hover: #0F766E;
+  --accent-sec-tint: #F0FDFA;
 
-  --status-success: #287A54;
-  --status-success-tint: #EBF7F0;
+  --status-success: #16A34A;
+  --status-success-tint: #F0FDF4;
 
-  --status-error: #C93B3B;
-  --status-error-tint: #FDF1F1;
+  --status-error: #DC2626;
+  --status-error-tint: #FEF2F2;
 
-  --status-warning: #D97E26;
-  --status-warning-tint: #FEF7EE;
+  --status-warning: #D97706;
+  --status-warning-tint: #FFFBEB;
 
-  --status-info: #2C6E8F;
-  --status-info-tint: #EFF6F9;
+  --status-info: #0284C7;
+  --status-info-tint: #F0F9FF;
 
-  --border-color: #E6DFD5;
+  --border-color: #CBD5E1;
 }
 
 @layer base {
   body {
-    background-color: var(--bg-main);
-    color: var(--text-main);
+    background-color: #F8FAFC;
+    color: #1E293B;
     font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
   }
 
   ::selection {
-    background-color: #F5D7CC;
-    color: #261C14;
+    background-color: #1E3A8A;
+    color: #FFFFFF;
   }
 }
 
 .bg-doodle-pattern {
-  background-color: var(--bg-main);
+  background: linear-gradient(135deg, #1898AA 0%, #1CA2B7 25%, #2EB2C1 52%, #1FA4B8 78%, #158897 100%);
 }
 
 /* Custom animation utils */
@@ -67,6 +68,33 @@
   animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Animasi mengapung santai untuk gelembung di pojok */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(2deg);
+  }
+}
+
+@keyframes floatReverse {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(8px) rotate(-2deg);
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 7s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: floatReverse 9s ease-in-out infinite;
+}
+
 /* Sembunyikan ikon intip password bawaan Microsoft Edge agar tidak dobel */
 input::-ms-reveal,
 input::-ms-clear,
@@ -75,4 +103,36 @@ input[type="password"]::-ms-clear {
   display: none !important;
   width: 0 !important;
   height: 0 !important;
+}
+
+/* 
+  Transformasi background putih menjadi abu-abu / gray (Slate Gray #E2E8F0) elegan
+  Mengubah semua surface bg-white dan varian transparansinya menjadi warna abu-abu
+  tanpa mempengaruhi text-white atau border-white.
+*/
+@layer utilities {
+  .bg-white {
+    background-color: #E2E8F0;
+  }
+  .bg-white\/95 {
+    background-color: rgb(226 232 240 / 0.95);
+  }
+  .bg-white\/90 {
+    background-color: rgb(226 232 240 / 0.9);
+  }
+  .bg-white\/85 {
+    background-color: rgb(226 232 240 / 0.85);
+  }
+  .bg-white\/80 {
+    background-color: rgb(226 232 240 / 0.8);
+  }
+  .bg-white\/70 {
+    background-color: rgb(226 232 240 / 0.7);
+  }
+  .bg-white\/60 {
+    background-color: rgb(226 232 240 / 0.6);
+  }
+  .bg-white\/50 {
+    background-color: rgb(226 232 240 / 0.5);
+  }
 }

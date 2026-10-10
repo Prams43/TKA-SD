@@ -220,18 +220,18 @@ const TryoutView = ({ isOpen, onClose }) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div
                   onClick={() => setSelectedSubject('bahasa_indonesia')}
-                  className="p-6 rounded-2xl bg-gradient-to-br from-blue-50/80 via-white to-blue-50/40 border-2 border-blue-200 hover:border-blue-500 transition-all cursor-pointer group hover:scale-[1.02] shadow-md hover:shadow-xl"
+                  className="p-6 rounded-2xl bg-white border-2 border-[#047857] hover:border-[#065F46] transition-all cursor-pointer group hover:scale-[1.02] shadow-md hover:shadow-xl"
                 >
-                  <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 rounded-2xl bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <BookOpen className="w-6 h-6" />
                   </div>
-                  <h4 className="text-lg font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+                  <h4 className="text-lg font-bold text-slate-900 group-hover:text-[#047857] transition-colors">
                     Tryout Bahasa Indonesia
                   </h4>
                   <p className="text-xs text-slate-600 mt-2 leading-relaxed">
                     5 Paket Tryout Nasional: 30 Soal (PG & Isian), durasi 60 menit, variasi HOTS & Sedang.
                   </p>
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-blue-600 font-semibold">
+                  <div className="mt-4 pt-3 border-t border-[#A7F3D0] flex items-center justify-between text-xs text-[#047857] font-semibold">
                     <span>Pilih Paket 1 s.d. 5</span>
                     <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -239,18 +239,18 @@ const TryoutView = ({ isOpen, onClose }) => {
 
                 <div
                   onClick={() => setSelectedSubject('matematika')}
-                  className="p-6 rounded-2xl bg-gradient-to-br from-amber-50/80 via-white to-amber-50/40 border-2 border-amber-200 hover:border-amber-500 transition-all cursor-pointer group hover:scale-[1.02] shadow-md hover:shadow-xl"
+                  className="p-6 rounded-2xl bg-white border-2 border-[#881337] hover:border-[#700D2B] transition-all cursor-pointer group hover:scale-[1.02] shadow-md hover:shadow-xl"
                 >
-                  <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 rounded-2xl bg-[#FFF1F2] text-[#881337] border border-[#FECDD3] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <Calculator className="w-6 h-6" />
                   </div>
-                  <h4 className="text-lg font-bold text-slate-900 group-hover:text-amber-700 transition-colors">
+                  <h4 className="text-lg font-bold text-slate-900 group-hover:text-[#881337] transition-colors">
                     Tryout Matematika
                   </h4>
                   <p className="text-xs text-slate-600 mt-2 leading-relaxed">
                     5 Paket Tryout Nasional: 30 Soal (PG & Isian), durasi 60 menit, penerapan problem solving nyata.
                   </p>
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-amber-600 font-semibold">
+                  <div className="mt-4 pt-3 border-t border-[#FECDD3] flex items-center justify-between text-xs text-[#881337] font-semibold">
                     <span>Pilih Paket 1 s.d. 5</span>
                     <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -269,14 +269,7 @@ const TryoutView = ({ isOpen, onClose }) => {
                   </h3>
                   <p className="text-xs text-slate-500 mt-0.5">
                     Standar TKA SD Nasional: 30 Soal (PG + Isian), 60 Menit.
-                  </p>
                 </div>
-                <button
-                  onClick={() => setSelectedSubject(null)}
-                  className="text-xs text-slate-500 hover:text-slate-800 underline font-medium"
-                >
-                  Ganti Mapel
-                </button>
               </div>
 
               {/* Grid 5 Paket Tryout */}

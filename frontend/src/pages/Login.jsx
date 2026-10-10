@@ -160,27 +160,27 @@ const Login = () => {
   const isPromptingSavedUser = savedUser && !useAnotherAccount;
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] text-[#261C14] flex flex-col justify-center items-center p-4 sm:p-6">
+    <div className="min-h-screen bg-transparent text-[#261C14] flex flex-col justify-center items-center p-4 sm:p-6">
       <div className="w-full max-w-md">
         {/* Brand Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center mb-3">
+          <div className="inline-flex items-center justify-center mb-3 p-2 bg-white rounded-2xl shadow-md border border-white/30">
             <img
               src="/logo.png"
               alt="Logo EDU TKA"
-              className="h-16 w-auto object-contain"
+              className="h-14 w-auto object-contain"
             />
           </div>
-          <h1 className="text-2xl font-bold text-[#261C14] tracking-tight">
+          <h1 className="text-2xl font-bold text-white tracking-tight drop-shadow-sm">
             Portal TKA SD
           </h1>
-          <p className="text-[#6E6258] text-sm mt-1">
+          <p className="text-teal-50/90 text-sm mt-1 font-medium">
             Masuk untuk mengakses latihan Tes Kemampuan Akademik
           </p>
         </div>
 
         {/* Card Form */}
-        <div className="bg-white rounded-lg border border-[#E6DFD5] p-6 sm:p-8 shadow-xs">
+        <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 shadow-xl">
           {/* Notifikasi Registrasi Berhasil */}
           {successNotice && (
             <div className="mb-5 p-3 rounded-lg bg-[#EBF7F0] border border-[#287A54]/30 flex items-start space-x-2.5 text-[#287A54] text-sm font-medium">
@@ -404,7 +404,7 @@ const Login = () => {
         </div>
 
         {/* Footer info */}
-        <p className="text-center text-xs text-[#A89F95] mt-6">
+        <p className="text-center text-xs text-slate-500 mt-6">
           &copy; {new Date().getFullYear()} TKA SD. Seluruh hak cipta dilindungi.
         </p>
       </div>

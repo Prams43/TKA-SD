@@ -7,22 +7,17 @@ import PillMenuButton from '../components/PillMenuButton';
 import { BookOpen, FileQuestion, Trophy, BarChart3, Crown } from 'lucide-react';
 import { getUserProfileStats } from '../utils/activityTracker';
 import LeaderboardModal from '../components/LeaderboardModal';
+import ProfileModal from '../components/ProfileModal';
 
 /**
  * Halaman Dashboard Utama TKA SD
- * 
- * Fitur:
- * 1. Background gradient doodle edukasi terang & bersih
- * 2. 5 Tombol Menu Kapsul Navy Interaktif:
- *    - Materi, Latihan Soal, Tryout, Rapor, dan Menu Leaderboard (Papan Peringkat)
- * 3. Menu Leaderboard menampilkan daftar top user berdasarkan Level & EXP serta gelar yang dipasang
- * 4. Karakter Siswa Cerdas tetap di sebelah kanan tombol
  */
 const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [profileStats, setProfileStats] = useState(() => getUserProfileStats());
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const refreshStats = () => {
     setProfileStats(getUserProfileStats());
@@ -40,21 +35,55 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#261C14]">
+    <div className="min-h-screen flex flex-col bg-transparent text-slate-800">
       {/* 1. Navbar Bagian Atas */}
       <Navbar />
 
       {/* 2. Area Utama di Bawah Navbar */}
       <main className="flex-1 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-12 py-6 sm:py-10">
         <div className="max-w-6xl w-full mx-auto flex flex-col justify-center">
-          {/* Header Judul */}
-          <div className="mb-6 sm:mb-8 text-center lg:text-left">
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#261C14] tracking-tight">
-              Halo, {user?.username || user?.email?.split('@')[0] || 'Siswa'}!
-            </h1>
-            <p className="text-xs sm:text-sm text-[#6E6258] mt-1.5">
-              Pilih menu di bawah untuk mulai belajar atau cek evaluasi kemampuanmu.
-            </p>
+          {/* Bagian Profil Siswa di Dashboard - Dominan Navy Solid (Tanpa Gradient) */}
+          <div className="mb-6 sm:mb-8 p-4 sm:p-5 rounded-2xl bg-[#0B1A34] border-2 border-blue-500/40 shadow-lg text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center space-x-3.5 sm:space-x-4">
+              <div
+                onClick={() => setIsProfileModalOpen(true)}
+                className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#1E3A8A] hover:bg-blue-600 text-white border-2 border-blue-400 flex items-center justify-center text-2xl font-bold shadow-md flex-shrink-0 cursor-pointer transition-all active:scale-95"
+                title="Buka profil"
+              >
+                {profileStats?.activeTitle?.icon || (user?.username ? user.username.charAt(0).toUpperCase() : '🦁')}
+              </div>
+              <div>
+                <div className="flex items-center space-x-2 flex-wrap">
+                  <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                    Halo, {user?.username || user?.email?.split('@')[0] || 'Siswa'}!
+                  </h1>
+                  {profileStats?.activeTitle && (
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-blue-600 text-white border border-blue-400 shadow-2xs">
+                      {profileStats.activeTitle.name}
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs sm:text-sm text-blue-200 mt-1">
+                  Siap belajar hari ini? Kumpulkan EXP dan raih puncak prestasi!
+                </p>
+              </div>
+            </div>
+
+            {/* Quick Stats: Level & EXP (Display Only) */}
+            <div className="flex items-center self-stretch md:self-auto justify-end border-t-2 md:border-t-0 border-[#1E3A8A] pt-3 md:pt-0">
+              <div
+                className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-[#071325] border-2 border-blue-500/40 shadow-xs select-none"
+              >
+                <span className="text-xs font-bold text-blue-400">Lv.{profileStats.level}</span>
+                <div className="w-16 sm:w-20 bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div
+                    className="bg-blue-500 h-full rounded-full transition-all duration-300"
+                    style={{ width: `${profileStats.progressPercent}%` }}
+                  />
+                </div>
+                <span className="text-[10px] text-blue-200 font-semibold">{profileStats.progressPercent}%</span>
+              </div>
+            </div>
           </div>
 
           {/* Kontainer 2 Kolom (Side-by-side tetap berdampingan di Mobile & Desktop) */}
@@ -117,6 +146,15 @@ const Dashboard = () => {
         onClose={() => setIsLeaderboardOpen(false)}
         user={user}
         profileStats={profileStats}
+      />
+
+      {/* Modal Detail Profil Siswa (Dominan Navy) */}
+      <ProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        user={user}
+        profileStats={profileStats}
+        onProfileUpdated={refreshStats}
       />
     </div>
   );

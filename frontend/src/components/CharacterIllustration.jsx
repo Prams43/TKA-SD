@@ -119,7 +119,7 @@ const CharacterIllustration = () => {
       {/* Interactive Speech Bubble */}
       <div
         onClick={handleCharacterClick}
-        className="cursor-pointer mb-2 px-3 py-1.5 rounded-lg bg-white text-slate-800 text-xs sm:text-sm font-medium border border-slate-200 shadow-xs flex items-center space-x-1.5 z-20 text-center"
+        className="cursor-pointer mb-2 px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-xs sm:text-sm font-medium border border-slate-300 shadow-xs flex items-center space-x-1.5 z-20 text-center"
       >
         <Sparkles className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
         <span className="line-clamp-2 sm:line-clamp-none">{quotes[quoteIndex]}</span>

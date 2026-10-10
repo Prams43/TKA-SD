@@ -68,11 +68,11 @@ const SUBJECTS_CONFIG = {
     theme: {
       gradient: 'from-slate-900 to-slate-900',
       border: 'border-[#33261D]',
-      badgeBg: 'bg-[#E8F2EF] text-[#286657] border-[#BCD9D0]',
-      activeRing: 'ring-[#286657]/20',
-      activeBtn: 'from-[#286657] to-[#286657] border-[#1E5044]',
-      pillCompleted: 'bg-[#E8F2EF] border-[#BCD9D0] text-[#286657]',
-      pillActive: 'bg-[#E8F2EF] border-[#BCD9D0] text-[#286657]',
+      badgeBg: 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]',
+      activeRing: 'ring-[#047857]/20',
+      activeBtn: 'from-[#047857] to-[#047857] border-[#065F46]',
+      pillCompleted: 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]',
+      pillActive: 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]',
     },
     milestones: {
       4: {
@@ -110,11 +110,11 @@ const SUBJECTS_CONFIG = {
     theme: {
       gradient: 'from-slate-900 to-slate-900',
       border: 'border-[#33261D]',
-      badgeBg: 'bg-[#FAECE6] text-[#C25E38] border-[#F2D2C4]',
-      activeRing: 'ring-[#C25E38]/20',
-      activeBtn: 'from-[#C25E38] to-[#C25E38] border-[#A94D2B]',
-      pillCompleted: 'bg-[#FAECE6] border-[#F2D2C4] text-[#C25E38]',
-      pillActive: 'bg-[#FAECE6] border-[#F2D2C4] text-[#C25E38]',
+      badgeBg: 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]',
+      activeRing: 'ring-[#881337]/20',
+      activeBtn: 'from-[#881337] to-[#881337] border-[#700D2B]',
+      pillCompleted: 'bg-[#FFF1F2] border-[#FECDD3] text-[#881337]',
+      pillActive: 'bg-[#FFF1F2] border-[#FECDD3] text-[#881337]',
     },
     milestones: {
       4: {
@@ -510,7 +510,7 @@ const LatihanSoal = () => {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#261C14] selection:bg-[#FAECE6] selection:text-[#C25E38] pb-12">
+    <div className="min-h-screen flex flex-col bg-transparent text-slate-800 pb-12">
       {/* 1. Navbar Utama */}
       <Navbar />
 
@@ -518,39 +518,39 @@ const LatihanSoal = () => {
       <main className="flex-1 max-w-4xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 flex flex-col animate-fade-in">
         {/* Navigasi Breadcrumb */}
         <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-xs text-[#6E6258]">
+          <div className="flex items-center space-x-2 text-xs text-blue-200">
             <button
               onClick={() => navigate('/dashboard')}
-              className="hover:text-[#C25E38] font-medium flex items-center space-x-1 transition-colors"
+              className="hover:text-white font-medium flex items-center space-x-1 transition-colors text-blue-200"
             >
               <LayoutDashboard className="w-3.5 h-3.5" />
               <span>Dashboard</span>
             </button>
-            <span>/</span>
+            <span className="text-blue-300/50">/</span>
             <button
               onClick={() => {
                 setActiveLatihan(null);
                 setJumpChallengeLevel(null);
                 setSelectedSubject(null);
               }}
-              className={`font-medium hover:text-[#C25E38] transition-colors ${
-                !selectedSubject ? 'text-[#261C14] font-semibold' : ''
+              className={`font-medium hover:text-white transition-colors ${
+                !selectedSubject ? 'text-white font-bold' : 'text-blue-200'
               }`}
             >
               Bank Latihan Soal
             </button>
             {selectedSubject && (
               <>
-                <span>/</span>
-                <span className="text-[#261C14] font-semibold">
+                <span className="text-blue-300/50">/</span>
+                <span className="text-white font-semibold">
                   {currentSubject?.title}
                 </span>
               </>
             )}
             {activeLatihan && (
               <>
-                <span>/</span>
-                <span className="text-[#C25E38] font-medium truncate max-w-[150px] sm:max-w-xs">
+                <span className="text-blue-300/50">/</span>
+                <span className="text-amber-300 font-medium truncate max-w-[150px] sm:max-w-xs">
                   Latihan {activeLatihan.level}: {activeLatihan.subjudul}
                 </span>
               </>
@@ -577,7 +577,7 @@ const LatihanSoal = () => {
                 navigate('/dashboard');
               }
             }}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#F2ECE4] border border-[#E6DFD5] text-[#261C14] hover:text-[#C25E38] text-xs font-medium transition-colors cursor-pointer"
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 hover:text-blue-700 text-xs font-semibold transition-all cursor-pointer shadow-sm"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>
@@ -595,10 +595,10 @@ const LatihanSoal = () => {
           <div className="max-w-3xl mx-auto w-full py-4 sm:py-8 space-y-6 animate-fade-in">
             {/* Header Pilihan */}
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold text-[#261C14] tracking-tight">
+              <h2 className="text-2xl font-bold text-white tracking-tight">
                 Pilih Mata Pelajaran
               </h2>
-              <p className="text-xs sm:text-sm text-[#6E6258] max-w-md mx-auto">
+              <p className="text-xs sm:text-sm text-blue-100/90 max-w-md mx-auto">
                 Pilih mata pelajaran untuk melihat peta latihan berjenjang dan raih bintang.
               </p>
             </div>
@@ -617,19 +617,32 @@ const LatihanSoal = () => {
                       setSelectedSubject('bahasa_indonesia');
                       setSearchQuery('');
                     }}
-                    className="p-6 rounded-lg bg-white border border-[#E6DFD5] hover:border-[#286657] shadow-sm transition-colors cursor-pointer flex flex-col justify-between"
+                    onMouseMove={(e) => {
+                      const r = e.currentTarget.getBoundingClientRect();
+                      e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`);
+                      e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`);
+                    }}
+                    className="group relative overflow-hidden p-6 rounded-2xl bg-white border-2 border-[#047857] hover:border-[#047857] hover:ring-4 hover:ring-[#047857]/20 hover:shadow-2xl hover:shadow-[#047857]/20 hover:-translate-y-2 active:scale-[0.985] transition-all duration-300 ease-out cursor-pointer flex flex-col justify-between select-none"
                   >
-                    <div>
+                    {/* Interactive Cursor Spotlight Glow */}
+                    <div
+                      className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      style={{
+                        background: 'radial-gradient(350px circle at var(--mx, 50%) var(--my, 50%), rgba(4, 120, 87, 0.1), transparent 75%)',
+                      }}
+                    />
+
+                    <div className="relative z-10">
                       <div className="flex items-center justify-between mb-4">
-                        <div className="w-12 h-12 rounded-lg bg-[#E8F2EF] text-[#286657] border border-[#BCD9D0] flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-xl bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0] flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-[-4deg] group-hover:shadow-md group-hover:bg-[#D1FAE5]">
                           <BookOpen className="w-6 h-6" />
                         </div>
-                        <span className="px-2.5 py-0.5 rounded text-xs font-semibold bg-[#E8F2EF] text-[#286657] border border-[#BCD9D0]">
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0] transition-all duration-300 group-hover:scale-105 shadow-2xs">
                           10 Latihan Soal
                         </span>
                       </div>
 
-                      <h3 className="text-lg font-bold text-[#261C14]">
+                      <h3 className="text-lg font-bold text-[#261C14] group-hover:text-[#047857] transition-colors duration-200">
                         Bahasa Indonesia
                       </h3>
                       <p className="text-xs text-[#6E6258] mt-2 leading-relaxed">
@@ -640,11 +653,11 @@ const LatihanSoal = () => {
                       <div className="mt-4 pt-3 border-t border-[#E6DFD5] space-y-2">
                         <div className="flex items-center justify-between text-[11px] font-medium text-[#6E6258]">
                           <span>Progres: {biDone} dari 10 Latihan</span>
-                          <span className="text-[#286657] font-semibold">{biPercent}%</span>
+                          <span className="text-[#047857] font-semibold">{biPercent}%</span>
                         </div>
                         <div className="w-full bg-[#F2ECE4] rounded-full h-2 overflow-hidden">
                           <div
-                            className="bg-[#286657] h-2 rounded-full transition-all duration-300"
+                            className="bg-[#047857] h-2 rounded-full transition-all duration-300"
                             style={{ width: `${Math.max(4, biPercent)}%` }}
                           />
                         </div>
@@ -655,9 +668,13 @@ const LatihanSoal = () => {
                       </div>
                     </div>
 
-                    <div className="mt-5 pt-3 border-t border-[#E6DFD5] flex items-center justify-between text-xs text-[#286657] font-medium">
-                      <span>Buka Peta 10 Latihan Bahasa Indonesia</span>
-                      <ChevronRight className="w-4 h-4" />
+                    <div className="relative z-10 mt-5 pt-3 border-t border-[#E6DFD5] flex items-center justify-between text-xs font-bold text-[#047857] transition-all">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">
+                        Buka Peta 10 Latihan Bahasa Indonesia
+                      </span>
+                      <div className="w-7 h-7 rounded-lg bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center group-hover:translate-x-1.5 group-hover:bg-[#047857] group-hover:text-white transition-all duration-300 shadow-2xs">
+                        <ChevronRight className="w-4 h-4" />
+                      </div>
                     </div>
                   </div>
                 );
@@ -675,19 +692,32 @@ const LatihanSoal = () => {
                       setSelectedSubject('matematika');
                       setSearchQuery('');
                     }}
-                    className="p-6 rounded-lg bg-white border border-[#E6DFD5] hover:border-[#C25E38] shadow-sm transition-colors cursor-pointer flex flex-col justify-between"
+                    onMouseMove={(e) => {
+                      const r = e.currentTarget.getBoundingClientRect();
+                      e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`);
+                      e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`);
+                    }}
+                    className="group relative overflow-hidden p-6 rounded-2xl bg-white border-2 border-[#881337] hover:border-[#881337] hover:ring-4 hover:ring-[#881337]/20 hover:shadow-2xl hover:shadow-[#881337]/20 hover:-translate-y-2 active:scale-[0.985] transition-all duration-300 ease-out cursor-pointer flex flex-col justify-between select-none"
                   >
-                    <div>
+                    {/* Interactive Cursor Spotlight Glow */}
+                    <div
+                      className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      style={{
+                        background: 'radial-gradient(350px circle at var(--mx, 50%) var(--my, 50%), rgba(136, 19, 55, 0.1), transparent 75%)',
+                      }}
+                    />
+
+                    <div className="relative z-10">
                       <div className="flex items-center justify-between mb-4">
-                        <div className="w-12 h-12 rounded-lg bg-[#FAECE6] text-[#C25E38] border border-[#F2D2C4] flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-xl bg-[#FFF1F2] text-[#881337] border border-[#FECDD3] flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-[4deg] group-hover:shadow-md group-hover:bg-[#FFE4E6]">
                           <Calculator className="w-6 h-6" />
                         </div>
-                        <span className="px-2.5 py-0.5 rounded text-xs font-semibold bg-[#FAECE6] text-[#C25E38] border border-[#F2D2C4]">
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#FFF1F2] text-[#881337] border border-[#FECDD3] transition-all duration-300 group-hover:scale-105 shadow-2xs">
                           10 Latihan Soal
                         </span>
                       </div>
 
-                      <h3 className="text-lg font-bold text-[#261C14]">
+                      <h3 className="text-lg font-bold text-[#261C14] group-hover:text-[#881337] transition-colors duration-200">
                         Matematika
                       </h3>
                       <p className="text-xs text-[#6E6258] mt-2 leading-relaxed">
@@ -698,11 +728,11 @@ const LatihanSoal = () => {
                       <div className="mt-4 pt-3 border-t border-[#E6DFD5] space-y-2">
                         <div className="flex items-center justify-between text-[11px] font-medium text-[#6E6258]">
                           <span>Progres: {mtkDone} dari 10 Latihan</span>
-                          <span className="text-[#C25E38] font-semibold">{mtkPercent}%</span>
+                          <span className="text-[#881337] font-semibold">{mtkPercent}%</span>
                         </div>
                         <div className="w-full bg-[#F2ECE4] rounded-full h-2 overflow-hidden">
                           <div
-                            className="bg-[#C25E38] h-2 rounded-full transition-all duration-300"
+                            className="bg-[#881337] h-2 rounded-full transition-all duration-300"
                             style={{ width: `${Math.max(4, mtkPercent)}%` }}
                           />
                         </div>
@@ -713,9 +743,13 @@ const LatihanSoal = () => {
                       </div>
                     </div>
 
-                    <div className="mt-5 pt-3 border-t border-[#E6DFD5] flex items-center justify-between text-xs text-[#C25E38] font-medium">
-                      <span>Buka Peta 10 Latihan Matematika</span>
-                      <ChevronRight className="w-4 h-4" />
+                    <div className="relative z-10 mt-5 pt-3 border-t border-[#E6DFD5] flex items-center justify-between text-xs font-bold text-[#881337] transition-all">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">
+                        Buka Peta 10 Latihan Matematika
+                      </span>
+                      <div className="w-7 h-7 rounded-lg bg-[#FFF1F2] border border-[#FECDD3] flex items-center justify-center group-hover:translate-x-1.5 group-hover:bg-[#881337] group-hover:text-white transition-all duration-300 shadow-2xs">
+                        <ChevronRight className="w-4 h-4" />
+                      </div>
                     </div>
                   </div>
                 );
@@ -747,13 +781,24 @@ const LatihanSoal = () => {
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </button>
+
                 <div>
                   <div className="flex items-center space-x-2">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FAECE6] text-[#C25E38] border border-[#F4D3C4]">
+                    <span
+                      className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${
+                        selectedSubject === 'bahasa_indonesia'
+                          ? 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                          : 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                      }`}
+                    >
                       LATIHAN {activeLatihan.level} DARI {currentLevels.length} • {currentSubject.title.toUpperCase()}
                     </span>
                     {isLevelCompleted(activeLatihan.id) && (
-                      <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#E8F2EF] text-[#286657] border border-[#C5DDD6] flex items-center space-x-1">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border flex items-center space-x-1 ${
+                        selectedSubject === 'matematika'
+                          ? 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                          : 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                      }`}>
                         <Check className="w-3 h-3 stroke-[2.5]" />
                         <span>Tuntas</span>
                       </span>
@@ -802,7 +847,13 @@ const LatihanSoal = () => {
                         <div className="flex items-center space-x-2">
                           <span className="text-[11px] font-medium text-[#6E6258]">
                             Terjawab:{' '}
-                            <strong className="text-[#C25E38] font-semibold">{answeredCount}</strong> /{' '}
+                            <strong
+                              className={`font-semibold ${
+                                selectedSubject === 'bahasa_indonesia' ? 'text-[#047857]' : 'text-[#881337]'
+                              }`}
+                            >
+                              {answeredCount}
+                            </strong> /{' '}
                             {activeLatihan.soal.length}
                           </span>
                           <span className="text-[10px] text-[#8C7E72] font-medium">
@@ -814,7 +865,9 @@ const LatihanSoal = () => {
                       {/* Bar Progres Visual Lembar Soal */}
                       <div className="w-full bg-[#F2ECE4] rounded-full h-1.5 overflow-hidden">
                         <div
-                          className="h-full bg-[#C25E38] rounded-full transition-all duration-300"
+                          className={`h-full rounded-full transition-all duration-300 ${
+                            selectedSubject === 'bahasa_indonesia' ? 'bg-[#047857]' : 'bg-[#881337]'
+                          }`}
                           style={{ width: `${Math.max(3, answeredPercent)}%` }}
                         />
                       </div>
@@ -828,18 +881,26 @@ const LatihanSoal = () => {
                             <button
                               key={idx}
                               onClick={() => setCurrentQuestionIndex(idx)}
-                              className={`w-8 h-8 rounded-lg text-xs font-semibold transition-colors flex-shrink-0 cursor-pointer flex items-center justify-center relative ${
+                              className={`w-8 h-8 rounded-lg text-xs font-semibold transition-all duration-300 flex-shrink-0 cursor-pointer flex items-center justify-center relative ${
                                 isCurrent
-                                  ? 'bg-[#C25E38] text-white ring-2 ring-[#FAECE6]'
+                                  ? selectedSubject === 'bahasa_indonesia'
+                                    ? 'bg-[#047857] text-white ring-2 ring-[#ECFDF5]'
+                                    : 'bg-[#881337] text-white ring-2 ring-[#FFF1F2]'
                                   : answered
-                                  ? 'bg-[#FAECE6] text-[#C25E38] border border-[#F4D3C4] hover:bg-[#F4D3C4]'
+                                  ? selectedSubject === 'bahasa_indonesia'
+                                    ? 'bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0] hover:bg-[#A7F3D0]/60'
+                                    : 'bg-[#FFF1F2] text-[#881337] border border-[#FECDD3] hover:bg-[#FECDD3]/60'
                                   : 'bg-[#FAF7F2] hover:bg-[#F2ECE4] text-[#6E6258] border border-[#E6DFD5]'
                               }`}
                               title={`Soal ${idx + 1} (${answered ? 'Sudah Terjawab' : 'Belum Dijawab'})`}
                             >
                               <span>{idx + 1}</span>
                               {answered && !isCurrent && (
-                                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#C25E38] border border-white" />
+                                <span
+                                  className={`absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full border border-white ${
+                                    selectedSubject === 'bahasa_indonesia' ? 'bg-[#047857]' : 'bg-[#881337]'
+                                  }`}
+                                />
                               )}
                             </button>
                           );
@@ -861,8 +922,14 @@ const LatihanSoal = () => {
                     <div className="p-5 sm:p-6 rounded-lg bg-white border border-[#E6DFD5] shadow-xs space-y-4">
                       {/* Indikator Kurikulum */}
                       {currentQ.indicator && (
-                        <div className="p-2.5 rounded-lg bg-[#FAECE6] border border-[#F4D3C4] text-[#C25E38] text-xs font-medium flex items-center space-x-2">
-                          <HelpCircle className="w-4 h-4 text-[#C25E38] flex-shrink-0" />
+                        <div
+                          className={`p-2.5 rounded-lg border text-xs font-medium flex items-center space-x-2 ${
+                            selectedSubject === 'bahasa_indonesia'
+                              ? 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]'
+                              : 'bg-[#FFF1F2] border-[#FECDD3] text-[#881337]'
+                          }`}
+                        >
+                          <HelpCircle className="w-4 h-4 flex-shrink-0" />
                           <span>
                             <strong>Indikator:</strong> {currentQ.indicator}
                           </span>
@@ -877,8 +944,8 @@ const LatihanSoal = () => {
                         </div>
                       )}
 
-                      {/* Pertanyaan */}
-                      <h4
+                      {/* Teks Pertanyaan */}
+                      <h3
                         className="text-sm sm:text-base font-semibold text-[#261C14] leading-relaxed"
                         dangerouslySetInnerHTML={{ __html: formatMath(currentQ.pertanyaan) }}
                       />
@@ -895,17 +962,21 @@ const LatihanSoal = () => {
                               <button
                                 key={oIdx}
                                 onClick={() => handleAnswerChange(opt)}
-                                className={`w-full p-3 rounded-lg text-left text-xs sm:text-sm font-medium border transition-colors flex items-center justify-between cursor-pointer ${
+                                className={`w-full p-3 rounded-lg text-left text-xs sm:text-sm font-medium border transition-all duration-300 flex items-center justify-between cursor-pointer ${
                                   isSelected
-                                    ? 'bg-[#FAECE6] border border-[#C25E38] text-[#261C14] font-semibold'
+                                    ? selectedSubject === 'bahasa_indonesia'
+                                      ? 'bg-[#ECFDF5] border border-[#047857] text-[#261C14] font-semibold'
+                                      : 'bg-[#FFF1F2] border border-[#881337] text-[#261C14] font-semibold'
                                     : 'bg-white border-[#E6DFD5] text-[#261C14] hover:bg-[#FAF7F2]'
                                 }`}
                               >
                                 <span dangerouslySetInnerHTML={{ __html: formatMath(opt) }} />
                                 <div
-                                  className={`w-6 h-6 rounded-full border flex items-center justify-center text-xs font-semibold flex-shrink-0 ml-2 ${
+                                  className={`w-6 h-6 rounded-full border flex items-center justify-center text-xs font-semibold flex-shrink-0 ml-2 transition-colors ${
                                     isSelected
-                                      ? 'border-[#C25E38] bg-[#C25E38] text-white'
+                                      ? selectedSubject === 'bahasa_indonesia'
+                                        ? 'border-[#047857] bg-[#047857] text-white'
+                                        : 'border-[#881337] bg-[#881337] text-white'
                                       : 'border-[#E6DFD5] text-[#6E6258] bg-[#FAF7F2]'
                                   }`}
                                 >
@@ -920,8 +991,14 @@ const LatihanSoal = () => {
                       {/* Opsi 2: MCMA (Multi-select) */}
                       {qType === 'mcma' && (
                         <div className="space-y-2 pt-2">
-                          <div className="p-2.5 rounded-lg bg-[#FAECE6] border border-[#F4D3C4] text-xs text-[#C25E38] font-medium flex items-center space-x-2">
-                            <CheckCircle2 className="w-4 h-4 text-[#C25E38] flex-shrink-0" />
+                          <div
+                            className={`p-2.5 rounded-lg border text-xs font-medium flex items-center space-x-2 ${
+                              selectedSubject === 'bahasa_indonesia'
+                                ? 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]'
+                                : 'bg-[#FFF1F2] border-[#FECDD3] text-[#881337]'
+                            }`}
+                          >
+                            <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
                             <span>Pilihan Ganda Kompleks: Anda dapat memilih lebih dari satu jawaban.</span>
                           </div>
                           {currentQ.pilihan?.map((opt, oIdx) => {
@@ -936,17 +1013,21 @@ const LatihanSoal = () => {
                                     : [...list, opt];
                                   handleAnswerChange(nextList);
                                 }}
-                                className={`w-full p-3 rounded-lg text-left text-xs sm:text-sm font-medium border transition-colors flex items-center justify-between cursor-pointer ${
+                                className={`w-full p-3 rounded-lg text-left text-xs sm:text-sm font-medium border transition-all duration-300 flex items-center justify-between cursor-pointer ${
                                   isSelected
-                                    ? 'bg-[#FAECE6] border border-[#C25E38] text-[#261C14] font-semibold'
+                                    ? selectedSubject === 'bahasa_indonesia'
+                                      ? 'bg-[#ECFDF5] border border-[#047857] text-[#261C14] font-semibold'
+                                      : 'bg-[#FFF1F2] border border-[#881337] text-[#261C14] font-semibold'
                                     : 'bg-white border-[#E6DFD5] text-[#261C14] hover:bg-[#FAF7F2]'
                                 }`}
                               >
                                 <span dangerouslySetInnerHTML={{ __html: formatMath(opt) }} />
                                 <div
-                                  className={`w-5 h-5 rounded border flex items-center justify-center text-xs font-bold flex-shrink-0 ml-2 ${
+                                  className={`w-5 h-5 rounded border flex items-center justify-center text-xs font-bold flex-shrink-0 ml-2 transition-colors ${
                                     isSelected
-                                      ? 'border-[#C25E38] bg-[#C25E38] text-white'
+                                      ? selectedSubject === 'bahasa_indonesia'
+                                        ? 'border-[#047857] bg-[#047857] text-white'
+                                        : 'border-[#881337] bg-[#881337] text-white'
                                       : 'border-[#E6DFD5] text-[#8C7E72] bg-white'
                                   }`}
                                 >
@@ -1039,7 +1120,11 @@ const LatihanSoal = () => {
                           {currentQuestionIndex < activeLatihan.soal.length - 1 ? (
                             <button
                               onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
-                              className="px-4 py-2 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white text-xs font-semibold transition-colors cursor-pointer"
+                              className={`px-4 py-2 rounded-lg text-white text-xs font-semibold transition-all duration-300 cursor-pointer ${
+                                selectedSubject === 'bahasa_indonesia'
+                                  ? 'bg-[#047857] hover:bg-[#065F46]'
+                                  : 'bg-[#881337] hover:bg-[#700D2B]'
+                              }`}
                             >
                               Selanjutnya &rarr;
                             </button>
@@ -1067,7 +1152,11 @@ const LatihanSoal = () => {
                                   }
                                 }
                               }}
-                              className="px-4 py-2 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white text-xs font-semibold transition-colors cursor-pointer"
+                              className={`px-4 py-2 rounded-lg text-white text-xs font-semibold transition-all duration-300 cursor-pointer ${
+                                selectedSubject === 'bahasa_indonesia'
+                                  ? 'bg-[#047857] hover:bg-[#065F46]'
+                                  : 'bg-[#881337] hover:bg-[#700D2B]'
+                              }`}
                             >
                               Kumpulkan Latihan
                             </button>
@@ -1173,7 +1262,11 @@ const LatihanSoal = () => {
                       setReviewFilter('all');
                       setIsReviewMode(true);
                     }}
-                    className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white font-semibold text-xs shadow-xs transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
+                    className={`w-full sm:w-auto px-4 py-2 rounded-lg text-white font-semibold text-xs shadow-xs transition-all duration-300 flex items-center justify-center space-x-1.5 cursor-pointer ${
+                      selectedSubject === 'matematika'
+                        ? 'bg-[#881337] hover:bg-[#700D2B]'
+                        : 'bg-[#047857] hover:bg-[#065F46]'
+                    }`}
                   >
                     <Eye className="w-4 h-4" />
                     <span>Review Pembahasan</span>
@@ -1373,7 +1466,9 @@ const LatihanSoal = () => {
                                         </span>
                                       )}
                                       {isUser && (
-                                        <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[#C25E38] text-white">
+                                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold text-white transition-colors duration-300 ${
+                                          selectedSubject === 'matematika' ? 'bg-[#881337]' : 'bg-[#047857]'
+                                        }`}>
                                           Dipilih
                                         </span>
                                       )}
@@ -1400,11 +1495,11 @@ const LatihanSoal = () => {
                                       dangerouslySetInnerHTML={{ __html: formatMath(stmt.text) }}
                                     />
                                     <div className="flex items-center space-x-2 text-[11px] font-medium">
-                                      <span className={stmt.answer ? 'text-[#286657]' : 'text-[#C93B3B]'}>
+                                      <span className={stmt.answer ? 'text-[#047857]' : 'text-[#C93B3B]'}>
                                         Kunci: {stmt.answer ? 'Benar' : 'Salah'}
                                       </span>
                                       <span className="text-[#8C7E72]">|</span>
-                                      <span className={isStmtCorrect ? 'text-[#286657]' : 'text-[#C93B3B]'}>
+                                      <span className={isStmtCorrect ? 'text-[#047857]' : 'text-[#C93B3B]'}>
                                         Kamu: {userVal === undefined ? 'Belum dijawab' : userVal ? 'Benar' : 'Salah'}
                                       </span>
                                     </div>
@@ -1417,7 +1512,7 @@ const LatihanSoal = () => {
                           {/* Penjelasan */}
                           <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] text-xs">
                             <strong className="text-[#261C14] flex items-center space-x-1.5 mb-1 font-semibold">
-                              <HelpCircle className="w-3.5 h-3.5 text-[#C25E38]" />
+                              <HelpCircle className={`w-3.5 h-3.5 transition-colors duration-300 ${selectedSubject === 'matematika' ? 'text-[#881337]' : 'text-[#047857]'}`} />
                               <span>Penjelasan & Pembahasan:</span>
                             </strong>
                             <div
@@ -1438,12 +1533,14 @@ const LatihanSoal = () => {
         {selectedSubject && !activeLatihan && (
           <div className="w-full space-y-4">
             {/* Header Hero Banner Mapel Aktif */}
-            <div className="p-5 sm:p-6 rounded-xl bg-white border border-[#E6DFD5] text-[#261C14] shadow-xs relative overflow-hidden">
+            <div className={`p-5 sm:p-6 rounded-2xl bg-white border-2 text-[#261C14] shadow-sm relative overflow-hidden ${
+              selectedSubject === 'bahasa_indonesia' ? 'border-[#047857]' : 'border-[#881337]'
+            }`}>
               <div className="relative z-10 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="space-y-1">
                     <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#FAF7F2] text-xs font-medium text-[#6E6258] border border-[#E6DFD5]">
-                      <currentSubject.icon className={`w-3.5 h-3.5 ${selectedSubject === 'bahasa_indonesia' ? 'text-[#286657]' : 'text-[#C25E38]'}`} />
+                      <currentSubject.icon className={`w-3.5 h-3.5 transition-colors duration-300 ${selectedSubject === 'matematika' ? 'text-[#881337]' : 'text-[#047857]'}`} />
                       <span>{currentSubject.tagline}</span>
                     </div>
                     <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#261C14]">
@@ -1455,23 +1552,31 @@ const LatihanSoal = () => {
                   </div>
 
                   <div className="flex flex-col items-stretch sm:items-end space-y-2 flex-shrink-0 self-start sm:self-center">
-                    {/* Tombol Buku Panduan */}
+                    {/* Tombol Buku Panduan - Sesuai Mata Pelajaran */}
                     <button
                       onClick={() => setShowGuideModal(true)}
-                      className="w-full sm:w-auto px-3.5 py-2 rounded-lg bg-white hover:bg-[#FAF7F2] text-xs font-semibold text-[#261C14] transition-colors flex items-center justify-center space-x-2 border border-[#E6DFD5] cursor-pointer shadow-xs"
-                      title="Buku Panduan Aturan Main"
+                      className={`w-full sm:w-auto px-3.5 py-2 rounded-lg text-xs font-bold transition-all duration-300 flex items-center justify-center space-x-2 border-2 cursor-pointer shadow-xs ${
+                        selectedSubject === 'matematika'
+                          ? 'bg-[#FFF1F2] hover:bg-[#FFE4E6] text-[#881337] border-[#881337]'
+                          : 'bg-[#ECFDF5] hover:bg-[#D1FAE5] text-[#047857] border-[#047857]'
+                      }`}
+                      title={`Buku Panduan ${currentSubject?.title || ''}`}
                     >
-                      <BookOpen className="w-4 h-4 text-[#8C7E72]" />
+                      {selectedSubject === 'matematika' ? (
+                        <Calculator className="w-4 h-4 text-[#881337]" />
+                      ) : (
+                        <BookOpen className="w-4 h-4 text-[#047857]" />
+                      )}
                       <span>Buku Panduan</span>
                     </button>
 
                     {/* Switcher Mode Tampilan (Peta / Daftar) */}
-                    <div className="w-full sm:w-auto bg-[#FAF7F2] p-1 rounded-lg flex items-center border border-[#E6DFD5]">
+                    <div className="w-full sm:w-auto bg-[#FAF7F2] p-1 rounded-lg flex items-center border-2 border-slate-300">
                       <button
                         onClick={() => setViewMode('roadmap')}
-                        className={`flex-1 sm:flex-initial py-1 px-3 rounded-md text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors cursor-pointer ${
+                        className={`flex-1 sm:flex-initial py-1 px-3 rounded-md text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all duration-300 cursor-pointer ${
                           viewMode === 'roadmap'
-                            ? 'bg-white text-[#C25E38] font-semibold shadow-xs'
+                            ? `bg-white ${selectedSubject === 'matematika' ? 'text-[#881337]' : 'text-[#047857]'} font-semibold shadow-xs`
                             : 'text-[#6E6258] hover:text-[#261C14]'
                         }`}
                         title="Tampilan Peta Jalan"
@@ -1481,9 +1586,9 @@ const LatihanSoal = () => {
                       </button>
                       <button
                         onClick={() => setViewMode('grid')}
-                        className={`flex-1 sm:flex-initial py-1 px-3 rounded-md text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors cursor-pointer ${
+                        className={`flex-1 sm:flex-initial py-1 px-3 rounded-md text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all duration-300 cursor-pointer ${
                           viewMode === 'grid'
-                            ? 'bg-white text-[#C25E38] font-semibold shadow-xs'
+                            ? `bg-white ${selectedSubject === 'matematika' ? 'text-[#881337]' : 'text-[#047857]'} font-semibold shadow-xs`
                             : 'text-[#6E6258] hover:text-[#261C14]'
                         }`}
                         title="Tampilan Daftar Kartu"
@@ -1506,7 +1611,7 @@ const LatihanSoal = () => {
                     </div>
                     <div className="w-full bg-[#F2ECE4] rounded-full h-2 overflow-hidden">
                       <div
-                        className={`${selectedSubject === 'bahasa_indonesia' ? 'bg-[#286657]' : 'bg-[#C25E38]'} h-2 rounded-full transition-all duration-500`}
+                        className={`${selectedSubject === 'matematika' ? 'bg-[#881337]' : 'bg-[#047857]'} h-2 rounded-full transition-all duration-500`}
                         style={{ width: `${Math.max(4, progressPercent)}%` }}
                       />
                     </div>
@@ -1550,7 +1655,7 @@ const LatihanSoal = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={`Cari tingkat latihan ${currentSubject.title}...`}
-                className="w-full pl-10 pr-9 py-2.5 rounded-lg bg-white border border-[#E6DFD5] text-xs sm:text-sm text-[#261C14] placeholder-[#8C7E72] focus:outline-hidden focus:border-[#C25E38] focus:ring-1 focus:ring-[#C25E38] shadow-xs transition-colors"
+                className={`w-full pl-10 pr-9 py-2.5 rounded-lg bg-white border border-[#E6DFD5] text-xs sm:text-sm text-[#261C14] placeholder-[#8C7E72] focus:outline-hidden ${selectedSubject === 'matematika' ? 'focus:border-[#881337] focus:ring-[#881337]' : 'focus:border-[#047857] focus:ring-[#047857]'} focus:ring-1 shadow-xs transition-all duration-300`}
               />
               {searchQuery && (
                 <button
@@ -1570,16 +1675,21 @@ const LatihanSoal = () => {
                   const isCompleted = isLevelCompleted(lvl.id);
                   const isUnlocked = isLevelUnlocked(originalIndex, lvl, currentLevels);
                   const isCurrent = originalIndex === currentActiveLevelIndex;
+                  const isMtk = selectedSubject === 'matematika';
 
                   return (
                     <div
                       key={lvl.id}
                       onClick={() => setSelectedLevelModal(lvl)}
-                      className={`p-4 rounded-lg border transition-all cursor-pointer flex flex-col justify-between ${
+                      className={`p-4 rounded-lg border transition-all duration-300 cursor-pointer flex flex-col justify-between ${
                         isCompleted
-                          ? 'bg-white border-[#C5DDD6] hover:border-[#286657] shadow-xs'
+                          ? isMtk
+                            ? 'bg-white border-[#FECDD3] hover:border-[#881337] shadow-xs'
+                            : 'bg-white border-[#A7F3D0] hover:border-[#047857] shadow-xs'
                           : isCurrent
-                          ? 'bg-white border-[#C25E38] shadow-xs ring-1 ring-[#C25E38]'
+                          ? isMtk
+                            ? 'bg-white border-[#881337] shadow-xs ring-1 ring-[#881337]'
+                            : 'bg-white border-[#047857] shadow-xs ring-1 ring-[#047857]'
                           : isUnlocked
                           ? 'bg-white border-[#E6DFD5] hover:border-[#8C7E72] shadow-xs'
                           : 'bg-[#FAF7F2] border-[#E6DFD5] text-[#8C7E72] hover:border-[#8C7E72]'
@@ -1588,11 +1698,11 @@ const LatihanSoal = () => {
                       <div>
                         <div className="flex items-center justify-between mb-2">
                           <span
-                            className={`w-7 h-7 rounded-md flex items-center justify-center text-xs font-semibold ${
-                              isCompleted
-                                ? 'bg-[#286657] text-white'
-                                : isCurrent
-                                ? 'bg-[#C25E38] text-white'
+                            className={`w-7 h-7 rounded-md flex items-center justify-center text-xs font-semibold transition-colors duration-300 ${
+                              isCompleted || isCurrent
+                                ? isMtk
+                                  ? 'bg-[#881337] text-white'
+                                  : 'bg-[#047857] text-white'
                                 : isUnlocked
                                 ? 'bg-[#F2ECE4] text-[#261C14]'
                                 : 'bg-[#E6DFD5] text-[#8C7E72]'
@@ -1602,12 +1712,20 @@ const LatihanSoal = () => {
                           </span>
 
                           {isCompleted ? (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#E8F2EF] text-[#286657] border border-[#C5DDD6] flex items-center space-x-1">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border flex items-center space-x-1 transition-colors duration-300 ${
+                              isMtk
+                                ? 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                                : 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                            }`}>
                               <Check className="w-3 h-3 stroke-[2.5]" />
                               <span>Selesai</span>
                             </span>
                           ) : isCurrent ? (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FAECE6] text-[#C25E38] border border-[#F4D3C4]">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border transition-colors duration-300 ${
+                              isMtk
+                                ? 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                                : 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                            }`}>
                               Fokus Saat Ini
                             </span>
                           ) : isUnlocked ? (
@@ -1624,9 +1742,7 @@ const LatihanSoal = () => {
 
                         <h4
                           className={`text-sm font-semibold leading-snug ${
-                            isCompleted
-                              ? 'text-[#261C14]'
-                              : isUnlocked
+                            isCompleted || isUnlocked
                               ? 'text-[#261C14]'
                               : 'text-[#8C7E72]'
                           }`}
@@ -1660,7 +1776,7 @@ const LatihanSoal = () => {
                       </div>
 
                       <div className="mt-4 pt-3 border-t border-[#E6DFD5] flex items-center justify-between text-xs font-medium">
-                        <span className={isUnlocked ? 'text-[#C25E38]' : 'text-[#8C7E72]'}>
+                        <span className={`transition-colors duration-300 ${isUnlocked ? (isMtk ? 'text-[#881337]' : 'text-[#047857]') : 'text-[#8C7E72]'}`}>
                           {isUnlocked ? 'Kerjakan Latihan' : 'Lompat Latihan'}
                         </span>
                         <ChevronRight className="w-3.5 h-3.5 text-[#8C7E72]" />
@@ -1705,18 +1821,18 @@ const LatihanSoal = () => {
                           {isCurrent && (
                             <div
                               className={`absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1 rounded-full ${
-                                selectedSubject === 'bahasa_indonesia'
-                                  ? 'bg-[#286657] border-[#1E5044]'
-                                  : 'bg-[#C25E38] border-[#A94D2B]'
-                              } text-white font-bold text-[11px] shadow-md flex items-center space-x-1.5 z-20 border animate-bounce select-none pointer-events-none`}
+                                selectedSubject === 'matematika'
+                                  ? 'bg-[#881337] border-[#4C0519]'
+                                  : 'bg-[#047857] border-[#064E3B]'
+                              } text-white font-bold text-[11px] shadow-md flex items-center space-x-1.5 z-20 border animate-bounce select-none pointer-events-none transition-all duration-300`}
                             >
                               <Sparkles className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
                               <span>Mulai di Sini</span>
                               <div
                                 className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-[6px] ${
-                                  selectedSubject === 'bahasa_indonesia'
-                                    ? 'border-t-[#286657]'
-                                    : 'border-t-[#C25E38]'
+                                  selectedSubject === 'matematika'
+                                    ? 'border-t-[#881337]'
+                                    : 'border-t-[#047857]'
                                 }`}
                               />
                             </div>
@@ -1725,15 +1841,19 @@ const LatihanSoal = () => {
                           {/* Tombol Lingkaran Interaktif Tactile 3D Node */}
                           <button
                             onClick={() => setSelectedLevelModal(lvl)}
-                            className={`w-18 h-18 sm:w-20 sm:h-20 rounded-full flex flex-col items-center justify-center font-bold border-2 transition-all duration-150 cursor-pointer relative z-10 select-none group ${
+                            className={`w-18 h-18 sm:w-20 sm:h-20 rounded-full flex flex-col items-center justify-center font-bold border-2 transition-all duration-300 cursor-pointer relative z-10 select-none group ${
                               isCompleted
-                                ? 'bg-[#286657] border-[#1E5044] text-white shadow-[0_6px_0_0_#163C33] hover:shadow-[0_7px_0_0_#163C33] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#163C33]'
+                                ? selectedSubject === 'matematika'
+                                  ? 'bg-[#881337] border-[#4C0519] text-white shadow-[0_6px_0_0_#4C0519] hover:shadow-[0_7px_0_0_#4C0519] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#4C0519]'
+                                  : 'bg-[#047857] border-[#064E3B] text-white shadow-[0_6px_0_0_#064E3B] hover:shadow-[0_7px_0_0_#064E3B] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#064E3B]'
                                 : isCurrent
-                                ? selectedSubject === 'bahasa_indonesia'
-                                  ? 'bg-[#286657] border-[#1E5044] text-white shadow-[0_6px_0_0_#163C33] hover:shadow-[0_7px_0_0_#163C33] ring-4 ring-offset-2 ring-[#286657]/30 hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#163C33]'
-                                  : 'bg-[#C25E38] border-[#A94D2B] text-white shadow-[0_6px_0_0_#8D391B] hover:shadow-[0_7px_0_0_#8D391B] ring-4 ring-offset-2 ring-[#C25E38]/30 hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#8D391B]'
+                                ? selectedSubject === 'matematika'
+                                  ? 'bg-[#881337] border-[#4C0519] text-white shadow-[0_6px_0_0_#4C0519] hover:shadow-[0_7px_0_0_#4C0519] ring-4 ring-offset-2 ring-[#881337]/30 hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#4C0519]'
+                                  : 'bg-[#047857] border-[#064E3B] text-white shadow-[0_6px_0_0_#064E3B] hover:shadow-[0_7px_0_0_#064E3B] ring-4 ring-offset-2 ring-[#047857]/30 hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#064E3B]'
                                 : isUnlocked
-                                ? 'bg-white border-[#D8CDC2] text-[#261C14] shadow-[0_6px_0_0_#C5B8AC] hover:border-[#C25E38] hover:text-[#C25E38] hover:shadow-[0_7px_0_0_#A94D2B] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#C5B8AC]'
+                                ? selectedSubject === 'matematika'
+                                  ? 'bg-white border-[#D8CDC2] text-[#261C14] shadow-[0_6px_0_0_#C5B8AC] hover:border-[#881337] hover:text-[#881337] hover:shadow-[0_7px_0_0_#4C0519] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#C5B8AC]'
+                                  : 'bg-white border-[#D8CDC2] text-[#261C14] shadow-[0_6px_0_0_#C5B8AC] hover:border-[#047857] hover:text-[#047857] hover:shadow-[0_7px_0_0_#064E3B] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#C5B8AC]'
                                 : 'bg-[#F2ECE4] border-[#E6DFD5] text-[#8C7E72] shadow-[0_5px_0_0_#D8CDC2] hover:bg-[#EAE2D8] hover:text-[#6E6258] hover:shadow-[0_6px_0_0_#C5B8AC] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#D8CDC2]'
                             }`}
                             title={`Latihan ${lvl.level}: ${lvl.subjudul || lvl.namaLevel} (${
@@ -1767,15 +1887,15 @@ const LatihanSoal = () => {
 
                           {/* Pill Judul Level (Hanya Indikator, Bukan Tombol) */}
                           <div
-                            className={`mt-2.5 px-3.5 py-1.5 rounded-lg text-center select-none max-w-[170px] sm:max-w-[200px] border shadow-2xs ${
+                            className={`mt-2.5 px-3.5 py-1.5 rounded-lg text-center select-none max-w-[170px] sm:max-w-[200px] border shadow-2xs transition-all duration-300 ${
                               isCompleted
-                                ? 'bg-[#E8F2EF] border-[#C5DDD6] text-[#286657]'
+                                ? selectedSubject === 'matematika'
+                                  ? 'bg-[#FFF1F2] border-[#FECDD3] text-[#881337]'
+                                  : 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]'
                                 : isCurrent
-                                ? `${
-                                    selectedSubject === 'bahasa_indonesia'
-                                      ? 'bg-[#E8F2EF] border-[#BCD9D0] text-[#286657]'
-                                      : 'bg-[#FAECE6] border-[#F2D2C4] text-[#C25E38]'
-                                  } font-bold shadow-xs`
+                                ? selectedSubject === 'matematika'
+                                  ? 'bg-[#FFF1F2] border-[#FECDD3] text-[#881337] font-bold shadow-xs'
+                                  : 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857] font-bold shadow-xs'
                                 : isUnlocked
                                 ? 'bg-white border-[#E6DFD5] text-[#261C14]'
                                 : 'bg-[#FAF7F2] border-[#E6DFD5] text-[#8C7E72]'
@@ -1913,11 +2033,19 @@ const LatihanSoal = () => {
                     LATIHAN {selectedLevelModal.level} • {currentSubject?.title.toUpperCase()}
                   </span>
                   {isCompleted ? (
-                    <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#1E5044] text-[#E8F2EF] border border-[#286657]">
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-medium border ${
+                      selectedSubject === 'matematika'
+                        ? 'bg-[#881337] text-white border-[#4C0519]'
+                        : 'bg-[#047857] text-white border-[#064E3B]'
+                    }`}>
                       Tuntas ({getLevelStars(selectedLevelModal.id)}/3 ★)
                     </span>
                   ) : isUnlocked ? (
-                    <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#FAECE6] text-[#C25E38] border border-[#F4D3C4]">
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-medium border ${
+                      selectedSubject === 'matematika'
+                        ? 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                        : 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                    }`}>
                       Terbuka
                     </span>
                   ) : (
@@ -1980,7 +2108,11 @@ const LatihanSoal = () => {
                   </p>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-[#FAECE6] border border-[#F4D3C4] text-xs text-[#C25E38] font-medium">
+                <div className={`p-2.5 rounded-lg border text-xs font-medium transition-colors duration-300 ${
+                  selectedSubject === 'matematika'
+                    ? 'bg-[#FFF1F2] border-[#FECDD3] text-[#881337]'
+                    : 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]'
+                }`}>
                   <span>Target: <strong>{selectedLevelModal.targetSoal} Soal</strong> Standar Pusmendik Kemendikdasmen RI</span>
                 </div>
 
@@ -2006,7 +2138,11 @@ const LatihanSoal = () => {
                   {isUnlocked ? (
                     <button
                       onClick={() => handleStartLatihan(selectedLevelModal)}
-                      className="w-full py-2.5 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white font-semibold text-xs sm:text-sm transition-colors flex items-center justify-center space-x-2 cursor-pointer"
+                      className={`w-full py-2.5 rounded-lg text-white font-semibold text-xs sm:text-sm transition-all duration-300 flex items-center justify-center space-x-2 cursor-pointer ${
+                        selectedSubject === 'matematika'
+                          ? 'bg-[#881337] hover:bg-[#700D2B]'
+                          : 'bg-[#047857] hover:bg-[#065F46]'
+                      }`}
                     >
                       <CheckCircle2 className="w-4 h-4" />
                       <span>{isCompleted ? 'Kerjakan Ulang Latihan' : 'Mulai Kerjakan Latihan'}</span>
@@ -2082,7 +2218,11 @@ const LatihanSoal = () => {
                         setJumpChallengeLevel(null);
                         handleStartLatihan(target);
                       }}
-                      className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white font-semibold text-xs transition-colors cursor-pointer"
+                      className={`w-full sm:w-auto px-4 py-2 rounded-lg text-white font-semibold text-xs transition-all duration-300 cursor-pointer ${
+                        selectedSubject === 'matematika'
+                          ? 'bg-[#881337] hover:bg-[#700D2B]'
+                          : 'bg-[#047857] hover:bg-[#065F46]'
+                      }`}
                     >
                       Langsung Kerjakan Latihan
                     </button>
@@ -2109,11 +2249,15 @@ const LatihanSoal = () => {
                           {challengeList.map((_, i) => (
                             <span
                               key={i}
-                              className={`w-4 h-1.5 rounded-full ${
+                              className={`w-4 h-1.5 rounded-full transition-all duration-300 ${
                                 i < jumpQuizIndex
-                                  ? 'bg-[#286657]'
+                                  ? selectedSubject === 'matematika'
+                                    ? 'bg-[#881337]'
+                                    : 'bg-[#047857]'
                                   : i === jumpQuizIndex
-                                  ? 'bg-[#C25E38]'
+                                  ? selectedSubject === 'matematika'
+                                    ? 'bg-[#9F1239]'
+                                    : 'bg-[#059669]'
                                   : 'bg-[#F2ECE4]'
                               }`}
                             />
@@ -2151,21 +2295,25 @@ const LatihanSoal = () => {
                                 setJumpIsCorrect(false);
                                 setShowJumpHint(false);
                               }}
-                              className={`w-full p-2.5 rounded-lg text-left text-xs font-medium border transition-colors flex items-center justify-between cursor-pointer ${
+                              className={`w-full p-2.5 rounded-lg text-left text-xs font-medium border transition-all duration-300 flex items-center justify-between cursor-pointer ${
                                 isWrongSubmitted
                                   ? 'bg-[#FDF1F1] border-[#F4C7C7] text-[#C93B3B]'
                                   : isSelected
-                                  ? 'bg-[#FAECE6] border-[#C25E38] text-[#261C14]'
+                                  ? selectedSubject === 'matematika'
+                                    ? 'bg-[#FFF1F2] border-[#881337] text-[#261C14]'
+                                    : 'bg-[#ECFDF5] border-[#047857] text-[#261C14]'
                                   : 'bg-white border-[#E6DFD5] text-[#261C14] hover:bg-[#FAF7F2]'
                               }`}
                             >
                               <span dangerouslySetInnerHTML={{ __html: formatMath(opt) }} />
                               <div
-                                className={`w-5 h-5 rounded-md border flex items-center justify-center text-[10px] font-semibold ${
+                                className={`w-5 h-5 rounded-md border flex items-center justify-center text-[10px] font-semibold transition-all duration-300 ${
                                   isWrongSubmitted
                                     ? 'border-[#C93B3B] bg-[#C93B3B] text-white'
                                     : isSelected
-                                    ? 'border-[#C25E38] bg-[#C25E38] text-white'
+                                    ? selectedSubject === 'matematika'
+                                      ? 'border-[#881337] bg-[#881337] text-white'
+                                      : 'border-[#047857] bg-[#047857] text-white'
                                     : 'border-[#E6DFD5] text-[#8C7E72]'
                                 }`}
                               >
@@ -2208,13 +2356,15 @@ const LatihanSoal = () => {
                             (jumpHasSubmitted && jumpIsCorrect) ||
                             (!jumpHasSubmitted && jumpSelectedAnswer === null)
                           }
-                          className={`px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                          className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-300 ${
                             isJumpTransitioning || (jumpHasSubmitted && jumpIsCorrect)
                               ? 'bg-[#F2ECE4] text-[#8C7E72] cursor-not-allowed'
                               : jumpHasSubmitted && !jumpIsCorrect
                               ? 'bg-[#D97E26] hover:bg-[#B5671B] text-white cursor-pointer'
                               : jumpSelectedAnswer !== null
-                              ? 'bg-[#C25E38] hover:bg-[#A94D2B] text-white cursor-pointer'
+                              ? selectedSubject === 'matematika'
+                                ? 'bg-[#881337] hover:bg-[#700D2B] text-white cursor-pointer'
+                                : 'bg-[#047857] hover:bg-[#065F46] text-white cursor-pointer'
                               : 'bg-[#F2ECE4] text-[#8C7E72] cursor-not-allowed'
                           }`}
                         >
@@ -2236,27 +2386,39 @@ const LatihanSoal = () => {
 
       {/* --- MODAL 3: BUKU PANDUAN CARA BERMAIN --- */}
       {showGuideModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1F1914]/50 backdrop-blur-xs">
-          <div className="bg-white rounded-xl border border-[#E6DFD5] shadow-xl max-w-md w-full overflow-hidden relative">
-            <div className="p-4 bg-[#1F1914] text-white border-b border-[#33261D]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#1F1914]/50 backdrop-blur-xs animate-fade-in">
+          <div className={`bg-white rounded-2xl border-2 shadow-2xl max-w-md w-full overflow-hidden relative ${
+            selectedSubject === 'matematika' ? 'border-[#881337]' : 'border-[#047857]'
+          }`}>
+            <div className={`p-5 text-white border-b-2 relative ${
+              selectedSubject === 'matematika' ? 'bg-[#881337] border-[#700D2B]' : 'bg-[#047857] border-[#065F46]'
+            }`}>
               <button
                 onClick={() => setShowGuideModal(false)}
-                className="absolute right-3.5 top-3.5 w-7 h-7 rounded-md hover:bg-[#2D241C] text-[#D4C8BC] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                className="absolute right-4 top-4 w-7 h-7 rounded-lg bg-black/20 hover:bg-black/40 text-white flex items-center justify-center transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
-              <h3 className="text-base font-bold flex items-center space-x-2">
-                <BookOpen className="w-4 h-4 text-[#E5A875]" />
-                <span>Buku Panduan Petualangan Latihan</span>
+              <h3 className="text-base sm:text-lg font-bold flex items-center space-x-2 text-white">
+                {selectedSubject === 'matematika' ? (
+                  <Calculator className="w-5 h-5 text-rose-200" />
+                ) : (
+                  <BookOpen className="w-5 h-5 text-emerald-200" />
+                )}
+                <span>Buku Panduan {currentSubject?.title || 'Latihan'}</span>
               </h3>
-              <p className="text-xs text-[#D4C8BC] mt-0.5">
-                Aturan & Cara Menuntaskan Latihan Pembelajaran TKA SD
+              <p className="text-xs text-white/80 mt-0.5">
+                Aturan & Cara Menuntaskan Latihan Soal {currentSubject?.title || 'TKA SD'}
               </p>
             </div>
 
-            <div className="p-4 space-y-3 text-xs text-[#6E6258] leading-relaxed">
+            <div className="p-5 space-y-3.5 text-xs text-[#261C14] leading-relaxed">
               <div className="flex items-start space-x-3">
-                <span className="w-5 h-5 rounded bg-[#F2ECE4] text-[#261C14] flex items-center justify-center font-bold flex-shrink-0 text-[11px] border border-[#E6DFD5]">
+                <span className={`w-6 h-6 rounded-md flex items-center justify-center font-bold flex-shrink-0 text-xs border ${
+                  selectedSubject === 'matematika'
+                    ? 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                    : 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                }`}>
                   1
                 </span>
                 <div>
@@ -2266,7 +2428,11 @@ const LatihanSoal = () => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <span className="w-5 h-5 rounded bg-[#F2ECE4] text-[#261C14] flex items-center justify-center font-bold flex-shrink-0 text-[11px] border border-[#E6DFD5]">
+                <span className={`w-6 h-6 rounded-md flex items-center justify-center font-bold flex-shrink-0 text-xs border ${
+                  selectedSubject === 'matematika'
+                    ? 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                    : 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                }`}>
                   2
                 </span>
                 <div>
@@ -2276,7 +2442,11 @@ const LatihanSoal = () => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <span className="w-5 h-5 rounded bg-[#F2ECE4] text-[#261C14] flex items-center justify-center font-bold flex-shrink-0 text-[11px] border border-[#E6DFD5]">
+                <span className={`w-6 h-6 rounded-md flex items-center justify-center font-bold flex-shrink-0 text-xs border ${
+                  selectedSubject === 'matematika'
+                    ? 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                    : 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                }`}>
                   3
                 </span>
                 <div>
@@ -2286,7 +2456,11 @@ const LatihanSoal = () => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <span className="w-5 h-5 rounded bg-[#F2ECE4] text-[#261C14] flex items-center justify-center font-bold flex-shrink-0 text-[11px] border border-[#E6DFD5]">
+                <span className={`w-6 h-6 rounded-md flex items-center justify-center font-bold flex-shrink-0 text-xs border ${
+                  selectedSubject === 'matematika'
+                    ? 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                    : 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                }`}>
                   4
                 </span>
                 <div>
@@ -2295,10 +2469,14 @@ const LatihanSoal = () => {
                 </div>
               </div>
 
-              <div className="pt-2">
+              <div className="pt-3">
                 <button
                   onClick={() => setShowGuideModal(false)}
-                  className="w-full py-2.5 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white font-semibold text-xs transition-colors cursor-pointer"
+                  className={`w-full py-2.5 rounded-lg text-white font-semibold text-xs transition-all duration-300 cursor-pointer shadow-xs ${
+                    selectedSubject === 'matematika'
+                      ? 'bg-[#881337] hover:bg-[#700D2B]'
+                      : 'bg-[#047857] hover:bg-[#065F46]'
+                  }`}
                 >
                   Saya Mengerti, Tutup Panduan
                 </button>

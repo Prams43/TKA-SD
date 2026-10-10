@@ -32,7 +32,7 @@ const Rapor = () => {
   const maxBintangSemua = (stats.maxBintangMateri || 99) + (stats.maxBintangLatihan || 60);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#261C14]">
+    <div className="min-h-screen flex flex-col bg-transparent text-slate-800">
       {/* 1. Navbar Bagian Atas */}
       <Navbar />
 
@@ -40,21 +40,21 @@ const Rapor = () => {
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 flex flex-col">
         {/* Breadcrumb & Navigasi */}
         <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-xs text-[#6E6258]">
+          <div className="flex items-center space-x-2 text-xs text-blue-200">
             <button
               onClick={() => navigate('/dashboard')}
-              className="hover:text-[#261C14] font-medium flex items-center space-x-1 cursor-pointer transition-colors"
+              className="hover:text-white font-medium flex items-center space-x-1 cursor-pointer transition-colors text-blue-200"
             >
               <LayoutDashboard className="w-3.5 h-3.5" />
               <span>Dashboard</span>
             </button>
-            <span className="text-[#8C7E72]">/</span>
-            <span className="font-semibold text-[#261C14]">Rapor Belajar</span>
+            <span className="text-blue-300/50">/</span>
+            <span className="font-bold text-white">Rapor Belajar</span>
           </div>
 
           <button
             onClick={() => navigate('/dashboard')}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#FAF7F2] border border-[#E6DFD5] text-[#261C14] text-xs font-medium transition-colors cursor-pointer shadow-xs"
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 hover:text-blue-700 text-xs font-semibold transition-all cursor-pointer shadow-sm"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Kembali ke Dashboard</span>
@@ -63,9 +63,9 @@ const Rapor = () => {
         </div>
 
         {/* Kartu Utama Rapor */}
-        <div className="bg-white border border-[#E6DFD5] rounded-xl w-full flex-1 flex flex-col shadow-xs overflow-hidden">
+        <div className="bg-white border-2 border-slate-400 rounded-2xl w-full flex-1 flex flex-col shadow-xl overflow-hidden">
           {/* Header Bar */}
-          <div className="p-4 sm:p-5 border-b border-[#E6DFD5] flex items-center justify-between bg-white">
+          <div className="p-4 sm:p-5 border-b-2 border-slate-300 flex items-center justify-between bg-white">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-lg bg-[#FAECE6] border border-[#F4D3C4] text-[#C25E38] flex items-center justify-center flex-shrink-0 shadow-xs">
                 <TrendingUp className="w-5 h-5" />
@@ -92,7 +92,7 @@ const Rapor = () => {
           </div>
 
           {/* Sub-Nav Tabs */}
-          <div className="flex border-b border-[#E6DFD5] px-4 sm:px-6 bg-[#FAF7F2] gap-1 sm:gap-2">
+          <div className="flex border-b-2 border-slate-300 px-4 sm:px-6 bg-[#FAF7F2] gap-1 sm:gap-2">
             <button
               onClick={() => setActiveTab('ringkasan')}
               className={`py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold border-b-2 transition-colors cursor-pointer ${
@@ -130,14 +130,14 @@ const Rapor = () => {
             {/* ================= TAB 1: RINGKASAN ================= */}
             {activeTab === 'ringkasan' && (
               <div className="space-y-6">
-                {/* 1. 4 Kartu Statistik Ringkas */}
+                {/* 1. 4 Kartu Statistik Ringkas dengan Outline Tegas & Kontras */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-                  {/* Card 1: Materi Tuntas */}
-                  <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#E6DFD5] flex flex-col justify-between">
+                  {/* Card 1: Materi Tuntas (Emerald Outline) */}
+                  <div className="p-4 rounded-xl bg-[#FAF7F2] border-2 border-[#047857] flex flex-col justify-between shadow-xs">
                     <div>
                       <div className="flex items-center justify-between text-xs text-[#6E6258] mb-1">
                         <span className="font-medium">Materi Tuntas</span>
-                        <BookOpen className="w-4 h-4 text-[#286657]" />
+                        <BookOpen className="w-4 h-4 text-[#047857]" />
                       </div>
                       <div className="text-xl sm:text-2xl font-bold text-[#261C14]">
                         {stats.materiSelesai}
@@ -152,19 +152,19 @@ const Rapor = () => {
                       </div>
                       <div className="w-full h-1.5 rounded-full bg-[#E6DFD5] overflow-hidden">
                         <div
-                          className="h-full bg-[#286657] rounded-full transition-all duration-300"
+                          className="h-full bg-[#047857] rounded-full transition-all duration-300"
                           style={{ width: `${Math.max(4, stats.persenMateri)}%` }}
                         />
                       </div>
                     </div>
                   </div>
 
-                  {/* Card 2: Latihan Soal */}
-                  <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#E6DFD5] flex flex-col justify-between">
+                  {/* Card 2: Latihan Soal (Burgundy Outline) */}
+                  <div className="p-4 rounded-xl bg-[#FAF7F2] border-2 border-[#881337] flex flex-col justify-between shadow-xs">
                     <div>
                       <div className="flex items-center justify-between text-xs text-[#6E6258] mb-1">
                         <span className="font-medium">Latihan Soal</span>
-                        <Target className="w-4 h-4 text-[#C25E38]" />
+                        <Target className="w-4 h-4 text-[#881337]" />
                       </div>
                       <div className="text-xl sm:text-2xl font-bold text-[#261C14]">
                         {stats.latihanSelesai}
@@ -179,19 +179,19 @@ const Rapor = () => {
                       </div>
                       <div className="w-full h-1.5 rounded-full bg-[#E6DFD5] overflow-hidden">
                         <div
-                          className="h-full bg-[#C25E38] rounded-full transition-all duration-300"
+                          className="h-full bg-[#881337] rounded-full transition-all duration-300"
                           style={{ width: `${Math.max(4, stats.persenLatihan)}%` }}
                         />
                       </div>
                     </div>
                   </div>
 
-                  {/* Card 3: Rata-rata Tryout */}
-                  <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#E6DFD5] flex flex-col justify-between">
+                  {/* Card 3: Rata-rata Tryout (Amber Outline) */}
+                  <div className="p-4 rounded-xl bg-[#FAF7F2] border-2 border-amber-600 flex flex-col justify-between shadow-xs">
                     <div>
                       <div className="flex items-center justify-between text-xs text-[#6E6258] mb-1">
                         <span className="font-medium">Rata-rata Tryout</span>
-                        <Trophy className="w-4 h-4 text-[#D97E26]" />
+                        <Trophy className="w-4 h-4 text-amber-600" />
                       </div>
                       <div className="text-xl sm:text-2xl font-bold text-[#261C14]">
                         {stats.totalTryout > 0 ? stats.rataRataTryout : '-'}
@@ -206,12 +206,12 @@ const Rapor = () => {
                     </div>
                   </div>
 
-                  {/* Card 4: Total Bintang */}
-                  <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#E6DFD5] flex flex-col justify-between">
+                  {/* Card 4: Total Bintang (Gold Outline) */}
+                  <div className="p-4 rounded-xl bg-[#FAF7F2] border-2 border-yellow-600 flex flex-col justify-between shadow-xs">
                     <div>
                       <div className="flex items-center justify-between text-xs text-[#6E6258] mb-1">
                         <span className="font-medium">Total Bintang</span>
-                        <Star className="w-4 h-4 fill-[#E5A875] text-[#D97E26]" />
+                        <Star className="w-4 h-4 fill-[#E5A875] text-yellow-600" />
                       </div>
                       <div className="text-xl sm:text-2xl font-bold text-[#D97E26]">
                         {totalBintangSemua}
@@ -245,8 +245,8 @@ const Rapor = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                     {/* Kolom Kiri: Seluruh Topik Bahasa Indonesia */}
                     <div className="space-y-3">
-                      <div className="flex items-center space-x-1.5 px-1 text-xs font-semibold text-[#286657]">
-                        <BookOpen className="w-3.5 h-3.5 text-[#286657]" />
+                      <div className="flex items-center space-x-1.5 px-1 text-xs font-semibold text-[#047857]">
+                        <BookOpen className="w-3.5 h-3.5 text-[#047857]" />
                         <span>Bahasa Indonesia</span>
                       </div>
                       {stats.kompetensi
@@ -254,37 +254,25 @@ const Rapor = () => {
                         .map((k, idx) => (
                           <div
                             key={`bi-${idx}`}
-                            className="p-3.5 rounded-xl bg-white border border-[#E6DFD5] hover:border-[#D8CDC2] transition-colors space-y-2 shadow-xs"
+                            className="p-3.5 rounded-xl bg-white border-2 border-[#047857] hover:border-[#065F46] transition-all duration-300 space-y-2 shadow-xs"
                           >
                             <div className="flex items-center justify-between text-xs">
                               <div>
                                 <h3 className="text-sm font-bold text-[#261C14]">{k.nama}</h3>
                                 <span className="text-[10px] text-[#6E6258] font-medium">{k.mapel}</span>
                               </div>
-                              <span className="text-base font-extrabold text-[#286657]">{k.nilai}%</span>
+                              <span className="text-base font-extrabold text-[#047857]">{k.nilai}%</span>
                             </div>
 
                             <div className="w-full h-2 rounded-full bg-[#F2ECE4] overflow-hidden">
                               <div
-                                className={`h-full rounded-full transition-all duration-300 ${
-                                  k.nilai >= 90
-                                    ? 'bg-[#286657]'
-                                    : k.nilai >= 80
-                                    ? 'bg-[#C25E38]'
-                                    : 'bg-[#D97E26]'
-                                }`}
+                                className="h-full rounded-full transition-all duration-300 bg-[#047857]"
                                 style={{ width: `${k.nilai}%` }}
                               />
                             </div>
 
                             <div className="flex justify-end">
-                              <span
-                                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
-                                  k.nilai >= 90
-                                    ? 'bg-[#E8F2EF] text-[#286657] border-[#C5DDD6]'
-                                    : 'bg-[#FAECE6] text-[#C25E38] border-[#F4D3C4]'
-                                }`}
-                              >
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-[#ECFDF5] text-[#047857] border-[#A7F3D0] transition-colors duration-300">
                                 {k.status}
                               </span>
                             </div>
@@ -294,8 +282,8 @@ const Rapor = () => {
 
                     {/* Kolom Kanan: Seluruh Topik Matematika */}
                     <div className="space-y-3">
-                      <div className="flex items-center space-x-1.5 px-1 text-xs font-semibold text-[#C25E38]">
-                        <Calculator className="w-3.5 h-3.5 text-[#C25E38]" />
+                      <div className="flex items-center space-x-1.5 px-1 text-xs font-semibold text-[#881337]">
+                        <Calculator className="w-3.5 h-3.5 text-[#881337]" />
                         <span>Matematika</span>
                       </div>
                       {stats.kompetensi
@@ -303,37 +291,25 @@ const Rapor = () => {
                         .map((k, idx) => (
                           <div
                             key={`mtk-${idx}`}
-                            className="p-3.5 rounded-xl bg-white border border-[#E6DFD5] hover:border-[#D8CDC2] transition-colors space-y-2 shadow-xs"
+                            className="p-3.5 rounded-xl bg-white border-2 border-[#881337] hover:border-[#700D2B] transition-all duration-300 space-y-2 shadow-xs"
                           >
                             <div className="flex items-center justify-between text-xs">
                               <div>
                                 <h3 className="text-sm font-bold text-[#261C14]">{k.nama}</h3>
                                 <span className="text-[10px] text-[#6E6258] font-medium">{k.mapel}</span>
                               </div>
-                              <span className="text-base font-extrabold text-[#C25E38]">{k.nilai}%</span>
+                              <span className="text-base font-extrabold text-[#881337]">{k.nilai}%</span>
                             </div>
 
                             <div className="w-full h-2 rounded-full bg-[#F2ECE4] overflow-hidden">
                               <div
-                                className={`h-full rounded-full transition-all duration-300 ${
-                                  k.nilai >= 90
-                                    ? 'bg-[#286657]'
-                                    : k.nilai >= 80
-                                    ? 'bg-[#C25E38]'
-                                    : 'bg-[#D97E26]'
-                                }`}
+                                className="h-full rounded-full transition-all duration-300 bg-[#881337]"
                                 style={{ width: `${k.nilai}%` }}
                               />
                             </div>
 
                             <div className="flex justify-end">
-                              <span
-                                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
-                                  k.nilai >= 90
-                                    ? 'bg-[#E8F2EF] text-[#286657] border-[#C5DDD6]'
-                                    : 'bg-[#FAECE6] text-[#C25E38] border-[#F4D3C4]'
-                                }`}
-                              >
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-[#FFF1F2] text-[#881337] border-[#FECDD3] transition-colors duration-300">
                                 {k.status}
                               </span>
                             </div>
@@ -344,7 +320,7 @@ const Rapor = () => {
                 </div>
 
                 {/* 3. Rekomendasi Belajar Ringkas (Bukan Wall-of-Text) */}
-                <div className="p-4 sm:p-5 rounded-xl bg-[#FAECE6] border border-[#F4D3C4] space-y-3">
+                <div className="p-4 sm:p-5 rounded-xl bg-[#FAECE6] border-2 border-[#C25E38] space-y-3 shadow-xs">
                   <div className="flex items-center space-x-2">
                     <Sparkles className="w-4 h-4 text-[#C25E38]" />
                     <h3 className="text-xs sm:text-sm font-bold text-[#261C14]">
@@ -353,7 +329,7 @@ const Rapor = () => {
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                    <div className="p-3 rounded-lg bg-white/80 border border-[#F4D3C4]">
+                    <div className="p-3 rounded-lg bg-white border-2 border-slate-300 shadow-2xs">
                       <span className="text-[11px] font-semibold text-[#286657] block mb-0.5">
                         ✓ Topik Sangat Baik:
                       </span>
@@ -362,7 +338,7 @@ const Rapor = () => {
                       </p>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-white/80 border border-[#F4D3C4]">
+                    <div className="p-3 rounded-lg bg-white border-2 border-slate-300 shadow-2xs">
                       <span className="text-[11px] font-semibold text-[#C25E38] block mb-0.5">
                         ⚡ Perlu Ditingkatkan:
                       </span>
@@ -395,7 +371,7 @@ const Rapor = () => {
                 </div>
 
                 {stats.tryoutHistory.length === 0 ? (
-                  <div className="py-12 sm:py-16 text-center rounded-xl bg-[#FAF7F2] border border-[#E6DFD5] space-y-3">
+                  <div className="py-12 sm:py-16 text-center rounded-xl bg-[#FAF7F2] border-2 border-slate-300 space-y-3 shadow-xs">
                     <div className="w-12 h-12 rounded-full bg-white border border-[#E6DFD5] flex items-center justify-center mx-auto text-[#8C7E72]">
                       <Trophy className="w-6 h-6 text-[#8C7E72]" />
                     </div>
@@ -414,9 +390,9 @@ const Rapor = () => {
                     </button>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto rounded-xl border border-[#E6DFD5] bg-white shadow-xs">
+                  <div className="overflow-x-auto rounded-xl border-2 border-slate-400 bg-white shadow-xs">
                     <table className="w-full text-left text-xs">
-                      <thead className="bg-[#FAF7F2] text-[#6E6258] font-semibold border-b border-[#E6DFD5]">
+                      <thead className="bg-[#FAF7F2] text-[#6E6258] font-semibold border-b-2 border-slate-300">
                         <tr>
                           <th className="px-4 py-3">Paket</th>
                           <th className="px-4 py-3">Mata Pelajaran</th>
@@ -426,7 +402,7 @@ const Rapor = () => {
                           <th className="px-4 py-3 text-center">Status</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#E6DFD5]">
+                      <tbody className="divide-y divide-slate-300">
                         {stats.tryoutHistory.map((item) => (
                           <tr key={item.id} className="hover:bg-[#FAF7F2] transition-colors">
                             <td className="px-4 py-3 font-semibold text-[#261C14]">
@@ -434,10 +410,10 @@ const Rapor = () => {
                             </td>
                             <td className="px-4 py-3">
                               <span
-                                className={`inline-block px-2 py-0.5 rounded text-[11px] font-medium border ${
+                                className={`inline-block px-2 py-0.5 rounded text-[11px] font-medium border transition-colors duration-300 ${
                                   item.subject === 'bahasa_indonesia'
-                                    ? 'bg-[#E8F2EF] text-[#286657] border-[#C5DDD6]'
-                                    : 'bg-[#FAECE6] text-[#C25E38] border-[#F4D3C4]'
+                                    ? 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                                    : 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
                                 }`}
                               >
                                 {item.subject === 'bahasa_indonesia' ? 'Bahasa Indonesia' : 'Matematika'}
@@ -453,7 +429,11 @@ const Rapor = () => {
                               {item.correct} / {item.total} Benar
                             </td>
                             <td className="px-4 py-3 text-center">
-                              <span className="inline-block px-2.5 py-0.5 rounded-md text-xs font-bold bg-[#FAECE6] text-[#C25E38] border border-[#F4D3C4]">
+                              <span className={`inline-block px-2.5 py-0.5 rounded-md text-xs font-bold border transition-colors duration-300 ${
+                                item.subject === 'bahasa_indonesia'
+                                    ? 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                                    : 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                              }`}>
                                 {item.score}
                               </span>
                             </td>
@@ -488,7 +468,7 @@ const Rapor = () => {
                 </div>
 
                 {stats.latihanHistory.length === 0 ? (
-                  <div className="py-12 sm:py-16 text-center rounded-xl bg-[#FAF7F2] border border-[#E6DFD5] space-y-3">
+                  <div className="py-12 sm:py-16 text-center rounded-xl bg-[#FAF7F2] border-2 border-slate-300 space-y-3 shadow-xs">
                     <div className="w-12 h-12 rounded-full bg-white border border-[#E6DFD5] flex items-center justify-center mx-auto text-[#8C7E72]">
                       <Target className="w-6 h-6 text-[#8C7E72]" />
                     </div>
@@ -507,9 +487,9 @@ const Rapor = () => {
                     </button>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto rounded-xl border border-[#E6DFD5] bg-white shadow-xs">
+                  <div className="overflow-x-auto rounded-xl border-2 border-slate-400 bg-white shadow-xs">
                     <table className="w-full text-left text-xs">
-                      <thead className="bg-[#FAF7F2] text-[#6E6258] font-semibold border-b border-[#E6DFD5]">
+                      <thead className="bg-[#FAF7F2] text-[#6E6258] font-semibold border-b-2 border-slate-300">
                         <tr>
                           <th className="px-4 py-3">Tingkatan</th>
                           <th className="px-4 py-3">Mata Pelajaran</th>
@@ -519,7 +499,7 @@ const Rapor = () => {
                           <th className="px-4 py-3 text-center">Status</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#E6DFD5]">
+                      <tbody className="divide-y divide-slate-300">
                         {stats.latihanHistory.map((item) => (
                           <tr key={item.id} className="hover:bg-[#FAF7F2] transition-colors">
                             <td className="px-4 py-3 font-semibold text-[#261C14]">
@@ -527,10 +507,10 @@ const Rapor = () => {
                             </td>
                             <td className="px-4 py-3">
                               <span
-                                className={`inline-block px-2 py-0.5 rounded text-[11px] font-medium border ${
+                                className={`inline-block px-2 py-0.5 rounded text-[11px] font-medium border transition-colors duration-300 ${
                                   item.subject === 'bahasa_indonesia'
-                                    ? 'bg-[#E8F2EF] text-[#286657] border-[#C5DDD6]'
-                                    : 'bg-[#FAECE6] text-[#C25E38] border-[#F4D3C4]'
+                                    ? 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                                    : 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
                                 }`}
                               >
                                 {item.subject === 'bahasa_indonesia' ? 'Bahasa Indonesia' : 'Matematika'}
@@ -546,7 +526,11 @@ const Rapor = () => {
                               {item.correct} / {item.total} Benar
                             </td>
                             <td className="px-4 py-3 text-center">
-                              <span className="inline-block px-2.5 py-0.5 rounded-md text-xs font-bold bg-[#E8F2EF] text-[#286657] border border-[#C5DDD6]">
+                              <span className={`inline-block px-2.5 py-0.5 rounded-md text-xs font-bold border transition-colors duration-300 ${
+                                item.subject === 'bahasa_indonesia'
+                                  ? 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                                  : 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                              }`}>
                                 {item.score}
                               </span>
                             </td>

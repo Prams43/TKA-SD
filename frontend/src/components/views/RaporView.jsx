@@ -32,12 +32,12 @@ const RaporView = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in overflow-y-auto">
-      <div className="bg-white border border-slate-200/90 rounded-3xl max-w-4xl w-full min-h-[550px] max-h-[92vh] flex flex-col shadow-2xl text-slate-800 overflow-hidden relative">
+      <div className="bg-white border-2 border-slate-400 rounded-3xl max-w-4xl w-full min-h-[550px] max-h-[92vh] flex flex-col shadow-2xl text-slate-800 overflow-hidden relative">
         {/* Glow ambient */}
         <div className="absolute top-0 right-1/4 w-80 h-32 bg-purple-400/10 blur-3xl pointer-events-none" />
 
         {/* 1. Header Bar */}
-        <div className="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
+        <div className="p-4 sm:p-5 border-b-2 border-slate-300 flex items-center justify-between bg-slate-50/80">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center shadow-sm">
               <TrendingUp className="w-5 h-5" />
@@ -61,7 +61,7 @@ const RaporView = ({ isOpen, onClose }) => {
         </div>
 
         {/* 2. Sub-Nav Tabs */}
-        <div className="flex border-b border-slate-200 px-4 sm:px-6 bg-slate-50/50">
+        <div className="flex border-b-2 border-slate-300 px-4 sm:px-6 bg-slate-50/50">
           <button
             onClick={() => setActiveTab('ringkasan')}
             className={`py-3 px-4 text-xs font-bold border-b-2 transition-all ${
@@ -98,12 +98,12 @@ const RaporView = ({ isOpen, onClose }) => {
         <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-6">
           {activeTab === 'ringkasan' && (
             <>
-              {/* 4 Kartu Statistik Cepat */}
+              {/* 4 Kartu Statistik Cepat dengan Outline Berwarna Kontras */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm">
+                <div className="p-4 rounded-2xl bg-white border-2 border-[#047857] shadow-sm">
                   <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
                     <span>Materi Tuntas</span>
-                    <BookOpen className="w-4 h-4 text-blue-600" />
+                    <BookOpen className="w-4 h-4 text-[#047857]" />
                   </div>
                   <div className="text-xl sm:text-2xl font-black text-slate-900">
                     {stats.materiSelesai}{' '}
@@ -113,26 +113,26 @@ const RaporView = ({ isOpen, onClose }) => {
                   </div>
                   <div className="mt-2 w-full h-1.5 rounded-full bg-slate-200 overflow-hidden">
                     <div
-                      className="h-full bg-blue-600 rounded-full"
+                      className="h-full bg-[#047857] rounded-full"
                       style={{ width: `${stats.persenMateri}%` }}
                     />
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm">
+                <div className="p-4 rounded-2xl bg-white border-2 border-[#881337] shadow-sm">
                   <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
                     <span>Akurasi Latihan</span>
-                    <Target className="w-4 h-4 text-emerald-600" />
+                    <Target className="w-4 h-4 text-[#881337]" />
                   </div>
                   <div className="text-xl sm:text-2xl font-black text-slate-900">
                     {stats.akurasiLatihan}%
                   </div>
-                  <span className="text-[11px] text-emerald-700 font-medium mt-1 block">
+                  <span className="text-[11px] text-[#881337] font-medium mt-1 block">
                     {stats.totalSoalBenar} dari {stats.totalSoalDijawab} soal benar
                   </span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm">
+                <div className="p-4 rounded-2xl bg-white border-2 border-amber-600 shadow-sm">
                   <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
                     <span>Rata-rata Tryout</span>
                     <Trophy className="w-4 h-4 text-amber-600" />
@@ -145,7 +145,7 @@ const RaporView = ({ isOpen, onClose }) => {
                   </span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm">
+                <div className="p-4 rounded-2xl bg-white border-2 border-purple-600 shadow-sm">
                   <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
                     <span>Predikat Nilai</span>
                     <Award className="w-4 h-4 text-purple-600" />
@@ -160,7 +160,7 @@ const RaporView = ({ isOpen, onClose }) => {
               </div>
 
               {/* Matriks Asesmen Penguasaan Kompetensi Pusmendik */}
-              <div className="p-5 rounded-2xl bg-slate-50/70 border border-slate-200 space-y-4">
+              <div className="p-5 rounded-2xl bg-slate-50/70 border-2 border-slate-300 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 flex items-center space-x-2">
@@ -181,32 +181,26 @@ const RaporView = ({ isOpen, onClose }) => {
                       .map((k, idx) => (
                         <div
                           key={`bi-${idx}`}
-                          className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-sm space-y-2"
+                          className="p-3.5 rounded-xl bg-white border-2 border-[#047857] shadow-sm space-y-2"
                         >
                           <div className="flex items-center justify-between text-xs">
                             <div>
                               <strong className="text-slate-900 block">{k.nama}</strong>
                               <span className="text-[10px] text-slate-500">{k.mapel}</span>
                             </div>
-                            <span className="font-bold text-blue-600">{k.nilai}%</span>
+                            <span className="font-bold text-[#047857]">{k.nilai}%</span>
                           </div>
 
                           <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
                             <div
-                              className={`h-full rounded-full ${
-                                k.nilai >= 90
-                                  ? 'bg-emerald-500'
-                                  : k.nilai >= 80
-                                  ? 'bg-blue-500'
-                                  : 'bg-amber-500'
-                              }`}
+                              className="h-full rounded-full bg-[#047857]"
                               style={{ width: `${k.nilai}%` }}
                             />
                           </div>
 
                           <div className="flex justify-end">
                             <span className="text-[10px] text-slate-500 font-medium">
-                              Status: <strong className="text-slate-800">{k.status}</strong>
+                              Status: <strong className="text-[#047857]">{k.status}</strong>
                             </span>
                           </div>
                         </div>
@@ -220,32 +214,26 @@ const RaporView = ({ isOpen, onClose }) => {
                       .map((k, idx) => (
                         <div
                           key={`mtk-${idx}`}
-                          className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-sm space-y-2"
+                          className="p-3.5 rounded-xl bg-white border-2 border-[#881337] shadow-sm space-y-2"
                         >
                           <div className="flex items-center justify-between text-xs">
                             <div>
                               <strong className="text-slate-900 block">{k.nama}</strong>
                               <span className="text-[10px] text-slate-500">{k.mapel}</span>
                             </div>
-                            <span className="font-bold text-blue-600">{k.nilai}%</span>
+                            <span className="font-bold text-[#881337]">{k.nilai}%</span>
                           </div>
 
                           <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
                             <div
-                              className={`h-full rounded-full ${
-                                k.nilai >= 90
-                                  ? 'bg-emerald-500'
-                                  : k.nilai >= 80
-                                  ? 'bg-blue-500'
-                                  : 'bg-amber-500'
-                              }`}
+                              className="h-full rounded-full bg-[#881337]"
                               style={{ width: `${k.nilai}%` }}
                             />
                           </div>
 
                           <div className="flex justify-end">
                             <span className="text-[10px] text-slate-500 font-medium">
-                              Status: <strong className="text-slate-800">{k.status}</strong>
+                              Status: <strong className="text-[#881337]">{k.status}</strong>
                             </span>
                           </div>
                         </div>

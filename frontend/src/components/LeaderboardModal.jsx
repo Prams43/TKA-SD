@@ -37,9 +37,9 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#1F1914]/50 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white rounded-lg border border-[#E6DFD5] shadow-lg max-w-2xl w-full overflow-hidden relative my-auto flex flex-col max-h-[90vh]">
+      <div className="bg-white rounded-2xl border-2 border-slate-400 shadow-2xl max-w-2xl w-full overflow-hidden relative my-auto flex flex-col max-h-[90vh]">
         {/* Header Modal */}
-        <div className="p-4 sm:p-5 border-b border-[#E6DFD5] flex items-center justify-between bg-white flex-shrink-0">
+        <div className="p-4 sm:p-5 border-b-2 border-slate-300 flex items-center justify-between bg-white flex-shrink-0">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-lg bg-[#FAECE6] text-[#C25E38] border border-[#F2D2C4] flex items-center justify-center text-xl font-bold flex-shrink-0">
               🏆
@@ -64,7 +64,7 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
         {/* Konten Scrollable */}
         <div className="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1">
           {/* Card Posisi Pengguna ("Kamu") */}
-          <div className="p-3.5 sm:p-4 rounded-xl bg-[#FAF7F2] text-[#261C14] flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-2 border-[#C25E38]/25 shadow-xs">
+          <div className="p-3.5 sm:p-4 rounded-xl bg-[#FAF7F2] text-[#261C14] flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-2 border-[#C25E38] shadow-sm">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-lg bg-[#C25E38] text-white flex items-center justify-center text-sm font-bold flex-shrink-0 shadow-xs">
                 #{myRank}
@@ -92,7 +92,7 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
 
             <div className="flex items-center space-x-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#E6DFD5]">
               <div className="text-right">
-                <span className="px-2 py-0.5 rounded bg-white text-[#261C14] border border-[#E6DFD5] text-xs font-semibold inline-block">
+                <span className="px-2 py-0.5 rounded bg-white text-[#261C14] border-2 border-slate-300 text-xs font-semibold inline-block">
                   Level {myEntry.level}
                 </span>
                 <span className="text-[11px] text-[#6E6258] block mt-0.5">
@@ -115,7 +115,7 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
             {list.length === 1 && top3[0] ? (
               /* Tampilan 1 User */
               <div className="max-w-xs mx-auto">
-                <div className="p-4 rounded-lg border border-[#E6DFD5] bg-white text-center flex flex-col items-center shadow-xs">
+                <div className="p-4 rounded-xl border-2 border-amber-500 bg-white text-center flex flex-col items-center shadow-sm">
                   <span className="text-xs font-semibold text-[#C25E38] bg-[#FAECE6] px-2.5 py-0.5 rounded border border-[#F2D2C4] mb-2">
                     Juara #1
                   </span>
@@ -125,7 +125,7 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
                   <h6 className="text-sm font-bold text-[#261C14] truncate w-full">
                     {top3[0].name}
                   </h6>
-                  <div className="mt-2 px-2.5 py-0.5 rounded bg-[#F2ECE4] text-[#261C14] font-semibold text-xs border border-[#E6DFD5]">
+                  <div className="mt-2 px-2.5 py-0.5 rounded bg-[#F2ECE4] text-[#261C14] font-semibold text-xs border border-slate-300">
                     Lv. {top3[0].level} ({top3[0].exp} EXP)
                   </div>
                   <span className="text-[11px] font-medium text-[#6E6258] mt-1 truncate w-full">
@@ -137,15 +137,15 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
               /* Tampilan 2 User */
               <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto items-end">
                 {/* Peringkat 2 */}
-                <div className="p-3 rounded-lg border border-[#E6DFD5] bg-white text-center flex flex-col items-center shadow-xs">
-                  <span className="text-[10px] font-semibold text-[#6E6258] bg-[#F2ECE4] px-2 py-0.5 rounded border border-[#E6DFD5] mb-1.5">
+                <div className="p-3 rounded-xl border-2 border-slate-400 bg-white text-center flex flex-col items-center shadow-sm">
+                  <span className="text-[10px] font-semibold text-[#6E6258] bg-[#F2ECE4] px-2 py-0.5 rounded border border-slate-300 mb-1.5">
                     Juara 2
                   </span>
                   <span className="text-2xl mb-1">{top3[1].avatar}</span>
                   <h6 className="text-xs font-bold text-[#261C14] truncate w-full">
                     {top3[1].name}
                   </h6>
-                  <div className="mt-1 px-2 py-0.5 rounded bg-[#F2ECE4] text-[#261C14] font-semibold text-[11px] border border-[#E6DFD5]">
+                  <div className="mt-1 px-2 py-0.5 rounded bg-[#F2ECE4] text-[#261C14] font-semibold text-[11px] border border-slate-300">
                     Lv. {top3[1].level}
                   </div>
                   <span className="text-[10px] text-[#6E6258] font-medium mt-1 truncate w-full">
@@ -154,7 +154,7 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
                 </div>
 
                 {/* Peringkat 1 */}
-                <div className="p-3.5 rounded-lg border border-[#F2D2C4] bg-[#FEF7EE] text-center flex flex-col items-center shadow-xs">
+                <div className="p-3.5 rounded-xl border-2 border-amber-500 bg-[#FEF7EE] text-center flex flex-col items-center shadow-sm">
                   <span className="text-[10px] font-semibold text-[#C25E38] bg-[#FAECE6] px-2 py-0.5 rounded border border-[#F2D2C4] mb-1.5">
                     Juara 1
                   </span>
@@ -175,15 +175,15 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
               <div className="grid grid-cols-3 gap-2.5 items-end">
                 {/* Peringkat 2 */}
                 {top3[1] && (
-                  <div className="p-3 rounded-lg border border-[#E6DFD5] bg-white text-center flex flex-col items-center shadow-xs order-1">
-                    <span className="text-[10px] font-semibold text-[#6E6258] bg-[#F2ECE4] px-2 py-0.5 rounded border border-[#E6DFD5] mb-1.5">
+                  <div className="p-3 rounded-xl border-2 border-slate-400 bg-white text-center flex flex-col items-center shadow-sm order-1">
+                    <span className="text-[10px] font-semibold text-[#6E6258] bg-[#F2ECE4] px-2 py-0.5 rounded border border-slate-300 mb-1.5">
                       Juara 2
                     </span>
                     <span className="text-2xl mb-1">{top3[1].avatar}</span>
                     <h6 className="text-xs font-bold text-[#261C14] truncate w-full">
                       {top3[1].name}
                     </h6>
-                    <div className="mt-1 px-2 py-0.5 rounded bg-[#F2ECE4] text-[#261C14] font-semibold text-[11px] border border-[#E6DFD5]">
+                    <div className="mt-1 px-2 py-0.5 rounded bg-[#F2ECE4] text-[#261C14] font-semibold text-[11px] border border-slate-300">
                       Lv. {top3[1].level}
                     </div>
                     <span className="text-[10px] text-[#6E6258] font-medium mt-1 truncate w-full">
@@ -194,7 +194,7 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
 
                 {/* Peringkat 1 */}
                 {top3[0] && (
-                  <div className="p-3.5 rounded-lg border border-[#F2D2C4] bg-[#FEF7EE] text-center flex flex-col items-center shadow-xs order-2">
+                  <div className="p-3.5 rounded-xl border-2 border-amber-500 bg-[#FEF7EE] text-center flex flex-col items-center shadow-sm order-2">
                     <span className="text-[10px] font-semibold text-[#C25E38] bg-[#FAECE6] px-2 py-0.5 rounded border border-[#F2D2C4] mb-1.5">
                       Juara 1
                     </span>
@@ -213,7 +213,7 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
 
                 {/* Peringkat 3 */}
                 {top3[2] && (
-                  <div className="p-3 rounded-lg border border-[#E6DFD5] bg-white text-center flex flex-col items-center shadow-xs order-3">
+                  <div className="p-3 rounded-xl border-2 border-amber-700 bg-white text-center flex flex-col items-center shadow-sm order-3">
                     <span className="text-[10px] font-semibold text-[#D97E26] bg-[#FEF7EE] px-2 py-0.5 rounded border border-[#F6D8B8] mb-1.5">
                       Juara 3
                     </span>
@@ -221,7 +221,7 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
                     <h6 className="text-xs font-bold text-[#261C14] truncate w-full">
                       {top3[2].name}
                     </h6>
-                    <div className="mt-1 px-2 py-0.5 rounded bg-[#F2ECE4] text-[#261C14] font-semibold text-[11px] border border-[#E6DFD5]">
+                    <div className="mt-1 px-2 py-0.5 rounded bg-[#F2ECE4] text-[#261C14] font-semibold text-[11px] border border-slate-300">
                       Lv. {top3[2].level}
                     </div>
                     <span className="text-[10px] text-[#6E6258] font-medium mt-1 truncate w-full">
@@ -241,7 +241,7 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari nama siswa atau gelar..."
-              className="w-full pl-9 pr-4 py-2 rounded-lg bg-white border border-[#E6DFD5] text-xs sm:text-sm text-[#261C14] placeholder-[#8C7E72] focus:outline-none focus:border-[#C25E38] focus:ring-1 focus:ring-[#C25E38] transition-colors"
+              className="w-full pl-9 pr-4 py-2 rounded-lg bg-white border-2 border-slate-300 text-xs sm:text-sm text-[#261C14] placeholder-[#8C7E72] focus:outline-none focus:border-[#C25E38] focus:ring-1 focus:ring-[#C25E38] transition-colors"
             />
           </div>
 
@@ -251,7 +251,7 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
               Daftar Seluruh Peringkat ({filteredList.length} Siswa)
             </h5>
 
-            <div className="divide-y divide-[#E6DFD5] rounded-lg border border-[#E6DFD5] overflow-hidden bg-white shadow-xs">
+            <div className="divide-y divide-slate-300 rounded-xl border-2 border-slate-400 overflow-hidden bg-white shadow-sm">
               {filteredList.map((item) => {
                 const isMe = item.isCurrentUser;
                 const isGold = item.rank === 1;
@@ -308,7 +308,7 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
                     {/* Level, EXP & Streak */}
                     <div className="flex-shrink-0 flex items-center space-x-2 sm:space-x-3 text-right">
                       <div>
-                        <span className="px-2 py-0.5 rounded bg-[#F2ECE4] text-[#261C14] border border-[#E6DFD5] text-xs font-semibold inline-block">
+                        <span className="px-2 py-0.5 rounded bg-[#F2ECE4] text-[#261C14] border border-slate-300 text-xs font-semibold inline-block">
                           Lv. {item.level}
                         </span>
                         <span className="text-[10px] text-[#6E6258] block mt-0.5">
@@ -329,10 +329,10 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
         </div>
 
         {/* Footer Modal */}
-        <div className="p-3.5 bg-[#FAF7F2] border-t border-[#E6DFD5] flex justify-end">
+        <div className="p-3.5 bg-[#FAF7F2] border-t-2 border-slate-300 flex justify-end">
           <button
             onClick={onClose}
-            className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#261C14] hover:bg-[#3D2E22] text-white text-xs font-semibold transition-colors cursor-pointer"
+            className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#261C14] hover:bg-[#3D2E22] text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
           >
             Tutup
           </button>

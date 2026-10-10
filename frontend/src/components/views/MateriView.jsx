@@ -162,18 +162,18 @@ const MateriView = ({ isOpen, onClose }) => {
                 {/* Kartu Bahasa Indonesia */}
                 <div
                   onClick={() => setSelectedSubject('bahasa_indonesia')}
-                  className="p-6 rounded-2xl bg-gradient-to-br from-blue-50/70 via-white to-blue-50/30 border border-blue-200 hover:border-blue-400 hover:shadow-lg transition-all cursor-pointer group hover:scale-[1.02]"
+                  className="p-6 rounded-2xl bg-white border-2 border-[#047857] hover:border-[#065F46] hover:shadow-lg transition-all cursor-pointer group hover:scale-[1.02]"
                 >
-                  <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 rounded-2xl bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <BookOpen className="w-6 h-6" />
                   </div>
-                  <h4 className="text-lg font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+                  <h4 className="text-lg font-bold text-slate-900 group-hover:text-[#047857] transition-colors">
                     Bahasa Indonesia
                   </h4>
                   <p className="text-xs text-slate-600 mt-2 leading-relaxed">
                     3 Elemen: Pemahaman Tekstual, Inferensial, serta Evaluasi & Apresiasi pada teks informasi dan fiksi.
                   </p>
-                  <div className="mt-4 pt-3 border-t border-blue-100 flex items-center justify-between text-xs text-blue-600 font-semibold">
+                  <div className="mt-4 pt-3 border-t border-[#A7F3D0] flex items-center justify-between text-xs text-[#047857] font-semibold">
                     <span>Lihat Persebaran Bab</span>
                     <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -182,18 +182,18 @@ const MateriView = ({ isOpen, onClose }) => {
                 {/* Kartu Matematika */}
                 <div
                   onClick={() => setSelectedSubject('matematika')}
-                  className="p-6 rounded-2xl bg-gradient-to-br from-emerald-50/70 via-white to-emerald-50/30 border border-emerald-200 hover:border-emerald-400 hover:shadow-lg transition-all cursor-pointer group hover:scale-[1.02]"
+                  className="p-6 rounded-2xl bg-white border-2 border-[#881337] hover:border-[#700D2B] hover:shadow-lg transition-all cursor-pointer group hover:scale-[1.02]"
                 >
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 rounded-2xl bg-[#FFF1F2] text-[#881337] border border-[#FECDD3] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <Calculator className="w-6 h-6" />
                   </div>
-                  <h4 className="text-lg font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                  <h4 className="text-lg font-bold text-slate-900 group-hover:text-[#881337] transition-colors">
                     Matematika
                   </h4>
                   <p className="text-xs text-slate-600 mt-2 leading-relaxed">
                     3 Elemen: Bilangan (KABATAKU & Pecahan), Geometri & Pengukuran, serta Pengolahan Data.
                   </p>
-                  <div className="mt-4 pt-3 border-t border-emerald-100 flex items-center justify-between text-xs text-emerald-600 font-semibold">
+                  <div className="mt-4 pt-3 border-t border-[#FECDD3] flex items-center justify-between text-xs text-[#881337] font-semibold">
                     <span>Lihat Persebaran Bab</span>
                     <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -217,12 +217,6 @@ const MateriView = ({ isOpen, onClose }) => {
                     {PUSMENDIK_MATERI[selectedSubject].deskripsi}
                   </p>
                 </div>
-                <button
-                  onClick={() => setSelectedSubject(null)}
-                  className="text-xs text-blue-600 hover:text-blue-800 font-semibold underline"
-                >
-                  Ganti Mapel
-                </button>
               </div>
 
               {/* Loop Elemen Kurikulum */}

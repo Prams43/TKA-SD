@@ -215,21 +215,21 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] flex flex-col justify-center items-center p-4 sm:p-6">
+    <div className="min-h-screen bg-transparent flex flex-col justify-center items-center p-4 sm:p-6">
       <div className="w-full max-w-md">
         {/* Header Identitas */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center mb-3">
+          <div className="inline-flex items-center justify-center mb-3 p-2 bg-white rounded-2xl shadow-md border border-white/30">
             <img
               src="/logo.png"
               alt="Logo EDU TKA"
-              className="h-16 w-auto object-contain"
+              className="h-14 w-auto object-contain"
             />
           </div>
-          <h1 className="text-2xl font-bold text-[#261C14] tracking-tight">
+          <h1 className="text-2xl font-bold text-white tracking-tight drop-shadow-sm">
             {step === 'form' ? 'Daftar Akun TKA SD' : 'Verifikasi Akun'}
           </h1>
-          <p className="text-[#6E6258] text-sm mt-1">
+          <p className="text-teal-50/90 text-sm mt-1 font-medium">
             {step === 'form'
               ? 'Buat akun baru untuk mulai latihan Tes Kemampuan Akademik'
               : `Kode verifikasi telah dikirimkan ke email Anda`}
@@ -237,7 +237,7 @@ const Register = () => {
         </div>
 
         {/* Card Form Utama */}
-        <div className="bg-white rounded-lg border border-[#E6DFD5] p-6 sm:p-8 shadow-sm">
+        <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 shadow-xl">
           {/* STEP 1: FORMULIR PENDAFTARAN */}
           {step === 'form' && (
             <div>
@@ -434,7 +434,7 @@ const Register = () => {
         </div>
 
         {/* Footer info */}
-        <p className="text-center text-xs text-[#8C7E72] mt-6">
+        <p className="text-center text-xs text-blue-200/70 mt-6">
           &copy; {new Date().getFullYear()} TKA SD. Seluruh hak cipta dilindungi.
         </p>
       </div>

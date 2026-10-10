@@ -65,11 +65,11 @@ const SUBJECTS_CONFIG = {
     theme: {
       gradient: 'from-slate-900 to-slate-900',
       border: 'border-[#33261D]',
-      badgeBg: 'bg-[#E8F2EF] text-[#286657] border-[#BCD9D0]',
-      activeRing: 'ring-[#286657]/20',
-      activeBtn: 'from-[#286657] to-[#286657] border-[#1E5044]',
-      pillCompleted: 'bg-[#E8F2EF] border-[#BCD9D0] text-[#286657]',
-      pillActive: 'bg-[#E8F2EF] border-[#BCD9D0] text-[#286657]',
+      badgeBg: 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]',
+      activeRing: 'ring-[#047857]/20',
+      activeBtn: 'from-[#047857] to-[#047857] border-[#065F46]',
+      pillCompleted: 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]',
+      pillActive: 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]',
     },
     milestones: {
       5: {
@@ -109,11 +109,11 @@ const SUBJECTS_CONFIG = {
     theme: {
       gradient: 'from-slate-900 to-slate-900',
       border: 'border-[#33261D]',
-      badgeBg: 'bg-[#FAECE6] text-[#C25E38] border-[#F2D2C4]',
-      activeRing: 'ring-[#C25E38]/20',
-      activeBtn: 'from-[#C25E38] to-[#C25E38] border-[#A94D2B]',
-      pillCompleted: 'bg-[#FAECE6] border-[#F2D2C4] text-[#C25E38]',
-      pillActive: 'bg-[#FAECE6] border-[#F2D2C4] text-[#C25E38]',
+      badgeBg: 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]',
+      activeRing: 'ring-[#881337]/20',
+      activeBtn: 'from-[#881337] to-[#881337] border-[#700D2B]',
+      pillCompleted: 'bg-[#FFF1F2] border-[#FECDD3] text-[#881337]',
+      pillActive: 'bg-[#FFF1F2] border-[#FECDD3] text-[#881337]',
     },
     milestones: {
       4: {
@@ -423,7 +423,7 @@ const Materi = () => {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#261C14] selection:bg-[#FAECE6] selection:text-[#C25E38] pb-12">
+    <div className="min-h-screen flex flex-col bg-transparent text-slate-800 pb-12">
       {/* 1. Navbar Utama */}
       <Navbar />
 
@@ -431,39 +431,39 @@ const Materi = () => {
       <main className="flex-1 max-w-4xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 flex flex-col animate-fade-in">
         {/* Navigasi Breadcrumb */}
         <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-xs text-[#6E6258]">
+          <div className="flex items-center space-x-2 text-xs text-blue-200">
             <button
               onClick={() => navigate('/dashboard')}
-              className="hover:text-[#C25E38] font-medium flex items-center space-x-1 transition-colors"
+              className="hover:text-white font-medium flex items-center space-x-1 transition-colors text-blue-200"
             >
               <LayoutDashboard className="w-3.5 h-3.5" />
               <span>Dashboard</span>
             </button>
-            <span>/</span>
+            <span className="text-blue-300/50">/</span>
             <button
               onClick={() => {
                 setActiveBab(null);
                 setJumpChallengeBab(null);
                 setSelectedSubject(null);
               }}
-              className={`font-medium hover:text-[#C25E38] transition-colors ${
-                !selectedSubject ? 'text-[#261C14] font-semibold' : ''
+              className={`font-medium hover:text-white transition-colors ${
+                !selectedSubject ? 'text-white font-bold' : 'text-blue-200'
               }`}
             >
               Modul Materi Pembelajaran
             </button>
             {selectedSubject && (
               <>
-                <span>/</span>
-                <span className="text-[#261C14] font-semibold">
+                <span className="text-blue-300/50">/</span>
+                <span className="text-white font-semibold">
                   {currentSubject?.title}
                 </span>
               </>
             )}
             {activeBab && (
               <>
-                <span>/</span>
-                <span className="text-[#C25E38] font-medium truncate max-w-[150px] sm:max-w-xs">
+                <span className="text-blue-300/50">/</span>
+                <span className="text-amber-300 font-medium truncate max-w-[150px] sm:max-w-xs">
                   Materi {activeBab.no}: {activeBab.judul}
                 </span>
               </>
@@ -481,7 +481,7 @@ const Materi = () => {
                 navigate('/dashboard');
               }
             }}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#F2ECE4] border border-[#E6DFD5] text-[#261C14] hover:text-[#C25E38] text-xs font-medium transition-colors cursor-pointer"
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 hover:text-blue-700 text-xs font-semibold transition-all cursor-pointer shadow-sm"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>
@@ -499,10 +499,10 @@ const Materi = () => {
           <div className="max-w-3xl mx-auto w-full py-4 sm:py-8 space-y-6 animate-fade-in">
             {/* Header Pilihan */}
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold text-[#261C14] tracking-tight">
+              <h2 className="text-2xl font-bold text-white tracking-tight">
                 Pilih Mata Pelajaran
               </h2>
-              <p className="text-xs sm:text-sm text-[#6E6258] max-w-md mx-auto">
+              <p className="text-xs sm:text-sm text-blue-100/90 max-w-md mx-auto">
                 Pilih mata pelajaran untuk melihat peta materi terstruktur dan latihan berjenjang.
               </p>
             </div>
@@ -521,19 +521,32 @@ const Materi = () => {
                       setSelectedSubject('bahasa_indonesia');
                       setSearchQuery('');
                     }}
-                    className="p-6 rounded-lg bg-white border border-[#E6DFD5] hover:border-[#286657] shadow-sm transition-colors cursor-pointer flex flex-col justify-between"
+                    onMouseMove={(e) => {
+                      const r = e.currentTarget.getBoundingClientRect();
+                      e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`);
+                      e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`);
+                    }}
+                    className="group relative overflow-hidden p-6 rounded-2xl bg-white border-2 border-[#047857] hover:border-[#047857] hover:ring-4 hover:ring-[#047857]/20 hover:shadow-2xl hover:shadow-[#047857]/20 hover:-translate-y-2 active:scale-[0.985] transition-all duration-300 ease-out cursor-pointer flex flex-col justify-between select-none"
                   >
-                    <div>
+                    {/* Interactive Cursor Spotlight Glow */}
+                    <div
+                      className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      style={{
+                        background: 'radial-gradient(350px circle at var(--mx, 50%) var(--my, 50%), rgba(4, 120, 87, 0.1), transparent 75%)',
+                      }}
+                    />
+
+                    <div className="relative z-10">
                       <div className="flex items-center justify-between mb-4">
-                        <div className="w-12 h-12 rounded-lg bg-[#E8F2EF] text-[#286657] border border-[#BCD9D0] flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-xl bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0] flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-[-4deg] group-hover:shadow-md group-hover:bg-[#D1FAE5]">
                           <BookOpen className="w-6 h-6" />
                         </div>
-                        <span className="px-2.5 py-0.5 rounded text-xs font-semibold bg-[#E8F2EF] text-[#286657] border border-[#BCD9D0]">
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0] transition-all duration-300 group-hover:scale-105 shadow-2xs">
                           21 Topik Materi
                         </span>
                       </div>
 
-                      <h3 className="text-lg font-bold text-[#261C14]">
+                      <h3 className="text-lg font-bold text-[#261C14] group-hover:text-[#047857] transition-colors duration-200">
                         Bahasa Indonesia
                       </h3>
                       <p className="text-xs text-[#6E6258] mt-2 leading-relaxed">
@@ -544,20 +557,24 @@ const Materi = () => {
                       <div className="mt-4 pt-3 border-t border-[#E6DFD5]">
                         <div className="flex items-center justify-between text-[11px] mb-1.5 font-medium text-[#6E6258]">
                           <span>Progres: {biDone} dari 21 Materi</span>
-                          <span className="text-[#286657] font-semibold">{biPercent}%</span>
+                          <span className="text-[#047857] font-semibold">{biPercent}%</span>
                         </div>
                         <div className="w-full bg-[#F2ECE4] rounded-full h-2 overflow-hidden">
                           <div
-                            className="bg-[#286657] h-2 rounded-full transition-all duration-300"
+                            className="bg-[#047857] h-2 rounded-full transition-all duration-300"
                             style={{ width: `${Math.max(4, biPercent)}%` }}
                           />
                         </div>
                       </div>
                     </div>
 
-                    <div className="mt-5 pt-3 border-t border-[#E6DFD5] flex items-center justify-between text-xs text-[#286657] font-medium">
-                      <span>Buka Peta 21 Materi Bahasa Indonesia</span>
-                      <ChevronRight className="w-4 h-4" />
+                    <div className="relative z-10 mt-5 pt-3 border-t border-[#E6DFD5] flex items-center justify-between text-xs font-bold text-[#047857] transition-all">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">
+                        Buka Peta 21 Materi Bahasa Indonesia
+                      </span>
+                      <div className="w-7 h-7 rounded-lg bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center group-hover:translate-x-1.5 group-hover:bg-[#047857] group-hover:text-white transition-all duration-300 shadow-2xs">
+                        <ChevronRight className="w-4 h-4" />
+                      </div>
                     </div>
                   </div>
                 );
@@ -575,19 +592,32 @@ const Materi = () => {
                       setSelectedSubject('matematika');
                       setSearchQuery('');
                     }}
-                    className="p-6 rounded-lg bg-white border border-[#E6DFD5] hover:border-[#C25E38] shadow-sm transition-colors cursor-pointer flex flex-col justify-between"
+                    onMouseMove={(e) => {
+                      const r = e.currentTarget.getBoundingClientRect();
+                      e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`);
+                      e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`);
+                    }}
+                    className="group relative overflow-hidden p-6 rounded-2xl bg-white border-2 border-[#881337] hover:border-[#881337] hover:ring-4 hover:ring-[#881337]/20 hover:shadow-2xl hover:shadow-[#881337]/20 hover:-translate-y-2 active:scale-[0.985] transition-all duration-300 ease-out cursor-pointer flex flex-col justify-between select-none"
                   >
-                    <div>
+                    {/* Interactive Cursor Spotlight Glow */}
+                    <div
+                      className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      style={{
+                        background: 'radial-gradient(350px circle at var(--mx, 50%) var(--my, 50%), rgba(136, 19, 55, 0.1), transparent 75%)',
+                      }}
+                    />
+
+                    <div className="relative z-10">
                       <div className="flex items-center justify-between mb-4">
-                        <div className="w-12 h-12 rounded-lg bg-[#FAECE6] text-[#C25E38] border border-[#F2D2C4] flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-xl bg-[#FFF1F2] text-[#881337] border border-[#FECDD3] flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-[4deg] group-hover:shadow-md group-hover:bg-[#FFE4E6]">
                           <Calculator className="w-6 h-6" />
                         </div>
-                        <span className="px-2.5 py-0.5 rounded text-xs font-semibold bg-[#FAECE6] text-[#C25E38] border border-[#F2D2C4]">
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#FFF1F2] text-[#881337] border border-[#FECDD3] transition-all duration-300 group-hover:scale-105 shadow-2xs">
                           12 Topik Materi
                         </span>
                       </div>
 
-                      <h3 className="text-lg font-bold text-[#261C14]">
+                      <h3 className="text-lg font-bold text-[#261C14] group-hover:text-[#881337] transition-colors duration-200">
                         Matematika
                       </h3>
                       <p className="text-xs text-[#6E6258] mt-2 leading-relaxed">
@@ -598,20 +628,24 @@ const Materi = () => {
                       <div className="mt-4 pt-3 border-t border-[#E6DFD5]">
                         <div className="flex items-center justify-between text-[11px] mb-1.5 font-medium text-[#6E6258]">
                           <span>Progres: {mtkDone} dari 12 Materi</span>
-                          <span className="text-[#C25E38] font-semibold">{mtkPercent}%</span>
+                          <span className="text-[#881337] font-semibold">{mtkPercent}%</span>
                         </div>
                         <div className="w-full bg-[#F2ECE4] rounded-full h-2 overflow-hidden">
                           <div
-                            className="bg-[#C25E38] h-2 rounded-full transition-all duration-300"
+                            className="bg-[#881337] h-2 rounded-full transition-all duration-300"
                             style={{ width: `${Math.max(4, mtkPercent)}%` }}
                           />
                         </div>
                       </div>
                     </div>
 
-                    <div className="mt-5 pt-3 border-t border-[#E6DFD5] flex items-center justify-between text-xs text-[#C25E38] font-medium">
-                      <span>Buka Peta 12 Materi Matematika</span>
-                      <ChevronRight className="w-4 h-4" />
+                    <div className="relative z-10 mt-5 pt-3 border-t border-[#E6DFD5] flex items-center justify-between text-xs font-bold text-[#881337] transition-all">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">
+                        Buka Peta 12 Materi Matematika
+                      </span>
+                      <div className="w-7 h-7 rounded-lg bg-[#FFF1F2] border border-[#FECDD3] flex items-center justify-center group-hover:translate-x-1.5 group-hover:bg-[#881337] group-hover:text-white transition-all duration-300 shadow-2xs">
+                        <ChevronRight className="w-4 h-4" />
+                      </div>
                     </div>
                   </div>
                 );
@@ -683,11 +717,13 @@ const Materi = () => {
                     {activeBab.soalLatihan.map((_, i) => (
                       <div
                         key={i}
-                        className={`w-7 h-1.5 rounded-full transition-colors ${
+                        className={`w-7 h-1.5 rounded-full transition-all duration-300 ${
                           i < currentQuizIndex
                             ? 'bg-emerald-600'
                             : i === currentQuizIndex
-                            ? 'bg-blue-600'
+                            ? selectedSubject === 'bahasa_indonesia'
+                              ? 'bg-[#047857]'
+                              : 'bg-[#881337]'
                             : 'bg-slate-200'
                         }`}
                       />
@@ -745,8 +781,8 @@ const Materi = () => {
                       </p>
 
                       <div className="pt-2">
-                        <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#E8F2EF] text-[#286657] border border-[#BCD9D0] text-xs font-bold shadow-2xs">
-                          <Sparkles className="w-3.5 h-3.5 text-[#286657]" />
+                        <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0] text-xs font-bold shadow-2xs">
+                          <Sparkles className="w-3.5 h-3.5 text-[#047857]" />
                           <span>+{quizMistakes === 0 ? 90 : quizMistakes === 1 ? 80 : 70} EXP Didapatkan (Materi Selesai)!</span>
                         </span>
                       </div>
@@ -774,23 +810,27 @@ const Materi = () => {
                                 setHasSubmittedAnswer(false);
                                 setIsAnswerCorrect(false);
                               }}
-                              className={`w-full p-3 rounded-lg text-left text-xs sm:text-sm font-medium border transition-colors flex items-center justify-between ${
+                              className={`w-full p-3 rounded-lg text-left text-xs sm:text-sm font-medium border transition-all duration-300 flex items-center justify-between ${
                                 isLocked ? 'cursor-not-allowed opacity-80' : 'cursor-pointer'
                               } ${
                                 isWrongSubmitted
                                   ? 'bg-red-50 border-red-500 text-red-900'
                                   : isSelected
-                                  ? 'bg-blue-50 border-blue-600 text-blue-900'
+                                  ? selectedSubject === 'bahasa_indonesia'
+                                    ? 'bg-[#ECFDF5] border-[#047857] text-[#064E3B]'
+                                    : 'bg-[#FFF1F2] border-[#881337] text-[#4C0519]'
                                   : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
                               }`}
                             >
                               <span>{opt}</span>
                               <div
-                                className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-semibold ${
+                                className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-semibold transition-colors ${
                                   isWrongSubmitted
                                     ? 'border-red-500 bg-red-600 text-white'
                                     : isSelected
-                                    ? 'border-blue-600 bg-blue-600 text-white'
+                                    ? selectedSubject === 'bahasa_indonesia'
+                                      ? 'border-[#047857] bg-[#047857] text-white'
+                                      : 'border-[#881337] bg-[#881337] text-white'
                                     : 'border-slate-300 text-slate-400'
                                 }`}
                               >
@@ -828,7 +868,11 @@ const Materi = () => {
                           onClick={() => setInQuizMode(false)}
                           className="inline-flex items-center space-x-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
                         >
-                          <BookMarked className="w-3.5 h-3.5 text-blue-600" />
+                          <BookMarked
+                            className={`w-3.5 h-3.5 ${
+                              selectedSubject === 'bahasa_indonesia' ? 'text-[#047857]' : 'text-[#881337]'
+                            }`}
+                          />
                           <span>Kembali Baca Materi</span>
                         </button>
 
@@ -843,13 +887,15 @@ const Materi = () => {
                             (hasSubmittedAnswer && isAnswerCorrect) ||
                             (!hasSubmittedAnswer && selectedAnswer === null)
                           }
-                          className={`px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                          className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-300 ${
                             isQuizTransitioning || (hasSubmittedAnswer && isAnswerCorrect)
                               ? 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
                               : hasSubmittedAnswer && !isAnswerCorrect
                               ? 'bg-amber-500 hover:bg-amber-600 text-slate-950 cursor-pointer'
                               : selectedAnswer !== null
-                              ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
+                              ? selectedSubject === 'bahasa_indonesia'
+                                ? 'bg-[#047857] hover:bg-[#065F46] text-white cursor-pointer'
+                                : 'bg-[#881337] hover:bg-[#700D2B] text-white cursor-pointer'
                               : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                           }`}
                         >
@@ -872,13 +918,15 @@ const Materi = () => {
         {selectedSubject && !activeBab && (
           <div className="space-y-5">
             {/* Header Banner Dinamis Sesuai Mapel */}
-            <div className="bg-white rounded-xl p-5 sm:p-6 text-[#261C14] border border-[#E6DFD5] shadow-xs relative">
+            <div className={`bg-white rounded-2xl p-5 sm:p-6 text-[#261C14] border-2 shadow-sm relative ${
+              selectedSubject === 'bahasa_indonesia' ? 'border-[#047857]' : 'border-[#881337]'
+            }`}>
               <div className="relative z-10 space-y-4">
                 {/* Baris Atas Banner */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#FAF7F2] text-[11px] font-semibold text-[#6E6258] border border-[#E6DFD5] mb-2">
-                      <currentSubject.icon className={`w-3.5 h-3.5 ${selectedSubject === 'bahasa_indonesia' ? 'text-[#286657]' : 'text-[#C25E38]'}`} />
+                      <currentSubject.icon className={`w-3.5 h-3.5 transition-colors ${selectedSubject === 'bahasa_indonesia' ? 'text-[#047857]' : 'text-[#881337]'}`} />
                       <span>{currentSubject.title} • {currentLevels.length} Topik Materi</span>
                     </div>
 
@@ -887,29 +935,37 @@ const Materi = () => {
                     </h1>
                     <p className="text-xs sm:text-sm text-[#6E6258] max-w-xl mt-0.5 leading-relaxed">
                       Pelajari materi secara bertahap atau buka lebih awal dengan{' '}
-                      <strong className={selectedSubject === 'bahasa_indonesia' ? 'text-[#286657]' : 'text-[#C25E38]'}>Tantangan Lompat Materi</strong>.
+                      <strong className={`transition-colors ${selectedSubject === 'bahasa_indonesia' ? 'text-[#047857]' : 'text-[#881337]'}`}>Tantangan Lompat Materi</strong>.
                     </p>
                   </div>
 
                   {/* Tombol Panduan & Mode Tampilan */}
                   <div className="flex flex-col items-stretch sm:items-end space-y-2 flex-shrink-0 self-start sm:self-center">
-                    {/* Tombol Buku Panduan */}
+                    {/* Tombol Buku Panduan - Sesuai Mata Pelajaran */}
                     <button
                       onClick={() => setShowGuideModal(true)}
-                      className="w-full sm:w-auto min-w-[130px] px-3.5 py-2 rounded-lg bg-white hover:bg-[#FAF7F2] text-xs font-medium text-[#261C14] transition-colors flex items-center justify-center space-x-2 border border-[#E6DFD5] cursor-pointer shadow-xs"
-                      title="Buku Panduan Aturan Main"
+                      className={`w-full sm:w-auto min-w-[130px] px-3.5 py-2 rounded-lg text-xs font-bold transition-all duration-300 flex items-center justify-center space-x-2 border-2 cursor-pointer shadow-xs ${
+                        selectedSubject === 'matematika'
+                          ? 'bg-[#FFF1F2] hover:bg-[#FFE4E6] text-[#881337] border-[#881337]'
+                          : 'bg-[#ECFDF5] hover:bg-[#D1FAE5] text-[#047857] border-[#047857]'
+                      }`}
+                      title={`Buku Panduan ${currentSubject?.title || ''}`}
                     >
-                      <BookOpen className="w-4 h-4 text-[#8C7E72]" />
+                      {selectedSubject === 'matematika' ? (
+                        <Calculator className="w-4 h-4 text-[#881337]" />
+                      ) : (
+                        <BookOpen className="w-4 h-4 text-[#047857]" />
+                      )}
                       <span>Buku Panduan</span>
                     </button>
 
                     {/* Switcher Mode Tampilan (Peta / Daftar) */}
-                    <div className="w-full sm:w-auto min-w-[130px] bg-[#FAF7F2] p-1 rounded-lg flex items-center justify-between border border-[#E6DFD5]">
+                    <div className="w-full sm:w-auto min-w-[130px] bg-[#FAF7F2] p-1 rounded-lg flex items-center justify-between border-2 border-slate-300">
                       <button
                         onClick={() => setViewMode('roadmap')}
-                        className={`flex-1 py-1 px-2.5 rounded-md text-xs font-medium flex items-center justify-center space-x-1.5 transition-colors cursor-pointer ${
+                        className={`flex-1 py-1 px-2.5 rounded-md text-xs font-medium flex items-center justify-center space-x-1.5 transition-all duration-300 cursor-pointer ${
                           viewMode === 'roadmap'
-                            ? 'bg-white text-[#C25E38] font-semibold shadow-xs'
+                            ? `bg-white ${selectedSubject === 'bahasa_indonesia' ? 'text-[#047857]' : 'text-[#881337]'} font-semibold shadow-xs`
                             : 'text-[#6E6258] hover:text-[#261C14]'
                         }`}
                         title="Tampilan Peta Jalan"
@@ -919,9 +975,9 @@ const Materi = () => {
                       </button>
                       <button
                         onClick={() => setViewMode('grid')}
-                        className={`flex-1 py-1 px-2.5 rounded-md text-xs font-medium flex items-center justify-center space-x-1.5 transition-colors cursor-pointer ${
+                        className={`flex-1 py-1 px-2.5 rounded-md text-xs font-medium flex items-center justify-center space-x-1.5 transition-all duration-300 cursor-pointer ${
                           viewMode === 'grid'
-                            ? 'bg-white text-[#C25E38] font-semibold shadow-xs'
+                            ? `bg-white ${selectedSubject === 'bahasa_indonesia' ? 'text-[#047857]' : 'text-[#881337]'} font-semibold shadow-xs`
                             : 'text-[#6E6258] hover:text-[#261C14]'
                         }`}
                         title="Tampilan Daftar Grid"
@@ -944,7 +1000,7 @@ const Materi = () => {
                     </div>
                     <div className="w-full bg-[#F2ECE4] rounded-full h-2 overflow-hidden">
                       <div
-                        className={`${selectedSubject === 'bahasa_indonesia' ? 'bg-[#286657]' : 'bg-[#C25E38]'} h-2 rounded-full transition-all duration-500`}
+                        className={`${selectedSubject === 'bahasa_indonesia' ? 'bg-[#047857]' : 'bg-[#881337]'} h-2 rounded-full transition-all duration-500`}
                         style={{ width: `${Math.max(4, progressPercent)}%` }}
                       />
                     </div>
@@ -988,7 +1044,11 @@ const Materi = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Cari topik..."
-                className="w-full pl-10 pr-9 py-2.5 rounded-lg bg-white border border-[#E6DFD5] text-xs sm:text-sm text-[#261C14] placeholder-[#8C7E72] focus:outline-hidden focus:border-[#C25E38] focus:ring-1 focus:ring-[#C25E38] shadow-xs transition-colors"
+                className={`w-full pl-10 pr-9 py-2.5 rounded-lg bg-white border border-[#E6DFD5] text-xs sm:text-sm text-[#261C14] placeholder-[#8C7E72] focus:outline-hidden ${
+                  selectedSubject === 'bahasa_indonesia'
+                    ? 'focus:border-[#047857] focus:ring-1 focus:ring-[#047857]'
+                    : 'focus:border-[#881337] focus:ring-1 focus:ring-[#881337]'
+                } shadow-xs transition-all duration-300`}
               />
               {searchQuery && (
                 <button
@@ -1013,26 +1073,36 @@ const Materi = () => {
                     <div
                       key={bab.id}
                       onClick={() => setSelectedLevelModal(bab)}
-                      className={`p-4 rounded-lg border transition-colors cursor-pointer flex flex-col justify-between ${
+                      className={`p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer flex flex-col justify-between ${
                         isCompleted
-                          ? 'bg-white border-[#BCD9D0] hover:border-[#286657]'
+                          ? selectedSubject === 'bahasa_indonesia'
+                            ? 'bg-white border-[#047857] shadow-xs'
+                            : 'bg-white border-[#881337] shadow-xs'
                           : isCurrent
-                          ? 'bg-white border-[#C25E38] ring-1 ring-[#C25E38]'
+                          ? selectedSubject === 'bahasa_indonesia'
+                            ? 'bg-white border-[#047857] ring-2 ring-[#047857]/40 shadow-xs'
+                            : 'bg-white border-[#881337] ring-2 ring-[#881337]/40 shadow-xs'
                           : isUnlocked
-                          ? 'bg-white border-[#E6DFD5] hover:border-[#C25E38]/50'
-                          : 'bg-[#FAF7F2] border-[#E6DFD5] text-[#8C7E72]'
+                          ? 'bg-white border-slate-300 hover:border-slate-500 shadow-2xs'
+                          : 'bg-[#FAF7F2] border-slate-300 text-[#8C7E72]'
                       }`}
                     >
                       <div>
                         <div className="flex items-center justify-between mb-2.5">
                           <span
-                            className={`w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold ${
+                            className={`w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold transition-colors ${
                               isCompleted
-                                ? 'bg-emerald-600 text-white'
+                                ? selectedSubject === 'bahasa_indonesia'
+                                  ? 'bg-[#047857] text-white'
+                                  : 'bg-[#881337] text-white'
                                 : isCurrent
-                                ? 'bg-blue-600 text-white'
+                                ? selectedSubject === 'bahasa_indonesia'
+                                  ? 'bg-[#047857] text-white'
+                                  : 'bg-[#881337] text-white'
                                 : isUnlocked
-                                ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                                ? selectedSubject === 'bahasa_indonesia'
+                                  ? 'bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0]'
+                                  : 'bg-[#FFF1F2] text-[#881337] border border-[#FECDD3]'
                                 : 'bg-slate-200 text-slate-500'
                             }`}
                           >
@@ -1040,12 +1110,24 @@ const Materi = () => {
                           </span>
 
                           {isCompleted ? (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center space-x-1">
+                            <span
+                              className={`px-2 py-0.5 rounded text-[10px] font-semibold border flex items-center space-x-1 ${
+                                selectedSubject === 'bahasa_indonesia'
+                                  ? 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                                  : 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                              }`}
+                            >
                               <Check className="w-3 h-3 stroke-[2.5]" />
                               <span>Tuntas</span>
                             </span>
                           ) : isCurrent ? (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                            <span
+                              className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${
+                                selectedSubject === 'bahasa_indonesia'
+                                  ? 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                                  : 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                              }`}
+                            >
                               Fokus Belajar
                             </span>
                           ) : isUnlocked ? (
@@ -1144,8 +1226,8 @@ const Materi = () => {
                             <div
                               className={`absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1 rounded-full ${
                                 selectedSubject === 'bahasa_indonesia'
-                                  ? 'bg-[#286657] border-[#1E5044]'
-                                  : 'bg-[#C25E38] border-[#A94D2B]'
+                                  ? 'bg-[#047857] border-[#065F46]'
+                                  : 'bg-[#881337] border-[#700D2B]'
                               } text-white font-bold text-[11px] shadow-md flex items-center space-x-1.5 z-20 border animate-bounce select-none pointer-events-none`}
                             >
                               <Sparkles className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
@@ -1153,8 +1235,8 @@ const Materi = () => {
                               <div
                                 className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-[6px] ${
                                   selectedSubject === 'bahasa_indonesia'
-                                    ? 'border-t-[#286657]'
-                                    : 'border-t-[#C25E38]'
+                                    ? 'border-t-[#047857]'
+                                    : 'border-t-[#881337]'
                                 }`}
                               />
                             </div>
@@ -1165,13 +1247,17 @@ const Materi = () => {
                             onClick={() => setSelectedLevelModal(bab)}
                             className={`w-18 h-18 sm:w-20 sm:h-20 rounded-full flex flex-col items-center justify-center font-bold border-2 transition-all duration-150 cursor-pointer relative z-10 select-none group ${
                               isCompleted
-                                ? 'bg-[#286657] border-[#1E5044] text-white shadow-[0_6px_0_0_#163C33] hover:shadow-[0_7px_0_0_#163C33] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#163C33]'
+                                ? selectedSubject === 'bahasa_indonesia'
+                                  ? 'bg-[#047857] border-[#065F46] text-white shadow-[0_6px_0_0_#064E3B] hover:shadow-[0_7px_0_0_#064E3B] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#064E3B]'
+                                  : 'bg-[#881337] border-[#700D2B] text-white shadow-[0_6px_0_0_#4C0519] hover:shadow-[0_7px_0_0_#4C0519] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#4C0519]'
                                 : isCurrent
                                 ? selectedSubject === 'bahasa_indonesia'
-                                  ? 'bg-[#286657] border-[#1E5044] text-white shadow-[0_6px_0_0_#163C33] hover:shadow-[0_7px_0_0_#163C33] ring-4 ring-offset-2 ring-[#286657]/30 hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#163C33]'
-                                  : 'bg-[#C25E38] border-[#A94D2B] text-white shadow-[0_6px_0_0_#8D391B] hover:shadow-[0_7px_0_0_#8D391B] ring-4 ring-offset-2 ring-[#C25E38]/30 hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#8D391B]'
+                                  ? 'bg-[#047857] border-[#065F46] text-white shadow-[0_6px_0_0_#064E3B] hover:shadow-[0_7px_0_0_#064E3B] ring-4 ring-offset-2 ring-[#047857]/30 hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#064E3B]'
+                                  : 'bg-[#881337] border-[#700D2B] text-white shadow-[0_6px_0_0_#4C0519] hover:shadow-[0_7px_0_0_#4C0519] ring-4 ring-offset-2 ring-[#881337]/30 hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#4C0519]'
                                 : isUnlocked
-                                ? 'bg-white border-[#D8CDC2] text-[#261C14] shadow-[0_6px_0_0_#C5B8AC] hover:border-[#C25E38] hover:text-[#C25E38] hover:shadow-[0_7px_0_0_#A94D2B] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#C5B8AC]'
+                                ? selectedSubject === 'bahasa_indonesia'
+                                  ? 'bg-white border-[#D8CDC2] text-[#261C14] shadow-[0_6px_0_0_#C5B8AC] hover:border-[#047857] hover:text-[#047857] hover:shadow-[0_7px_0_0_#064E3B] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#C5B8AC]'
+                                  : 'bg-white border-[#D8CDC2] text-[#261C14] shadow-[0_6px_0_0_#C5B8AC] hover:border-[#881337] hover:text-[#881337] hover:shadow-[0_7px_0_0_#4C0519] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#C5B8AC]'
                                 : 'bg-[#F2ECE4] border-[#E6DFD5] text-[#8C7E72] shadow-[0_5px_0_0_#D8CDC2] hover:bg-[#EAE2D8] hover:text-[#6E6258] hover:shadow-[0_6px_0_0_#C5B8AC] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#D8CDC2]'
                             }`}
                             title={`Materi ${bab.no}: ${bab.judul} (${
@@ -1205,14 +1291,16 @@ const Materi = () => {
 
                           {/* Pill Judul Level (Hanya Indikator, Bukan Tombol) */}
                           <div
-                            className={`mt-2.5 px-3.5 py-1.5 rounded-lg text-center select-none max-w-[170px] sm:max-w-[200px] border shadow-2xs ${
+                            className={`mt-2.5 px-3.5 py-1.5 rounded-lg text-center select-none max-w-[170px] sm:max-w-[200px] border shadow-2xs transition-all duration-300 ${
                               isCompleted
-                                ? 'bg-[#E8F2EF] border-[#C5DDD6] text-[#286657]'
+                                ? selectedSubject === 'bahasa_indonesia'
+                                  ? 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]'
+                                  : 'bg-[#FFF1F2] border-[#FECDD3] text-[#881337]'
                                 : isCurrent
                                 ? `${
                                     selectedSubject === 'bahasa_indonesia'
-                                      ? 'bg-[#E8F2EF] border-[#BCD9D0] text-[#286657]'
-                                      : 'bg-[#FAECE6] border-[#F2D2C4] text-[#C25E38]'
+                                      ? 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]'
+                                      : 'bg-[#FFF1F2] border-[#FECDD3] text-[#881337]'
                                   } font-bold shadow-xs`
                                 : isUnlocked
                                 ? 'bg-white border-[#E6DFD5] text-[#261C14]'
@@ -1351,13 +1439,25 @@ const Materi = () => {
                     MATERI {selectedLevelModal.no} DARI {currentLevels.length} • {currentSubject?.title.toUpperCase()}
                   </span>
                   {isCompleted ? (
-                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#E8F2EF] text-[#286657] border border-[#BCD9D0] flex items-center space-x-1">
+                    <span
+                      className={`px-2 py-0.5 rounded text-[10px] font-semibold border flex items-center space-x-1 ${
+                        selectedSubject === 'bahasa_indonesia'
+                          ? 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                          : 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                      }`}
+                    >
                       <span>Tuntas</span>
                       <span>•</span>
                       <span>{getLevelStars(selectedLevelModal.id)}/3 ⭐</span>
                     </span>
                   ) : isUnlocked ? (
-                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FAECE6] text-[#C25E38] border border-[#F2D2C4]">
+                    <span
+                      className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${
+                        selectedSubject === 'bahasa_indonesia'
+                          ? 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                          : 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                      }`}
+                    >
                       Terbuka
                     </span>
                   ) : (
@@ -1438,7 +1538,7 @@ const Materi = () => {
                         </strong>
                         <p className="mt-0.5 text-[#6E6258] leading-relaxed">
                           Selesaikan Materi {prevBab?.no} ({prevBab?.judul}) terlebih dahulu,{' '}
-                          <strong className="text-[#C25E38]">atau kamu dapat langsung melompat</strong>{' '}
+                          <strong className={selectedSubject === 'bahasa_indonesia' ? 'text-[#047857]' : 'text-[#881337]'}>atau kamu dapat langsung melompat</strong>{' '}
                           ke materi ini dengan menjawab tantangan soal pemahaman materi!
                         </p>
                       </div>
@@ -1451,7 +1551,11 @@ const Materi = () => {
                   {isUnlocked ? (
                     <button
                       onClick={() => handleOpenBab(selectedLevelModal)}
-                      className="w-full py-2.5 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white font-semibold text-xs sm:text-sm transition-colors flex items-center justify-center space-x-2 cursor-pointer shadow-xs"
+                      className={`w-full py-2.5 rounded-lg text-white font-semibold text-xs sm:text-sm transition-all duration-300 flex items-center justify-center space-x-2 cursor-pointer shadow-xs ${
+                        selectedSubject === 'bahasa_indonesia'
+                          ? 'bg-[#047857] hover:bg-[#065F46]'
+                          : 'bg-[#881337] hover:bg-[#700D2B]'
+                      }`}
                     >
                       <BookOpen className="w-4 h-4" />
                       <span>{isCompleted ? 'Pelajari Ulang Materi' : 'Mulai Belajar Materi'}</span>
@@ -1528,7 +1632,11 @@ const Materi = () => {
                         setJumpChallengeBab(null);
                         handleOpenBab(target);
                       }}
-                      className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white font-semibold text-xs transition-colors cursor-pointer shadow-xs"
+                      className={`w-full sm:w-auto px-4 py-2 rounded-lg text-white font-semibold text-xs transition-all duration-300 cursor-pointer shadow-xs ${
+                        selectedSubject === 'bahasa_indonesia'
+                          ? 'bg-[#047857] hover:bg-[#065F46]'
+                          : 'bg-[#881337] hover:bg-[#700D2B]'
+                      }`}
                     >
                       Langsung Baca Materi
                     </button>
@@ -1551,9 +1659,13 @@ const Materi = () => {
                           key={i}
                           className={`w-6 h-1.5 rounded-full transition-colors ${
                             i < jumpQuizIndex
-                              ? 'bg-[#286657]'
+                              ? selectedSubject === 'bahasa_indonesia'
+                                ? 'bg-[#047857]'
+                                : 'bg-[#881337]'
                               : i === jumpQuizIndex
-                              ? 'bg-[#C25E38]'
+                              ? selectedSubject === 'bahasa_indonesia'
+                                ? 'bg-[#047857]'
+                                : 'bg-[#881337]'
                               : 'bg-[#E6DFD5]'
                           }`}
                         />
@@ -1583,23 +1695,27 @@ const Materi = () => {
                             setJumpHasSubmitted(false);
                             setJumpIsCorrect(false);
                           }}
-                          className={`w-full p-3 rounded-lg text-left text-xs sm:text-sm font-medium border transition-colors flex items-center justify-between ${
+                          className={`w-full p-3 rounded-lg text-left text-xs sm:text-sm font-medium border transition-all duration-300 flex items-center justify-between ${
                             isLocked ? 'cursor-not-allowed opacity-80' : 'cursor-pointer'
                           } ${
                             isWrongSubmitted
                               ? 'bg-[#FDF1F1] border-[#C93B3B] text-[#A82828]'
                               : isSelected
-                              ? 'bg-[#FAECE6] border-[#C25E38] text-[#261C14]'
+                              ? selectedSubject === 'bahasa_indonesia'
+                                ? 'bg-[#ECFDF5] border-[#047857] text-[#261C14]'
+                                : 'bg-[#FFF1F2] border-[#881337] text-[#261C14]'
                               : 'bg-white border-[#E6DFD5] text-[#261C14] hover:bg-[#FAF7F2]'
                           }`}
                         >
                           <span>{opt}</span>
                           <div
-                            className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-semibold ${
+                            className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-semibold transition-colors ${
                               isWrongSubmitted
                                 ? 'border-[#C93B3B] bg-[#C93B3B] text-white'
                                 : isSelected
-                                ? 'border-[#C25E38] bg-[#C25E38] text-white'
+                                ? selectedSubject === 'bahasa_indonesia'
+                                  ? 'border-[#047857] bg-[#047857] text-white'
+                                  : 'border-[#881337] bg-[#881337] text-white'
                                 : 'border-[#E6DFD5] text-[#8C7E72]'
                             }`}
                           >
@@ -1625,8 +1741,18 @@ const Materi = () => {
 
                   {/* Feedback Benar */}
                   {jumpHasSubmitted && jumpIsCorrect && (
-                    <div className="p-3 rounded-lg bg-[#E8F2EF] border border-[#BCD9D0] text-[#286657] text-xs animate-fade-in flex items-center space-x-2">
-                      <CheckCircle2 className="w-4 h-4 text-[#286657]" />
+                    <div
+                      className={`p-3 rounded-lg border text-xs animate-fade-in flex items-center space-x-2 ${
+                        selectedSubject === 'bahasa_indonesia'
+                          ? 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]'
+                          : 'bg-[#FFF1F2] border-[#FECDD3] text-[#881337]'
+                      }`}
+                    >
+                      <CheckCircle2
+                        className={`w-4 h-4 ${
+                          selectedSubject === 'bahasa_indonesia' ? 'text-[#047857]' : 'text-[#881337]'
+                        }`}
+                      />
                       <span className="font-semibold">Benar! Menuju ke soal berikutnya...</span>
                     </div>
                   )}
@@ -1650,13 +1776,15 @@ const Materi = () => {
                         (jumpHasSubmitted && jumpIsCorrect) ||
                         (!jumpHasSubmitted && jumpSelectedAnswer === null)
                       }
-                      className={`px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                      className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-300 ${
                         isJumpTransitioning || (jumpHasSubmitted && jumpIsCorrect)
                           ? 'bg-[#F2ECE4] text-[#8C7E72] cursor-not-allowed border border-[#E6DFD5]'
                           : jumpHasSubmitted && !jumpIsCorrect
                           ? 'bg-amber-500 hover:bg-amber-600 text-slate-950 cursor-pointer shadow-xs'
                           : jumpSelectedAnswer !== null
-                          ? 'bg-[#C25E38] hover:bg-[#A94D2B] text-white cursor-pointer shadow-xs'
+                          ? selectedSubject === 'bahasa_indonesia'
+                            ? 'bg-[#047857] hover:bg-[#065F46] text-white cursor-pointer shadow-xs'
+                            : 'bg-[#881337] hover:bg-[#700D2B] text-white cursor-pointer shadow-xs'
                           : 'bg-[#F2ECE4] text-[#8C7E72] cursor-not-allowed'
                       }`}
                     >
@@ -1677,26 +1805,38 @@ const Materi = () => {
       {/* --- MODAL 3: BUKU PANDUAN CARA BERMAIN --- */}
       {showGuideModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#1F1914]/50 backdrop-blur-xs animate-fade-in">
-          <div className="bg-white rounded-lg border border-[#E6DFD5] shadow-xl max-w-md w-full overflow-hidden relative animate-fade-in">
-            <div className="p-5 bg-[#1F1914] text-white border-b border-[#33261D] relative">
+          <div className={`bg-white rounded-2xl border-2 shadow-2xl max-w-md w-full overflow-hidden relative animate-fade-in ${
+            selectedSubject === 'matematika' ? 'border-[#881337]' : 'border-[#047857]'
+          }`}>
+            <div className={`p-5 text-white border-b-2 relative ${
+              selectedSubject === 'matematika' ? 'bg-[#881337] border-[#700D2B]' : 'bg-[#047857] border-[#065F46]'
+            }`}>
               <button
                 onClick={() => setShowGuideModal(false)}
-                className="absolute right-4 top-4 w-7 h-7 rounded-lg bg-[#2D241C] hover:bg-[#3D2E22] text-[#D4C8BC] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                className="absolute right-4 top-4 w-7 h-7 rounded-lg bg-black/20 hover:bg-black/40 text-white flex items-center justify-center transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
               <h3 className="text-base sm:text-lg font-bold flex items-center space-x-2 text-white">
-                <BookOpen className="w-5 h-5 text-[#E5A875]" />
-                <span>Buku Panduan Petualangan Materi</span>
+                {selectedSubject === 'matematika' ? (
+                  <Calculator className="w-5 h-5 text-rose-200" />
+                ) : (
+                  <BookOpen className="w-5 h-5 text-emerald-200" />
+                )}
+                <span>Buku Panduan {currentSubject?.title || 'Materi'}</span>
               </h3>
-              <p className="text-xs text-[#D4C8BC] mt-0.5">
-                Aturan & Cara Menuntaskan Materi Pembelajaran TKA SD
+              <p className="text-xs text-white/80 mt-0.5">
+                Aturan & Cara Menuntaskan Materi Pembelajaran {currentSubject?.title || 'TKA SD'}
               </p>
             </div>
 
             <div className="p-5 space-y-3.5 text-xs text-[#261C14] leading-relaxed">
               <div className="flex items-start space-x-3">
-                <span className="w-6 h-6 rounded-md bg-[#F2ECE4] text-[#261C14] border border-[#E6DFD5] flex items-center justify-center font-bold flex-shrink-0">
+                <span className={`w-6 h-6 rounded-md flex items-center justify-center font-bold flex-shrink-0 text-xs border ${
+                  selectedSubject === 'matematika'
+                    ? 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                    : 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                }`}>
                   1
                 </span>
                 <div>
@@ -1706,7 +1846,11 @@ const Materi = () => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <span className="w-6 h-6 rounded-md bg-[#F2ECE4] text-[#261C14] border border-[#E6DFD5] flex items-center justify-center font-bold flex-shrink-0">
+                <span className={`w-6 h-6 rounded-md flex items-center justify-center font-bold flex-shrink-0 text-xs border ${
+                  selectedSubject === 'matematika'
+                    ? 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                    : 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                }`}>
                   2
                 </span>
                 <div>
@@ -1716,7 +1860,11 @@ const Materi = () => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <span className="w-6 h-6 rounded-md bg-[#F2ECE4] text-[#261C14] border border-[#E6DFD5] flex items-center justify-center font-bold flex-shrink-0">
+                <span className={`w-6 h-6 rounded-md flex items-center justify-center font-bold flex-shrink-0 text-xs border ${
+                  selectedSubject === 'matematika'
+                    ? 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                    : 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                }`}>
                   3
                 </span>
                 <div>
@@ -1726,7 +1874,11 @@ const Materi = () => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <span className="w-6 h-6 rounded-md bg-[#F2ECE4] text-[#261C14] border border-[#E6DFD5] flex items-center justify-center font-bold flex-shrink-0">
+                <span className={`w-6 h-6 rounded-md flex items-center justify-center font-bold flex-shrink-0 text-xs border ${
+                  selectedSubject === 'matematika'
+                    ? 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                    : 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                }`}>
                   4
                 </span>
                 <div>
@@ -1738,7 +1890,11 @@ const Materi = () => {
               <div className="pt-3">
                 <button
                   onClick={() => setShowGuideModal(false)}
-                  className="w-full py-2.5 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white font-semibold text-xs transition-colors cursor-pointer shadow-xs"
+                  className={`w-full py-2.5 rounded-lg text-white font-semibold text-xs transition-all duration-300 cursor-pointer shadow-xs ${
+                    selectedSubject === 'bahasa_indonesia'
+                      ? 'bg-[#047857] hover:bg-[#065F46]'
+                      : 'bg-[#881337] hover:bg-[#700D2B]'
+                  }`}
                 >
                   Saya Mengerti, Lanjutkan Petualangan
                 </button>

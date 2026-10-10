@@ -664,6 +664,7 @@ const TanggaSatuanVisual = () => {
  * Komponen Utama Pembaca Materi Pembelajaran TKA SD
  */
 const MaterialReader = ({ bab, onStartQuiz }) => {
+  const isMath = Boolean(bab?.id && bab.id.startsWith('mtk'));
   const [currentSlide, setCurrentSlide] = useState(0);
   const [searchBaku, setSearchBaku] = useState('');
   const [openContohDropdown, setOpenContohDropdown] = useState({});
@@ -1113,22 +1114,36 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
         </div>
 
         {/* Banner CTA Kuis Pemahaman */}
-        <div className="p-4 sm:p-5 rounded-lg bg-blue-600 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-center sm:text-left">
+        <div
+          className={`p-4 sm:p-5 rounded-lg text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-center sm:text-left transition-all duration-300 ${
+            isMath ? 'bg-[#881337]' : 'bg-[#047857]'
+          }`}
+        >
           <div>
-            <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-blue-700 text-blue-100 inline-block mb-1 border border-blue-500">
+            <span
+              className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider inline-block mb-1 border ${
+                isMath
+                  ? 'bg-[#700D2B] text-rose-100 border-[#9F1239]'
+                  : 'bg-[#065F46] text-emerald-100 border-[#059669]'
+              }`}
+            >
               Uji 3 Bintang Emas
             </span>
             <h4 className="text-sm sm:text-base font-bold">
               Materi Selesai Dipelajari! Siap Uji Pemahaman?
             </h4>
-            <p className="text-xs text-blue-100 mt-0.5 leading-relaxed">
+            <p className={`text-xs mt-0.5 leading-relaxed ${isMath ? 'text-rose-100' : 'text-emerald-100'}`}>
               Jawab 3 soal kuis pemahaman materi ini untuk meraih Bintang Emas!
             </p>
           </div>
 
           <button
             onClick={onStartQuiz}
-            className="w-full sm:w-auto px-4 py-2 rounded-lg bg-white hover:bg-blue-50 text-blue-700 font-semibold text-xs sm:text-sm shadow-xs transition-colors flex items-center justify-center space-x-1.5 cursor-pointer flex-shrink-0"
+            className={`w-full sm:w-auto px-4 py-2 rounded-lg bg-white font-semibold text-xs sm:text-sm shadow-xs transition-all duration-300 flex items-center justify-center space-x-1.5 cursor-pointer flex-shrink-0 ${
+              isMath
+                ? 'text-[#881337] hover:bg-rose-50'
+                : 'text-[#047857] hover:bg-emerald-50'
+            }`}
           >
             <span>Mulai 3 Soal Kuis</span>
             <ArrowRight className="w-4 h-4" />
@@ -1148,7 +1163,13 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
       <div className="p-3.5 sm:p-4 rounded-lg bg-white border border-slate-200 shadow-sm space-y-2.5">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center space-x-2">
-            <span className="px-2.5 py-0.5 rounded text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+            <span
+              className={`px-2.5 py-0.5 rounded text-[11px] font-semibold border transition-colors ${
+                isMath
+                  ? 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                  : 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+              }`}
+            >
               Slide {currentSlide + 1} dari {totalSlides}
             </span>
             <span className="text-xs font-semibold text-slate-700 hidden sm:inline">
@@ -1162,11 +1183,11 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
               <button
                 key={s.id}
                 onClick={() => setCurrentSlide(idx)}
-                className={`transition-all rounded-full cursor-pointer ${
+                className={`transition-all duration-300 rounded-full cursor-pointer ${
                   idx === currentSlide
-                    ? 'w-6 h-2 bg-blue-600 shadow-2xs'
+                    ? `w-6 h-2 ${isMath ? 'bg-[#881337]' : 'bg-[#047857]'} shadow-2xs`
                     : idx < currentSlide
-                    ? 'w-2 h-2 bg-emerald-500'
+                    ? `${isMath ? 'bg-[#FDA4AF]' : 'bg-[#6EE7B7]'} w-2 h-2`
                     : 'w-2 h-2 bg-slate-200 hover:bg-slate-300'
                 }`}
                 title={`Buka Slide ${idx + 1}: ${s.subtitle}`}
@@ -1178,7 +1199,9 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
         {/* Bar Progres */}
         <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
           <div
-            className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
+            className={`h-1.5 rounded-full transition-all duration-300 ${
+              isMath ? 'bg-[#881337]' : 'bg-[#047857]'
+            }`}
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -1187,7 +1210,9 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
       {/* 2. Judul Bagian Slide Aktif */}
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center space-x-2">
-          <currentSlideData.icon className="w-4 h-4 text-blue-600" />
+          <currentSlideData.icon
+            className={`w-4 h-4 ${isMath ? 'text-[#881337]' : 'text-[#047857]'}`}
+          />
           <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
             {currentSlideData.badge}
           </span>
@@ -1227,14 +1252,24 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
         {currentSlide < totalSlides - 1 ? (
           <button
             onClick={() => setCurrentSlide((prev) => Math.min(totalSlides - 1, prev + 1))}
-            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition-colors flex items-center space-x-1.5 cursor-pointer"
+            className={`px-4 py-2 rounded-lg text-white font-semibold text-xs shadow-xs transition-all duration-300 flex items-center space-x-1.5 cursor-pointer ${
+              isMath
+                ? 'bg-[#881337] hover:bg-[#700D2B]'
+                : 'bg-[#047857] hover:bg-[#065F46]'
+            }`}
           >
             <span>Lanjut Slide Berikutnya</span>
             <ChevronRight className="w-4 h-4" />
           </button>
         ) : (
-          <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-semibold select-none border border-slate-200">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+          <div
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold select-none border ${
+              isMath
+                ? 'bg-[#FFF1F2] text-[#881337] border-[#FECDD3]'
+                : 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+            }`}
+          >
+            <CheckCircle2 className="w-4 h-4" />
             <span>Slide Terakhir</span>
           </div>
         )}

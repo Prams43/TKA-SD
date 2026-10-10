@@ -247,27 +247,27 @@ const ForgotPassword = () => {
   const headerInfo = getHeaderInfo();
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] flex flex-col justify-center items-center p-4 sm:p-6">
+    <div className="min-h-screen bg-transparent flex flex-col justify-center items-center p-4 sm:p-6">
       <div className="w-full max-w-md">
         {/* Header Identitas */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center mb-3">
+          <div className="inline-flex items-center justify-center mb-3 p-2 bg-white rounded-2xl shadow-md border border-white/30">
             <img
               src="/logo.png"
               alt="Logo EDU TKA"
               className="h-14 w-auto object-contain"
             />
           </div>
-          <h1 className="text-2xl font-bold text-[#261C14] tracking-tight">
+          <h1 className="text-2xl font-bold text-white tracking-tight">
             {headerInfo.title}
           </h1>
-          <p className="text-[#6E6258] text-sm mt-1 max-w-xs mx-auto">
+          <p className="text-blue-100 text-sm mt-1 max-w-xs mx-auto">
             {headerInfo.subtitle}
           </p>
         </div>
 
         {/* Card Form Utama */}
-        <div className="bg-white rounded-lg border border-[#E6DFD5] p-6 sm:p-8 shadow-sm">
+        <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 shadow-xl">
           {/* Banner Error Server */}
           {serverError && (
             <div className="mb-5 p-3 rounded-lg bg-[#FDF1F1] border border-[#F5C2C2] flex items-start space-x-2.5 text-[#C93B3B] text-sm">
@@ -498,7 +498,7 @@ const ForgotPassword = () => {
         </div>
 
         {/* Footer info */}
-        <p className="text-center text-xs text-[#8C7E72] mt-6">
+        <p className="text-center text-xs text-blue-200/70 mt-6">
           &copy; {new Date().getFullYear()} TKA SD. Seluruh hak cipta dilindungi.
         </p>
       </div>
