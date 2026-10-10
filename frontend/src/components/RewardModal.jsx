@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Trophy, Zap, Flame, Award, Sparkles, X, ChevronRight, Star } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Trophy, Zap, Flame, Award, Sparkles, X, ChevronRight } from 'lucide-react';
 
 /**
  * Audio Synthesizer (Web Audio API) untuk fanfare perayaan ala Duolingo.
@@ -20,7 +20,7 @@ const playCelebrationChime = (isLevelUp) => {
         const gain = ctx.createGain();
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, now + i * 0.11);
-        gain.gain.setValueAtTime(0.2, now + i * 0.11);
+        gain.gain.setValueAtTime(0.18, now + i * 0.11);
         gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.11 + 0.4);
         osc.connect(gain);
         gain.connect(ctx.destination);
@@ -35,7 +35,7 @@ const playCelebrationChime = (isLevelUp) => {
         const gain = ctx.createGain();
         osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, now + i * 0.09);
-        gain.gain.setValueAtTime(0.14, now + i * 0.09);
+        gain.gain.setValueAtTime(0.12, now + i * 0.09);
         gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.09 + 0.3);
         osc.connect(gain);
         gain.connect(ctx.destination);
@@ -49,13 +49,19 @@ const playCelebrationChime = (isLevelUp) => {
 };
 
 /**
- * Komponen Modal Perayaan EXP & Naik Level Ala Duolingo
+ * Komponen Notifikasi Floating Perayaan EXP & Naik Level.
+ * Tidak menutupi seluruh layar (tanpa overlay gelap yang memblokir),
+ * melainkan melayang di sudut atas sebagai toast notifikasi interaktif yang elegan.
  */
 const RewardModal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [reward, setReward] = useState(null);
   const [animProgress, setAnimProgress] = useState(0);
   const [confettiPieces, setConfettiPieces] = useState([]);
+  const [isPaused, setIsPaused] = useState(false);
+  const [dismissCountdown, setDismissCountdown] = useState(6);
+
+  const timerRef = useRef(null);
 
   useEffect(() => {
     const handleRewardEarned = (e) => {
@@ -64,28 +70,29 @@ const RewardModal = () => {
 
       setReward(data);
       setIsOpen(true);
+      setDismissCountdown(data.leveledUp ? 7 : 5); // Beri waktu lebih jika naik level
 
       // Mainkan suara perayaan ala Duolingo
       playCelebrationChime(data.leveledUp);
 
-      // Generate partikel konfeti warna-warni
+      // Partikel konfeti halus di sekitar toast notifikasi
       const colors = ['#58CC02', '#FFC800', '#1CB0F6', '#FF4B4B', '#CE82FF', '#FF9600'];
-      const pieces = Array.from({ length: 45 }).map((_, i) => ({
+      const pieces = Array.from({ length: 24 }).map((_, i) => ({
         id: i,
         left: Math.random() * 100,
-        delay: Math.random() * 0.8,
-        duration: 1.8 + Math.random() * 1.5,
+        delay: Math.random() * 0.4,
+        duration: 1.2 + Math.random() * 0.8,
         color: colors[Math.floor(Math.random() * colors.length)],
-        size: 8 + Math.random() * 10,
+        size: 6 + Math.random() * 7,
         rotation: Math.random() * 360,
       }));
       setConfettiPieces(pieces);
 
-      // Animasi pengisian XP bar
+      // Animasi bar EXP
       setAnimProgress(0);
       setTimeout(() => {
         setAnimProgress(data.newLevelInfo?.progressPercent || 100);
-      }, 250);
+      }, 200);
     };
 
     window.addEventListener('tka_reward_earned', handleRewardEarned);
@@ -93,6 +100,24 @@ const RewardModal = () => {
       window.removeEventListener('tka_reward_earned', handleRewardEarned);
     };
   }, []);
+
+  // Timer hitung mundur auto-dismiss (berhenti jika cursor pengguna diarahkan ke notifikasi)
+  useEffect(() => {
+    if (!isOpen || isPaused) return;
+
+    if (dismissCountdown <= 0) {
+      setIsOpen(false);
+      return;
+    }
+
+    timerRef.current = setTimeout(() => {
+      setDismissCountdown((prev) => prev - 1);
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [isOpen, isPaused, dismissCountdown]);
 
   if (!isOpen || !reward) return null;
 
@@ -110,94 +135,97 @@ const RewardModal = () => {
     setIsOpen(false);
   };
 
+  const expNeeded =
+    newLevelInfo?.expRemaining ??
+    Math.max(0, (newLevelInfo?.nextLevelExp || 150) - (newLevelInfo?.currentLevelExp || 0));
+
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in overflow-hidden">
-      {/* Konfeti Berjatuhan (Duolingo Confetti Shower) */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+    <div className="fixed top-4 right-4 sm:top-5 sm:right-6 z-[100] max-w-sm sm:max-w-md w-[calc(100%-2rem)] sm:w-full pointer-events-none select-none transition-all">
+      {/* Konfeti Halus Meluncur di Sekitar Notifikasi */}
+      <div className="absolute -inset-4 pointer-events-none overflow-hidden rounded-3xl">
         {confettiPieces.map((piece) => (
           <div
             key={piece.id}
-            className="absolute rounded-sm opacity-90"
+            className="absolute rounded-xs opacity-90"
             style={{
               left: `${piece.left}%`,
-              top: '-20px',
+              top: '-10px',
               width: `${piece.size}px`,
-              height: `${piece.size * 0.7}px`,
+              height: `${piece.size * 0.65}px`,
               backgroundColor: piece.color,
               transform: `rotate(${piece.rotation}deg)`,
-              animation: `confettiFall ${piece.duration}s ease-in ${piece.delay}s forwards`,
+              animation: `confettiFloat ${piece.duration}s ease-in ${piece.delay}s forwards`,
             }}
           />
         ))}
       </div>
 
       <style>{`
-        @keyframes confettiFall {
+        @keyframes confettiFloat {
           0% {
             transform: translateY(0) rotate(0deg) scale(0.8);
             opacity: 1;
           }
           100% {
-            transform: translateY(115vh) rotate(720deg) scale(1);
+            transform: translateY(220px) rotate(360deg) scale(0.9);
             opacity: 0;
           }
         }
       `}</style>
 
-      {/* Kartu Pop-up Utama */}
-      <div className="relative max-w-sm sm:max-w-md w-full bg-white rounded-3xl border-4 border-amber-300 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden text-center p-6 sm:p-8 animate-scale-up z-10">
-        {/* Tombol Tutup Silang di Sudut */}
+      {/* Kartu Notifikasi Mengambang (Floating Toast) */}
+      <div
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        className={`pointer-events-auto relative w-full bg-white/95 backdrop-blur-md rounded-2xl border-2 shadow-[0_14px_45px_-8px_rgba(0,0,0,0.24)] overflow-hidden p-4 sm:p-5 animate-slide-in-down transition-all ${
+          leveledUp
+            ? 'border-amber-400 bg-gradient-to-br from-amber-50/95 via-white/95 to-white/95'
+            : 'border-teal-400 bg-gradient-to-br from-teal-50/95 via-white/95 to-white/95'
+        }`}
+      >
+        {/* Tombol Tutup Silang Cepat */}
         <button
           onClick={handleClose}
-          className="absolute right-4 top-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors cursor-pointer"
+          aria-label="Tutup notifikasi"
+          className="absolute right-3.5 top-3.5 w-7 h-7 rounded-full bg-slate-100/90 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors cursor-pointer z-10"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
-
-        {/* Aura Cahaya Matahari Berputar di Belakang Icon */}
-        <div className="absolute top-12 left-1/2 -translate-x-1/2 w-48 h-48 bg-gradient-to-tr from-amber-300/40 via-yellow-200/50 to-orange-300/30 rounded-full blur-2xl animate-spin-slow pointer-events-none" />
 
         {/* ============================================================== */}
         {/* TAMPILAN JIKA NAIK LEVEL (LEVEL UP)                            */}
         {/* ============================================================== */}
         {leveledUp ? (
-          <div className="space-y-5 relative">
-            {/* Badge Pill Header */}
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-800 text-xs font-black uppercase tracking-wider border border-amber-300 shadow-xs animate-bounce-slow">
-              <Sparkles className="w-4 h-4 text-amber-600" />
-              <span>PENCAPAIAN LUAR BIASA!</span>
+          <div className="space-y-3.5">
+            {/* Header: Badge & Icon Hero */}
+            <div className="flex items-center space-x-3 pr-7">
+              <div className="relative w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-orange-500 text-white shadow-md border-2 border-white animate-bounce-slow">
+                <Trophy className="w-6 h-6 text-slate-950 drop-shadow-xs" />
+              </div>
+              <div>
+                <div className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-black uppercase tracking-wider border border-amber-300">
+                  <Sparkles className="w-3 h-3 text-amber-600" />
+                  <span>PENCAPAIAN BARU!</span>
+                </div>
+                <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight mt-0.5">
+                  KAMU NAIK LEVEL! 🎉
+                </h3>
+              </div>
             </div>
 
-            {/* Hero Mascot Icon Level Up */}
-            <div className="relative w-28 h-28 mx-auto flex items-center justify-center">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 rotate-6 shadow-xl animate-pulse" />
-              <div className="relative w-28 h-28 rounded-3xl bg-gradient-to-tr from-yellow-400 via-amber-400 to-orange-500 flex flex-col items-center justify-center text-slate-950 border-4 border-white shadow-2xl transform -rotate-3 hover:rotate-0 transition-transform">
-                <Trophy className="w-12 h-12 text-slate-950 drop-shadow-md mb-0.5" />
-                <span className="text-[11px] font-black uppercase tracking-widest text-slate-900 bg-white/70 px-2 rounded-full">
-                  LEVEL UP
+            {/* Level Transition Pill */}
+            <div className="flex items-center justify-between bg-amber-100/70 p-2 sm:p-2.5 rounded-xl border border-amber-200/80 text-xs font-bold text-amber-950">
+              <span className="text-[11px] text-amber-800 font-medium">
+                Pencapaian Level Baru:
+              </span>
+              <div className="flex items-center space-x-1.5 font-black">
+                <span className="px-2 py-0.5 rounded-md bg-white/90 text-slate-500 border border-slate-200 line-through text-[11px]">
+                  Lv. {prevLevelInfo?.level || newLevelInfo.level - 1}
                 </span>
-              </div>
-            </div>
-
-            {/* Teks Judul & Ucapan Selamat */}
-            <div className="space-y-1">
-              <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                KAMU NAIK LEVEL!
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 font-medium">
-                Selamat! Kamu berhasil menembus ke{' '}
-                <strong className="text-amber-600 font-black">Level {newLevelInfo.level}</strong>!
-              </p>
-            </div>
-
-            {/* Transisi Indikator Level (Lv. 1 -> Lv. 2) */}
-            <div className="flex items-center justify-center space-x-3 bg-amber-50/80 p-3 rounded-2xl border border-amber-200/80">
-              <div className="px-3 py-1.5 rounded-xl bg-white text-slate-500 border border-slate-200 text-xs font-black line-through">
-                Lv. {prevLevelInfo?.level || newLevelInfo.level - 1}
-              </div>
-              <ChevronRight className="w-5 h-5 text-amber-500 animate-pulse" />
-              <div className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-black shadow-md border-2 border-white scale-110">
-                Lv. {newLevelInfo.level}
+                <ChevronRight className="w-4 h-4 text-amber-600" />
+                <span className="px-2.5 py-0.5 rounded-md bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs shadow-xs">
+                  Lv. {newLevelInfo.level}
+                </span>
               </div>
             </div>
           </div>
@@ -205,119 +233,106 @@ const RewardModal = () => {
           /* ============================================================== */
           /* TAMPILAN JIKA MENDAPATKAN EXP (EXP EARNED)                      */
           /* ============================================================== */
-          <div className="space-y-5 relative">
-            {/* Badge Pill Header */}
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-blue-100 text-blue-800 text-xs font-black uppercase tracking-wider border border-blue-300 shadow-xs">
-              <Zap className="w-4 h-4 text-blue-600" />
-              <span>SESI BELAJAR TUNTAS!</span>
-            </div>
-
-            {/* Hero Icon EXP Gemstone */}
-            <div className="relative w-24 h-24 mx-auto flex items-center justify-center">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-blue-400 to-teal-300 rotate-6 shadow-xl" />
-              <div className="relative w-24 h-24 rounded-3xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-teal-400 flex flex-col items-center justify-center text-white border-4 border-white shadow-2xl animate-bounce-slow">
-                <span className="text-3xl font-black">⚡</span>
-                <span className="text-[10px] font-black uppercase tracking-wider text-teal-100">
-                  +{expEarned} EXP
-                </span>
+          <div className="space-y-3">
+            {/* Header: Badge & Icon Hero */}
+            <div className="flex items-center space-x-3 pr-7">
+              <div className="w-11 h-11 flex-shrink-0 flex items-center justify-center rounded-2xl bg-gradient-to-tr from-teal-500 to-emerald-400 text-white shadow-md border-2 border-white">
+                <Zap className="w-6 h-6 text-white drop-shadow-xs" />
               </div>
-            </div>
-
-            {/* Teks Judul */}
-            <div className="space-y-1">
-              <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                +{expEarned} EXP DIRAIH!
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 font-medium">
-                Kerja bagus! Usahamu membuatmu semakin dekat ke target juara TKA SD.
-              </p>
+              <div>
+                <div className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] font-black uppercase tracking-wider border border-teal-300">
+                  <span>+{expEarned} EXP DITAMBAHKAN</span>
+                </div>
+                <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight mt-0.5">
+                  +{expEarned} EXP Diraih! ⚡
+                </h3>
+              </div>
             </div>
           </div>
         )}
 
         {/* ============================================================== */}
-        {/* BAR EXP PROGRESS ALA DUOLINGO                                  */}
+        {/* BAR PROGRES EXP DINAMIS SESUAI KURVA LEVEL                     */}
         {/* ============================================================== */}
-        <div className="mt-5 p-4 rounded-2xl bg-slate-50 border border-slate-200/90 text-left space-y-2">
+        <div className="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200/90 space-y-1.5 text-left">
           <div className="flex items-center justify-between text-xs">
-            <span className="font-extrabold text-slate-800 flex items-center space-x-1">
-              <span>Level {newLevelInfo?.level}</span>
+            <span className="font-bold text-slate-800">
+              Level {newLevelInfo?.level}
             </span>
-            <span className="font-black text-blue-600">
+            <span className="font-black text-teal-700">
               {newLevelInfo?.currentLevelExp} / {newLevelInfo?.nextLevelExp} EXP
             </span>
           </div>
 
           {/* Bar Progress Smooth Filling */}
-          <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden p-0.5 shadow-inner">
+          <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden p-0.5 shadow-inner">
             <div
-              className="bg-gradient-to-r from-emerald-400 via-teal-400 to-blue-500 h-full rounded-full transition-all duration-1000 ease-out shadow-sm"
+              className={`h-full rounded-full transition-all duration-1000 ease-out shadow-xs ${
+                leveledUp
+                  ? 'bg-gradient-to-r from-amber-400 via-yellow-400 to-orange-500'
+                  : 'bg-gradient-to-r from-emerald-400 via-teal-400 to-blue-500'
+              }`}
               style={{ width: `${animProgress}%` }}
             />
           </div>
 
-          <div className="flex items-center justify-between text-[11px] text-slate-500">
+          <div className="flex items-center justify-between text-[11px] text-slate-500 font-medium pt-0.5">
             <span>Total {newExp} EXP</span>
-            <span>
-              {100 - (newLevelInfo?.currentLevelExp || 0)} EXP menuju Level{' '}
-              {(newLevelInfo?.level || 1) + 1}
+            <span className="text-slate-700 font-semibold">
+              {expNeeded} EXP menuju Level {(newLevelInfo?.level || 1) + 1}
             </span>
           </div>
         </div>
 
         {/* ============================================================== */}
-        {/* KARTU STREAK BONUS (JIKA ADA STREAK AKTIF)                     */}
+        {/* CHIP BONUS STREAK ATAU GELAR BARU                              */}
         {/* ============================================================== */}
-        {streak?.count > 0 && (
-          <div className="mt-3 flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200/80 text-xs">
-            <div className="flex items-center space-x-2 text-left">
-              <span className="text-xl">🔥</span>
-              <div>
-                <strong className="text-orange-900 block font-black">
-                  Streak {streak.count} Hari Menyala!
-                </strong>
-                <span className="text-[11px] text-orange-700/90 font-medium">
-                  Kebiasaan belajar harianmu terus terjaga
-                </span>
-              </div>
+        <div className="mt-2.5 flex flex-wrap gap-2 text-xs">
+          {streak?.count > 0 && (
+            <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-orange-50 border border-orange-200 text-orange-900 font-semibold text-[11px]">
+              <span>🔥</span>
+              <span>Streak {streak.count} Hari Menyala!</span>
             </div>
-            <span className="px-2.5 py-1 rounded-xl bg-orange-500 text-white font-black text-[10px] uppercase shadow-xs">
-              AKTIF
-            </span>
-          </div>
-        )}
+          )}
+
+          {newTitlesUnlocked.length > 0 && (
+            <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-purple-50 border border-purple-200 text-purple-900 font-semibold text-[11px]">
+              <span>{newTitlesUnlocked[0]?.icon || '🏆'}</span>
+              <span>Gelar Baru: {newTitlesUnlocked[0]?.name}</span>
+            </div>
+          )}
+        </div>
 
         {/* ============================================================== */}
-        {/* GELAR BARU TERBUKA (JIKA MEMENUHI SYARAT GELAR BARU)           */}
+        {/* TOMBOL TINDAKAN LANJUTKAN                                      */}
         {/* ============================================================== */}
-        {newTitlesUnlocked.length > 0 && (
-          <div className="mt-3 p-3 rounded-2xl bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 text-xs text-left flex items-center space-x-2.5 animate-bounce-slow">
-            <span className="text-2xl">{newTitlesUnlocked[0]?.icon || '🏆'}</span>
-            <div>
-              <span className="text-[10px] uppercase font-black tracking-wider text-purple-700 block">
-                🎉 GELAR BARU TERBUKA!
-              </span>
-              <strong className="text-purple-950 font-bold text-xs">
-                {newTitlesUnlocked[0]?.name}
-              </strong>
-            </div>
-          </div>
-        )}
+        <div className="mt-3 flex items-center justify-between pt-1">
+          <span className="text-[10px] text-slate-400 font-medium">
+            {isPaused ? 'Otomatis dijeda saat cursor di atas' : `Menutup dalam ${dismissCountdown}s`}
+          </span>
 
-        {/* ============================================================== */}
-        {/* TOMBOL CHUNKY 3D ALA DUOLINGO (BEROTOT & MENYENANGKAN)         */}
-        {/* ============================================================== */}
-        <div className="mt-6">
           <button
             onClick={handleClose}
-            className={`w-full py-3.5 px-6 rounded-2xl font-black text-sm uppercase tracking-wider text-white shadow-lg active:translate-y-1 active:border-b-0 transition-all cursor-pointer ${
+            className={`py-1.5 px-4 rounded-xl font-bold text-xs uppercase tracking-wider text-white shadow-sm active:scale-95 transition-all cursor-pointer ${
               leveledUp
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 border-b-4 border-orange-700 shadow-orange-500/20'
-                : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 border-b-4 border-emerald-700 shadow-emerald-500/20'
+                ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400'
+                : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500'
             }`}
           >
             {leveledUp ? 'Lanjutkan Perjuangan 🚀' : 'Keren, Lanjutkan! 👍'}
           </button>
+        </div>
+
+        {/* Indikator Garis Durasi Auto-Dismiss */}
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-slate-100 overflow-hidden">
+          <div
+            className={`h-full transition-all duration-1000 ease-linear ${
+              leveledUp ? 'bg-amber-400' : 'bg-teal-400'
+            }`}
+            style={{
+              width: `${(dismissCountdown / (leveledUp ? 7 : 5)) * 100}%`,
+            }}
+          />
         </div>
       </div>
     </div>

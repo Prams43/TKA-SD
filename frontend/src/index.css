@@ -111,6 +111,21 @@
   animation: bounceSlow 2.5s ease-in-out infinite;
 }
 
+@keyframes slideInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-24px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-slide-in-down {
+  animation: slideInDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 /* Sembunyikan ikon intip password bawaan Microsoft Edge agar tidak dobel */
 input::-ms-reveal,
 input::-ms-clear,

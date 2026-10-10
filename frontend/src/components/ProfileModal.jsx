@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Award, Flame, Zap, Trophy, Check, Lock, Star, Sparkles } from 'lucide-react';
-import { setActiveTitle, triggerRewardCelebration } from '../utils/activityTracker';
+import { setActiveTitle, triggerRewardCelebration, calculateLevelInfo } from '../utils/activityTracker';
 
 /**
  * Modal Profil Siswa Lengkap:
@@ -111,18 +111,16 @@ const ProfileModal = ({ isOpen, onClose, user, profileStats, onProfileUpdated })
             <button
               onClick={() => {
                 onClose();
+                const expBonus = 150;
+                const simPrev = calculateLevelInfo(totalExp);
+                const simNew = calculateLevelInfo(totalExp + expBonus);
                 triggerRewardCelebration({
-                  expEarned: 80,
+                  expEarned: expBonus,
                   prevExp: totalExp,
-                  newExp: totalExp + 80,
-                  prevLevelInfo: { level, currentLevelExp, nextLevelExp },
-                  newLevelInfo: {
-                    level: level + 1,
-                    currentLevelExp: 40,
-                    nextLevelExp: 100,
-                    progressPercent: 40,
-                  },
-                  leveledUp: true,
+                  newExp: totalExp + expBonus,
+                  prevLevelInfo: simPrev,
+                  newLevelInfo: simNew,
+                  leveledUp: simNew.level > simPrev.level,
                   streak: { count: streak?.count || 1 },
                   actionType: 'latihan',
                   newTitlesUnlocked: [{ name: 'Pakar Hitung Cepat', icon: '🔢' }],
@@ -131,7 +129,7 @@ const ProfileModal = ({ isOpen, onClose, user, profileStats, onProfileUpdated })
               className="w-full text-center py-2 px-3 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-900 text-[11px] font-bold border border-amber-200 transition-all flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs active:scale-98"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-600 animate-pulse" />
-              <span>Pratinjau Animasi Naik Level (Duolingo Style) 🌟</span>
+              <span>Pratinjau Notifikasi Perolehan EXP / Naik Level 🌟</span>
             </button>
           </div>
 
