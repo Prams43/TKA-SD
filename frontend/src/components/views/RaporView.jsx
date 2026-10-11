@@ -41,10 +41,15 @@ const getStatusBadge = (status) => {
  */
 const RaporView = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState('ringkasan'); // 'ringkasan' | 'tryout' | 'latihan'
+  const [tryoutFilter, setTryoutFilter] = useState('all'); // 'all' | 'bahasa_indonesia' | 'matematika'
 
   if (!isOpen) return null;
 
   const stats = getFullStats();
+  const filteredTryouts = (stats.tryoutHistory || []).filter((item) => {
+    if (tryoutFilter === 'all') return true;
+    return item.subject === tryoutFilter;
+  });
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in overflow-y-auto">
@@ -148,17 +153,37 @@ const RaporView = ({ isOpen, onClose }) => {
                   </span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-white border-2 border-amber-600 shadow-sm">
-                  <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-                    <span>Rata-rata Tryout</span>
-                    <Trophy className="w-4 h-4 text-amber-600" />
+                <div className="p-4 rounded-2xl bg-white border-2 border-amber-600 shadow-sm flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                      <span>Rata-rata Tryout</span>
+                      <Trophy className="w-4 h-4 text-amber-600" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 mt-1.5">
+                      <div className="p-2 rounded-xl bg-slate-50 border border-[#047857]/30">
+                        <div className="flex items-center space-x-1 text-[10px] font-bold text-[#047857]">
+                          <BookOpen className="w-3 h-3 text-[#047857] shrink-0" />
+                          <span className="truncate">B. Indo</span>
+                        </div>
+                        <div className="text-base sm:text-lg font-black text-[#047857] mt-0.5">
+                          {stats.totalTryoutBI > 0 ? stats.rataRataTryoutBI : '-'}
+                        </div>
+                      </div>
+                      <div className="p-2 rounded-xl bg-slate-50 border border-[#881337]/30">
+                        <div className="flex items-center space-x-1 text-[10px] font-bold text-[#881337]">
+                          <Calculator className="w-3 h-3 text-[#881337] shrink-0" />
+                          <span className="truncate">MTK</span>
+                        </div>
+                        <div className="text-base sm:text-lg font-black text-[#881337] mt-0.5">
+                          {stats.totalTryoutMTK > 0 ? stats.rataRataTryoutMTK : '-'}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-xl sm:text-2xl font-black text-slate-900">
-                    {stats.rataRataTryout}
+                  <div className="mt-2 text-[10px] text-slate-500 font-medium flex items-center justify-between pt-1 border-t border-slate-100">
+                    <span>BI: {stats.totalTryoutBI} sesi</span>
+                    <span>MTK: {stats.totalTryoutMTK} sesi</span>
                   </div>
-                  <span className="text-[11px] text-amber-700 font-medium mt-1 block">
-                    Dari {stats.totalTryout} sesi tryout
-                  </span>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-white border-2 border-purple-600 shadow-sm">
@@ -301,8 +326,90 @@ const RaporView = ({ isOpen, onClose }) => {
           {activeTab === 'tryout' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-slate-900">Riwayat Simulasi Tryout</h3>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Riwayat Simulasi Tryout</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Catatan pengerjaan 30 butir soal simulasi Asesmen TKA SD.
+                  </p>
+                </div>
                 <span className="text-xs text-slate-500">Total {stats.tryoutHistory.length} kali tryout</span>
+              </div>
+
+              {/* Banner Rata-rata Terpisah per Mata Pelajaran */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="p-3.5 rounded-xl bg-white border-2 border-[#047857] shadow-sm flex items-center justify-between">
+                  <div className="flex items-center space-x-2.5">
+                    <div className="w-9 h-9 rounded-lg bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center shrink-0">
+                      <BookOpen className="w-4 h-4 text-[#047857]" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900">Bahasa Indonesia</h4>
+                      <span className="text-[11px] text-slate-500 font-medium">
+                        {stats.totalTryoutBI} sesi tryout
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] text-slate-500 block font-medium">Rata-rata</span>
+                    <span className="text-lg font-black text-[#047857]">
+                      {stats.totalTryoutBI > 0 ? stats.rataRataTryoutBI : '-'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-white border-2 border-[#881337] shadow-sm flex items-center justify-between">
+                  <div className="flex items-center space-x-2.5">
+                    <div className="w-9 h-9 rounded-lg bg-[#FFF1F2] border border-[#FECDD3] flex items-center justify-center shrink-0">
+                      <Calculator className="w-4 h-4 text-[#881337]" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900">Matematika</h4>
+                      <span className="text-[11px] text-slate-500 font-medium">
+                        {stats.totalTryoutMTK} sesi tryout
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] text-slate-500 block font-medium">Rata-rata</span>
+                    <span className="text-lg font-black text-[#881337]">
+                      {stats.totalTryoutMTK > 0 ? stats.rataRataTryoutMTK : '-'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Filter Tab Mapel */}
+              <div className="flex items-center space-x-2 pt-1">
+                <button
+                  onClick={() => setTryoutFilter('all')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer border ${
+                    tryoutFilter === 'all'
+                      ? 'bg-slate-900 text-white border-slate-900'
+                      : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
+                  }`}
+                >
+                  Semua ({stats.tryoutHistory.length})
+                </button>
+                <button
+                  onClick={() => setTryoutFilter('bahasa_indonesia')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer border ${
+                    tryoutFilter === 'bahasa_indonesia'
+                      ? 'bg-[#047857] text-white border-[#047857]'
+                      : 'bg-white text-[#047857] border-[#A7F3D0] hover:bg-[#ECFDF5]'
+                  }`}
+                >
+                  Bahasa Indonesia ({stats.totalTryoutBI})
+                </button>
+                <button
+                  onClick={() => setTryoutFilter('matematika')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer border ${
+                    tryoutFilter === 'matematika'
+                      ? 'bg-[#881337] text-white border-[#881337]'
+                      : 'bg-white text-[#881337] border-[#FECDD3] hover:bg-[#FFF1F2]'
+                  }`}
+                >
+                  Matematika ({stats.totalTryoutMTK})
+                </button>
               </div>
 
               <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -318,7 +425,14 @@ const RaporView = ({ isOpen, onClose }) => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {stats.tryoutHistory.map((item) => (
+                    {filteredTryouts.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="px-4 py-8 text-center text-xs text-slate-500">
+                          Belum ada riwayat tryout untuk filter ini.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredTryouts.map((item) => (
                       <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
                         <td className="px-4 py-3 font-semibold text-slate-900">
                           Paket {item.packageNum}
@@ -347,8 +461,9 @@ const RaporView = ({ isOpen, onClose }) => {
                           </span>
                         </td>
                       </tr>
-                    ))}
-                  </tbody>
+                    ))
+                  )}
+                </tbody>
                 </table>
               </div>
             </div>

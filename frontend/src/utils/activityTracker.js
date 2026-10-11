@@ -752,11 +752,27 @@ export const getFullStats = () => {
   const akurasiLatihan =
     totalSoalDijawab > 0 ? Math.round((totalSoalBenar / totalSoalDijawab) * 100) : 0;
 
-  // 3. Statistik Tryout
+  // 3. Statistik Tryout (Keseluruhan & Terpisah per Mata Pelajaran)
   const totalTryout = data.tryoutHistory.length;
   const rataRataTryout =
     totalTryout > 0
       ? (data.tryoutHistory.reduce((acc, curr) => acc + (curr.score || 0), 0) / totalTryout).toFixed(1)
+      : '0.0';
+
+  // Rata-rata Terpisah: Bahasa Indonesia
+  const tryoutHistoryBI = data.tryoutHistory.filter((t) => t.subject === 'bahasa_indonesia');
+  const totalTryoutBI = tryoutHistoryBI.length;
+  const rataRataTryoutBI =
+    totalTryoutBI > 0
+      ? (tryoutHistoryBI.reduce((acc, curr) => acc + (curr.score || 0), 0) / totalTryoutBI).toFixed(1)
+      : '0.0';
+
+  // Rata-rata Terpisah: Matematika
+  const tryoutHistoryMTK = data.tryoutHistory.filter((t) => t.subject === 'matematika');
+  const totalTryoutMTK = tryoutHistoryMTK.length;
+  const rataRataTryoutMTK =
+    totalTryoutMTK > 0
+      ? (tryoutHistoryMTK.reduce((acc, curr) => acc + (curr.score || 0), 0) / totalTryoutMTK).toFixed(1)
       : '0.0';
 
   // 4. Penguasaan Kompetensi Pusmendik (%) Dinamis Tersinkronisasi
@@ -779,6 +795,16 @@ export const getFullStats = () => {
     akurasiLatihan,
     totalTryout,
     rataRataTryout,
+    totalTryoutBI,
+    rataRataTryoutBI,
+    totalTryoutMTK,
+    rataRataTryoutMTK,
+    tryoutStats: {
+      total: totalTryout,
+      rataRata: rataRataTryout,
+      bi: { total: totalTryoutBI, rataRata: rataRataTryoutBI },
+      mtk: { total: totalTryoutMTK, rataRata: rataRataTryoutMTK },
+    },
     latihanHistory: data.latihanHistory,
     tryoutHistory: data.tryoutHistory,
     kompetensi: topicMastery.kompetensi,
