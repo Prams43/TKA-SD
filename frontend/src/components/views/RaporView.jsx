@@ -32,7 +32,7 @@ const RaporView = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in overflow-y-auto">
-      <div className="bg-white border-2 border-slate-400 rounded-3xl max-w-4xl w-full min-h-[550px] max-h-[92vh] flex flex-col shadow-2xl text-slate-800 overflow-hidden relative">
+      <div className="bg-white border-2 border-slate-400 rounded-2xl sm:rounded-3xl max-w-4xl w-full min-h-0 sm:min-h-[520px] max-h-[92vh] flex flex-col shadow-2xl text-slate-800 overflow-hidden relative">
         {/* Glow ambient */}
         <div className="absolute top-0 right-1/4 w-80 h-32 bg-purple-400/10 blur-3xl pointer-events-none" />
 

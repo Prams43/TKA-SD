@@ -115,13 +115,13 @@ const CharacterIllustration = () => {
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-center select-none group w-full max-w-[170px] xs:max-w-[210px] sm:max-w-[320px] md:max-w-[420px]">
+    <div className="relative flex flex-col items-center justify-center select-none group w-full max-w-[150px] xs:max-w-[190px] sm:max-w-[320px] md:max-w-[420px]">
       {/* Interactive Speech Bubble */}
       <div
         onClick={handleCharacterClick}
-        className="cursor-pointer mb-2 px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-xs sm:text-sm font-medium border border-slate-300 shadow-xs flex items-center space-x-1.5 z-20 text-center"
+        className="cursor-pointer mb-1.5 sm:mb-2 px-2 xs:px-3 py-1 sm:py-1.5 rounded-lg bg-slate-200 text-slate-800 text-[11px] xs:text-xs sm:text-sm font-medium border border-slate-300 shadow-xs flex items-center space-x-1 sm:space-x-1.5 z-20 text-center leading-snug active:scale-95 transition-transform"
       >
-        <Sparkles className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
+        <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-500 flex-shrink-0" />
         <span className="line-clamp-2 sm:line-clamp-none">{quotes[quoteIndex]}</span>
       </div>
 
@@ -129,19 +129,19 @@ const CharacterIllustration = () => {
       <div
         onClick={handleCharacterClick}
         className={`relative cursor-pointer transition-transform duration-200 ${
-          isWiggling ? 'scale-102' : ''
+          isWiggling ? 'scale-105' : 'active:scale-95'
         } z-10 w-full flex justify-center`}
         title="Klik aku untuk bicara!"
       >
         <img
           src={processedSrc || originalImage}
           alt="Karakter Siswa Pintar TKA SD"
-          className="w-auto h-[210px] xs:h-[250px] sm:h-[350px] md:h-[440px] lg:h-[490px] object-contain transition-all duration-200 max-w-full"
+          className="w-auto h-[175px] xs:h-[215px] sm:h-[350px] md:h-[440px] lg:h-[490px] object-contain transition-all duration-200 max-w-full drop-shadow-sm"
           draggable="false"
         />
 
         {/* Badge Klik Saya (muncul saat hover) */}
-        <div className="absolute bottom-2 right-2 sm:right-4 bg-slate-900 text-white text-[10px] font-medium px-2 py-0.5 rounded border border-slate-700 flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute bottom-2 right-1 sm:right-4 bg-slate-900 text-white text-[10px] font-medium px-1.5 sm:px-2 py-0.5 rounded border border-slate-700 flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
           <MessageCircle className="w-3 h-3" />
           <span>Klik!</span>
         </div>

@@ -933,7 +933,7 @@ const Tryout = () => {
                       </div>
 
                       {/* Baris Tunggal Navigasi dengan Horizontal Scroll */}
-                      <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 pt-0.5">
+                      <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 pt-0.5 no-scrollbar">
                         {activePackage.soal.map((q, idx) => {
                           const isAnswered = checkAnswered(q, userAnswers[idx]);
                           const isCurrent = currentQuestionIndex === idx;
@@ -942,9 +942,9 @@ const Tryout = () => {
                             <button
                               key={idx}
                               onClick={() => setCurrentQuestionIndex(idx)}
-                              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-md text-xs font-medium transition-colors flex-shrink-0 cursor-pointer flex items-center justify-center relative ${
+                              className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg text-xs sm:text-sm font-semibold transition-all flex-shrink-0 cursor-pointer flex items-center justify-center relative active:scale-95 ${
                                 isCurrent
-                                  ? 'bg-[#C25E38] text-white font-bold ring-2 ring-[#FAECE6]'
+                                  ? 'bg-[#C25E38] text-white font-bold ring-2 ring-[#FAECE6] shadow-sm'
                                   : isAnswered
                                   ? 'bg-[#261C14] text-white'
                                   : 'bg-white text-[#261C14] border border-[#E6DFD5] hover:bg-[#F2ECE4]'
@@ -1020,17 +1020,17 @@ const Tryout = () => {
                               <button
                                 key={oIdx}
                                 onClick={() => handleAnswerChange(opt)}
-                                className={`w-full p-3 rounded-lg text-left text-xs sm:text-sm font-medium border transition-colors flex items-center justify-between cursor-pointer ${
+                                className={`w-full p-3 sm:p-3.5 rounded-xl text-left text-xs sm:text-sm font-medium border transition-all flex items-center justify-between cursor-pointer min-h-[46px] active:scale-[0.99] ${
                                   isSelected
-                                    ? 'bg-[#FAECE6] border-[#C25E38] text-[#261C14] font-semibold'
+                                    ? 'bg-[#FAECE6] border-[#C25E38] text-[#261C14] font-semibold ring-1 ring-[#C25E38]/30 shadow-xs'
                                     : 'bg-white border-[#E6DFD5] text-[#261C14] hover:bg-[#FAF7F2]'
                                 }`}
                               >
-                                <span dangerouslySetInnerHTML={{ __html: formatMath(opt) }} />
+                                <span className="pr-2 leading-relaxed" dangerouslySetInnerHTML={{ __html: formatMath(opt) }} />
                                 <div
-                                  className={`w-5 h-5 rounded-md border flex items-center justify-center text-[10px] font-semibold flex-shrink-0 ml-2 ${
+                                  className={`w-6 h-6 rounded-lg border flex items-center justify-center text-xs font-bold flex-shrink-0 ml-2 ${
                                     isSelected
-                                      ? 'border-[#C25E38] bg-[#C25E38] text-white'
+                                      ? 'border-[#C25E38] bg-[#C25E38] text-white shadow-2xs'
                                       : 'border-[#E6DFD5] text-[#6E6258] bg-[#FAF7F2]'
                                   }`}
                                 >
@@ -1163,26 +1163,26 @@ const Tryout = () => {
                       )}
 
                       {/* Navigasi Bawah */}
-                      <div className="mt-5 pt-3.5 border-t border-[#E6DFD5] flex items-center justify-between">
+                      <div className="mt-5 pt-3.5 border-t border-[#E6DFD5] flex items-center justify-between gap-2">
                         <button
                           disabled={currentQuestionIndex === 0}
                           onClick={() => setCurrentQuestionIndex((prev) => prev - 1)}
-                          className={`px-3.5 py-2 rounded-lg text-xs font-medium transition-colors ${
+                          className={`px-3.5 sm:px-4 py-2 sm:py-2.5 min-h-[42px] rounded-xl text-xs sm:text-sm font-semibold transition-all active:scale-95 flex items-center justify-center ${
                             currentQuestionIndex === 0
                               ? 'text-[#8C7E72] bg-[#FAF7F2] cursor-not-allowed border border-[#E6DFD5]'
-                              : 'text-[#261C14] hover:bg-[#F2ECE4] bg-white border border-[#E6DFD5] cursor-pointer'
+                              : 'text-[#261C14] hover:bg-[#F2ECE4] bg-white border border-[#E6DFD5] cursor-pointer shadow-xs'
                           }`}
                         >
-                          &larr; Sebelumnya
+                          &larr; <span className="hidden xs:inline ml-1">Sebelumnya</span>
                         </button>
 
                         <div className="flex items-center space-x-2">
                           {currentQuestionIndex < activePackage.soal.length - 1 ? (
                             <button
                               onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
-                              className="px-4 py-2 rounded-lg bg-[#C25E38] hover:bg-[#A94D2B] text-white text-xs font-semibold transition-colors cursor-pointer"
+                              className="px-4 sm:px-5 py-2 sm:py-2.5 min-h-[42px] rounded-xl bg-[#C25E38] hover:bg-[#A94D2B] text-white text-xs sm:text-sm font-semibold transition-all cursor-pointer shadow-sm active:scale-95 flex items-center justify-center"
                             >
-                              Selanjutnya &rarr;
+                              <span>Selanjutnya</span> <span className="ml-1">&rarr;</span>
                             </button>
                           ) : (
                             <button

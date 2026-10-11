@@ -91,7 +91,7 @@ const LatihanSoalView = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in overflow-y-auto">
-      <div className="bg-white border border-slate-200/90 rounded-3xl max-w-4xl w-full min-h-[550px] max-h-[92vh] flex flex-col shadow-2xl text-slate-800 overflow-hidden relative">
+      <div className="bg-white border border-slate-200/90 rounded-2xl sm:rounded-3xl max-w-4xl w-full min-h-0 sm:min-h-[520px] max-h-[92vh] flex flex-col shadow-2xl text-slate-800 overflow-hidden relative">
         {/* Glow ambient lembut */}
         <div className="absolute top-0 right-1/4 w-80 h-32 bg-emerald-500/5 blur-3xl pointer-events-none" />
 

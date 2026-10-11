@@ -35,16 +35,43 @@
 }
 
 @layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+
   body {
     background-color: #F8FAFC;
     color: #1E293B;
     font-family: 'Poppins', sans-serif;
     overflow-x: hidden;
+    min-height: 100vh;
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   ::selection {
     background-color: #1E3A8A;
     color: #FFFFFF;
+  }
+
+  /* Cegah auto-zoom browser iOS saat fokus pada form input */
+  @media screen and (max-width: 640px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+
+  /* Scrollbar halus untuk sentuhan mobile */
+  * {
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -193,5 +220,22 @@ input[type="password"]::-ms-clear {
   }
   .bg-white\/50 {
     background-color: rgb(226 232 240 / 0.5);
+  }
+
+  /* Sembunyikan scrollbar namun tetap bisa di-swipe di layar sentuh */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Safe Area Inset untuk smartphone berlayar notch/poni */
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }

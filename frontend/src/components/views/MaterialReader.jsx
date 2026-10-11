@@ -1218,25 +1218,26 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
           </span>
         </div>
         <span className="text-xs text-slate-400 font-medium">
-          Tekan tombol panah ← / → di keyboard
+          <span className="hidden sm:inline">Tekan tombol panah ← / → di keyboard</span>
+          <span className="sm:hidden text-[11px] font-semibold text-slate-500">{currentSlide + 1} / {totalSlides} Slide</span>
         </span>
       </div>
 
       {/* 3. Konten Utama Slide Terpilih */}
-      <div className="min-h-[340px]">
+      <div className="min-h-0 sm:min-h-[340px]">
         {currentSlideData.render()}
       </div>
 
       {/* 4. Footer Bar Tombol Navigasi Antar Slide */}
-      <div className="pt-3 border-t border-slate-200 flex items-center justify-between gap-3">
+      <div className="pt-3 border-t border-slate-200 flex items-center justify-between gap-2 sm:gap-3">
         {/* Tombol Sebelumnya */}
         <button
           onClick={() => setCurrentSlide((prev) => Math.max(0, prev - 1))}
           disabled={currentSlide === 0}
-          className={`px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-colors ${
+          className={`px-3 sm:px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center space-x-1 sm:space-x-1.5 transition-all active:scale-95 ${
             currentSlide === 0
               ? 'opacity-40 cursor-not-allowed bg-slate-100 text-slate-400'
-              : 'bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 cursor-pointer'
+              : 'bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 cursor-pointer shadow-2xs'
           }`}
         >
           <ChevronLeft className="w-4 h-4" />
@@ -1252,13 +1253,13 @@ const MaterialReader = ({ bab, onStartQuiz }) => {
         {currentSlide < totalSlides - 1 ? (
           <button
             onClick={() => setCurrentSlide((prev) => Math.min(totalSlides - 1, prev + 1))}
-            className={`px-4 py-2 rounded-lg text-white font-semibold text-xs shadow-xs transition-all duration-300 flex items-center space-x-1.5 cursor-pointer ${
+            className={`px-3.5 sm:px-4 py-2 rounded-lg text-white font-semibold text-xs shadow-xs transition-all duration-300 flex items-center space-x-1 sm:space-x-1.5 cursor-pointer active:scale-95 ${
               isMath
                 ? 'bg-[#881337] hover:bg-[#700D2B]'
                 : 'bg-[#047857] hover:bg-[#065F46]'
             }`}
           >
-            <span>Lanjut Slide Berikutnya</span>
+            <span>Lanjut <span className="hidden xs:inline">Slide</span></span>
             <ChevronRight className="w-4 h-4" />
           </button>
         ) : (

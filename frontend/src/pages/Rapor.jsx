@@ -39,7 +39,8 @@ const Rapor = () => {
       {/* 2. Konten Utama Halaman Rapor */}
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 flex flex-col">
         {/* Breadcrumb & Navigasi */}
-        <div className="mb-4 flex items-center justify-between">
+        {/* Breadcrumb & Navigasi */}
+        <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
           <div className="flex items-center space-x-2 text-xs text-blue-200">
             <button
               onClick={() => navigate('/dashboard')}
@@ -54,7 +55,7 @@ const Rapor = () => {
 
           <button
             onClick={() => navigate('/dashboard')}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 hover:text-blue-700 text-xs font-semibold transition-all cursor-pointer shadow-sm"
+            className="self-start sm:self-auto flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 hover:text-blue-700 text-xs font-semibold transition-all cursor-pointer shadow-sm active:scale-95"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Kembali ke Dashboard</span>
@@ -91,11 +92,11 @@ const Rapor = () => {
             </div>
           </div>
 
-          {/* Sub-Nav Tabs */}
-          <div className="flex border-b-2 border-slate-300 px-4 sm:px-6 bg-[#FAF7F2] gap-1 sm:gap-2">
+          {/* Sub-Nav Tabs (Bisa di-swipe horizontal di mobile) */}
+          <div className="flex border-b-2 border-slate-300 px-3 sm:px-6 bg-[#FAF7F2] gap-1 sm:gap-2 overflow-x-auto no-scrollbar">
             <button
               onClick={() => setActiveTab('ringkasan')}
-              className={`py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold border-b-2 transition-colors cursor-pointer ${
+              className={`py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold border-b-2 transition-colors cursor-pointer whitespace-nowrap flex-shrink-0 ${
                 activeTab === 'ringkasan'
                   ? 'border-[#C25E38] text-[#C25E38]'
                   : 'border-transparent text-[#6E6258] hover:text-[#261C14]'
@@ -105,7 +106,7 @@ const Rapor = () => {
             </button>
             <button
               onClick={() => setActiveTab('tryout')}
-              className={`py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold border-b-2 transition-colors cursor-pointer ${
+              className={`py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold border-b-2 transition-colors cursor-pointer whitespace-nowrap flex-shrink-0 ${
                 activeTab === 'tryout'
                   ? 'border-[#C25E38] text-[#C25E38]'
                   : 'border-transparent text-[#6E6258] hover:text-[#261C14]'
@@ -115,7 +116,7 @@ const Rapor = () => {
             </button>
             <button
               onClick={() => setActiveTab('latihan')}
-              className={`py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold border-b-2 transition-colors cursor-pointer ${
+              className={`py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold border-b-2 transition-colors cursor-pointer whitespace-nowrap flex-shrink-0 ${
                 activeTab === 'latihan'
                   ? 'border-[#C25E38] text-[#C25E38]'
                   : 'border-transparent text-[#6E6258] hover:text-[#261C14]'

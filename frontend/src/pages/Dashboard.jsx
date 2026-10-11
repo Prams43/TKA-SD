@@ -40,37 +40,39 @@ const Dashboard = () => {
       <Navbar />
 
       {/* 2. Area Utama di Bawah Navbar */}
-      <main className="flex-1 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-12 py-6 sm:py-10">
+      {/* 2. Area Utama di Bawah Navbar */}
+      <main className="flex-1 flex flex-col justify-center items-center px-3 sm:px-6 lg:px-12 py-3 xs:py-4 sm:py-10">
         <div className="max-w-6xl w-full mx-auto flex flex-col justify-center">
           {/* Bagian Profil Siswa di Dashboard - Dominan Navy Solid (Tanpa Gradient) */}
-          <div className="mb-6 sm:mb-8 p-4 sm:p-5 rounded-2xl bg-[#0B1A34] border-2 border-blue-500/40 shadow-lg text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center space-x-3.5 sm:space-x-4">
+          <div className="mb-4 sm:mb-8 p-3.5 sm:p-5 rounded-2xl bg-[#0B1A34] border-2 border-blue-500/40 shadow-lg text-white flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
+            <div className="flex items-center space-x-3 sm:space-x-4">
               <div
                 onClick={() => setIsProfileModalOpen(true)}
-                className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#1E3A8A] hover:bg-blue-600 text-white border-2 border-blue-400 flex items-center justify-center text-2xl font-bold shadow-md flex-shrink-0 cursor-pointer transition-all active:scale-95"
+                className="w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-[#1E3A8A] hover:bg-blue-600 text-white border-2 border-blue-400 flex items-center justify-center text-xl sm:text-2xl font-bold shadow-md flex-shrink-0 cursor-pointer transition-all active:scale-95"
                 title="Buka profil"
               >
                 {profileStats?.activeTitle?.icon || (user?.username ? user.username.charAt(0).toUpperCase() : '🦁')}
               </div>
-              <div>
-                <div className="flex items-center space-x-2 flex-wrap">
-                  <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              <div className="min-w-0">
+                <div className="flex items-center space-x-1.5 sm:space-x-2 flex-wrap">
+                  <h1 className="text-lg sm:text-2xl font-bold text-white tracking-tight truncate">
                     Halo, {user?.username || user?.email?.split('@')[0] || 'Siswa'}!
                   </h1>
                   {profileStats?.activeTitle && (
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-blue-600 text-white border border-blue-400 shadow-2xs">
+                    <span className="px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-xs font-bold bg-blue-600 text-white border border-blue-400 shadow-2xs">
                       {profileStats.activeTitle.name}
                     </span>
                   )}
                 </div>
-                <p className="text-xs sm:text-sm text-blue-200 mt-1">
-                  Siap belajar hari ini? Kumpulkan EXP dan raih puncak prestasi!
+                <p className="text-[11px] sm:text-sm text-blue-200 mt-0.5 sm:mt-1 line-clamp-1 sm:line-clamp-none">
+                  Siap belajar hari ini? Kumpulkan EXP dan raih prestasi!
                 </p>
               </div>
             </div>
 
             {/* Quick Stats: Level & EXP (Display Only) */}
-            <div className="flex items-center self-stretch md:self-auto justify-end border-t-2 md:border-t-0 border-[#1E3A8A] pt-3 md:pt-0">
+            <div className="flex items-center self-stretch md:self-auto justify-between md:justify-end border-t border-[#1E3A8A] md:border-t-0 pt-2.5 md:pt-0">
+              <span className="text-[11px] text-blue-300 md:hidden font-medium">Progres EXP</span>
               <div
                 className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-[#071325] border-2 border-blue-500/40 shadow-xs select-none"
               >

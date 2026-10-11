@@ -517,8 +517,8 @@ const LatihanSoal = () => {
       {/* 2. Konten Utama */}
       <main className="flex-1 max-w-4xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 flex flex-col animate-fade-in">
         {/* Navigasi Breadcrumb */}
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-xs text-blue-200">
+        <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
+          <div className="flex items-center space-x-1.5 sm:space-x-2 text-xs text-blue-200 flex-wrap">
             <button
               onClick={() => navigate('/dashboard')}
               className="hover:text-white font-medium flex items-center space-x-1 transition-colors text-blue-200"
@@ -577,7 +577,7 @@ const LatihanSoal = () => {
                 navigate('/dashboard');
               }
             }}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 hover:text-blue-700 text-xs font-semibold transition-all cursor-pointer shadow-sm"
+            className="self-start sm:self-auto flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 hover:text-blue-700 text-xs font-semibold transition-all cursor-pointer shadow-sm active:scale-95"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>

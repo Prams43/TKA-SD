@@ -215,21 +215,21 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-transparent flex flex-col justify-center items-center p-4 sm:p-6">
+    <div className="min-h-screen bg-transparent flex flex-col justify-center items-center p-3 xs:p-4 sm:p-6">
       <div className="w-full max-w-md">
         {/* Header Identitas */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center mb-3 p-2 bg-white rounded-2xl shadow-md border border-white/30">
+        <div className="text-center mb-5 sm:mb-6">
+          <div className="inline-flex items-center justify-center mb-2 sm:mb-3 p-2 bg-white rounded-2xl shadow-md border border-white/30">
             <img
               src="/logo.png"
               alt="Logo EDU TKA"
-              className="h-14 w-auto object-contain"
+              className="h-12 sm:h-14 w-auto object-contain"
             />
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight drop-shadow-sm">
+          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight drop-shadow-sm">
             {step === 'form' ? 'Daftar Akun TKA SD' : 'Verifikasi Akun'}
           </h1>
-          <p className="text-teal-50/90 text-sm mt-1 font-medium">
+          <p className="text-teal-50/90 text-xs sm:text-sm mt-1 font-medium">
             {step === 'form'
               ? 'Buat akun baru untuk mulai latihan Tes Kemampuan Akademik'
               : `Kode verifikasi telah dikirimkan ke email Anda`}
@@ -237,7 +237,7 @@ const Register = () => {
         </div>
 
         {/* Card Form Utama */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 shadow-xl">
+        <div className="bg-white rounded-2xl border border-slate-200/90 p-4 xs:p-6 sm:p-8 shadow-xl">
           {/* STEP 1: FORMULIR PENDAFTARAN */}
           {step === 'form' && (
             <div>
@@ -374,7 +374,7 @@ const Register = () => {
 
               <form onSubmit={handleVerifyOtpSubmit} noValidate>
                 {/* 6 Kotak Input OTP */}
-                <div className="flex justify-between items-center gap-2 mb-6" onPaste={handleOtpPaste}>
+                <div className="flex justify-center items-center gap-1 xs:gap-1.5 sm:gap-2 mb-6" onPaste={handleOtpPaste}>
                   {otpDigits.map((digit, index) => (
                     <input
                       key={index}
@@ -385,7 +385,7 @@ const Register = () => {
                       value={digit}
                       onChange={(e) => handleOtpDigitChange(index, e.target.value)}
                       onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                      className={`w-11 h-13 sm:w-12 sm:h-14 text-center text-xl font-bold rounded-lg border outline-none transition-colors ${
+                      className={`w-9 xs:w-10 sm:w-12 h-11 xs:h-12 sm:h-14 text-center text-base xs:text-lg sm:text-xl font-bold rounded-lg border outline-none transition-colors ${
                         digit
                           ? 'border-[#1E3A8A] bg-blue-50/30 text-slate-900 ring-1 ring-[#1E3A8A]'
                           : 'border-slate-300 bg-white text-slate-800 focus:border-[#1E3A8A] focus:ring-2 focus:ring-[#1E3A8A]/20'

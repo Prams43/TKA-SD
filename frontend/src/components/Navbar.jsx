@@ -39,29 +39,29 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-slate-200/95 backdrop-blur-md border-b border-slate-300 shadow-xs sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16 gap-4">
+      <nav className="bg-slate-200/95 backdrop-blur-md border-b border-slate-300 shadow-xs sticky top-0 z-30 pt-safe">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-14 sm:h-16 gap-2 sm:gap-4">
             {/* Logo & Judul Aplikasi */}
             <div
               onClick={() => navigate('/dashboard')}
-              className="flex items-center space-x-2.5 cursor-pointer flex-shrink-0"
+              className="flex items-center space-x-2 cursor-pointer flex-shrink-0 active:scale-95 transition-transform"
             >
               <img
                 src="/logo.png"
                 alt="Logo EDU TKA"
-                className="h-9 w-auto object-contain rounded-md"
+                className="h-8 sm:h-9 w-auto object-contain rounded-md"
               />
-              <span className="font-bold text-base text-slate-800 tracking-tight">
+              <span className="font-bold text-sm sm:text-base text-slate-800 tracking-tight">
                 TKA SD
               </span>
             </div>
 
             {/* Bagian Kanan: Indikator Gamifikasi & Profil */}
-            <div className="flex items-center space-x-2 sm:space-x-3.5">
-              {/* 1. Indikator Streak Belajar (Dominan Navy seperti Profil) */}
+            <div className="flex items-center space-x-1.5 sm:space-x-3">
+              {/* 1. Indikator Streak Belajar (Dominan Navy) */}
               <div
-                className={`inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold select-none border transition-all duration-300 shadow-sm bg-[#0B1A34] border-[#1E3A8A] ${
+                className={`inline-flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs font-semibold select-none border transition-all duration-300 shadow-sm bg-[#0B1A34] border-[#1E3A8A] flex-shrink-0 ${
                   profileStats.streak.activeToday
                     ? 'text-amber-300'
                     : 'text-slate-300'
@@ -81,31 +81,34 @@ const Navbar = () => {
                 >
                   🔥
                 </span>
-                <span className="font-semibold text-white">{profileStats.streak.count} Hari</span>
+                <span className="font-semibold text-white text-[11px] sm:text-xs">
+                  {profileStats.streak.count}
+                  <span className="hidden xs:inline"> Hari</span>
+                </span>
               </div>
 
               {/* 2. Tombol Profil Pengguna (Dominan Navy) */}
               <button
                 onClick={() => setIsProfileModalOpen(true)}
-                className="flex items-center space-x-2 text-xs text-white bg-[#0B1A34] hover:bg-[#0F2447] px-3 py-1.5 rounded-lg border border-[#1E3A8A] transition-all cursor-pointer shadow-sm active:scale-95"
+                className="flex items-center space-x-1.5 sm:space-x-2 text-xs text-white bg-[#0B1A34] hover:bg-[#0F2447] px-2 sm:px-3 py-1.5 rounded-lg border border-[#1E3A8A] transition-all cursor-pointer shadow-sm active:scale-95"
                 title="Buka detail profil, level, dan gelar"
               >
-                <div className="w-6 h-6 rounded-full bg-[#1E3A8A] text-white border border-blue-400/40 flex items-center justify-center font-bold text-[11px] flex-shrink-0">
-                  {user?.username ? user.username.charAt(0).toUpperCase() : <User className="w-3.5 h-3.5" />}
+                <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#1E3A8A] text-white border border-blue-400/40 flex items-center justify-center font-bold text-[10px] sm:text-[11px] flex-shrink-0">
+                  {user?.username ? user.username.charAt(0).toUpperCase() : <User className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
                 </div>
-                <span className="font-semibold text-xs text-white truncate max-w-[90px] sm:max-w-[130px]">
+                <span className="font-semibold text-[11px] sm:text-xs text-white truncate max-w-[65px] xs:max-w-[90px] sm:max-w-[130px]">
                   {user?.username || (user?.email ? user.email.split('@')[0] : 'Siswa')}
                 </span>
-                <span className="hidden sm:inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#1D4ED8] text-white">
+                <span className="hidden md:inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#1D4ED8] text-white">
                   Lv.{profileStats.level}
                 </span>
-                <ChevronDown className="w-3.5 h-3.5 text-blue-200 flex-shrink-0" />
+                <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-200 flex-shrink-0" />
               </button>
 
               {/* 3. Tombol Keluar (Logout - Dominan Navy) */}
               <button
                 onClick={handleLogout}
-                className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#0B1A34] hover:bg-[#1E3A8A] border border-[#1E3A8A] transition-all cursor-pointer shadow-sm active:scale-95"
+                className="inline-flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#0B1A34] hover:bg-[#1E3A8A] border border-[#1E3A8A] transition-all cursor-pointer shadow-sm active:scale-95"
                 title="Keluar dari akun"
               >
                 <LogOut className="w-3.5 h-3.5 text-blue-200" />
