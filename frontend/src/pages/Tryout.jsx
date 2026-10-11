@@ -421,11 +421,23 @@ const Tryout = () => {
     }
   };
 
-  const handleBackToDashboard = () => {
-    if (isExamRunning && !isFinished) {
-      if (window.confirm('Simulasi Tryout sedang berjalan. Jika Anda keluar sekarang, progres saat ini akan hilang. Yakin ingin kembali ke Dashboard?')) {
-        navigate('/dashboard');
+  const handleBackNavigation = () => {
+    if (activePackage) {
+      if (isExamRunning && !isFinished) {
+        if (
+          !window.confirm(
+            'Simulasi Tryout sedang berjalan. Jika Anda kembali sekarang, progres pengerjaan saat ini tidak akan tersimpan. Yakin ingin kembali ke daftar paket tryout?'
+          )
+        ) {
+          return;
+        }
       }
+      setActivePackage(null);
+      setIsExamRunning(false);
+      setIsFinished(false);
+      setIsReviewMode(false);
+    } else if (selectedSubject) {
+      setSelectedSubject(null);
     } else {
       navigate('/dashboard');
     }
@@ -437,12 +449,23 @@ const Tryout = () => {
       <Navbar />
 
       {/* 2. Konten Utama Halaman Tryout */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 flex flex-col">
-        {/* Breadcrumb & Tombol Kembali ke Dashboard */}
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-xs text-blue-200">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 flex flex-col animate-fade-in">
+        {/* Navigasi Breadcrumb & Tombol Kembali Konsisten dengan Latihan Soal */}
+        <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
+          <div className="flex items-center space-x-1.5 sm:space-x-2 text-xs text-blue-200 flex-wrap">
             <button
-              onClick={handleBackToDashboard}
+              onClick={() => {
+                if (isExamRunning && !isFinished) {
+                  if (
+                    !window.confirm(
+                      'Simulasi Tryout sedang berjalan. Jika Anda keluar sekarang, progres saat ini akan hilang. Yakin ingin kembali ke Dashboard?'
+                    )
+                  ) {
+                    return;
+                  }
+                }
+                navigate('/dashboard');
+              }}
               className="hover:text-white font-medium flex items-center space-x-1 cursor-pointer transition-colors text-blue-200"
             >
               <LayoutDashboard className="w-3.5 h-3.5" />
@@ -452,32 +475,55 @@ const Tryout = () => {
             <button
               onClick={() => {
                 if (isExamRunning && !isFinished) {
-                  if (window.confirm('Simulasi Tryout sedang berjalan. Yakin ingin kembali ke pilihan mapel?')) {
-                    setSelectedSubject(null);
-                    setActivePackage(null);
-                    setIsExamRunning(false);
+                  if (
+                    !window.confirm(
+                      'Simulasi Tryout sedang berjalan. Yakin ingin kembali ke pilihan mata pelajaran?'
+                    )
+                  ) {
+                    return;
                   }
-                } else {
-                  setSelectedSubject(null);
-                  setActivePackage(null);
                 }
+                setSelectedSubject(null);
+                setActivePackage(null);
+                setIsExamRunning(false);
               }}
-              className="font-bold text-white hover:text-blue-200 transition-colors cursor-pointer"
+              className={`font-medium hover:text-white transition-colors cursor-pointer ${
+                !selectedSubject ? 'text-white font-bold' : 'text-blue-200'
+              }`}
             >
               Simulasi Tryout
             </button>
             {selectedSubject && (
               <>
                 <span className="text-blue-300/50">/</span>
-                <span className="text-blue-100 font-medium">
+                <button
+                  onClick={() => {
+                    if (isExamRunning && !isFinished) {
+                      if (
+                        !window.confirm(
+                          'Simulasi Tryout sedang berjalan. Yakin ingin kembali ke daftar paket tryout?'
+                        )
+                      ) {
+                        return;
+                      }
+                    }
+                    setActivePackage(null);
+                    setIsExamRunning(false);
+                    setIsFinished(false);
+                    setIsReviewMode(false);
+                  }}
+                  className={`font-medium hover:text-white transition-colors cursor-pointer ${
+                    !activePackage ? 'text-white font-bold' : 'text-blue-200'
+                  }`}
+                >
                   {PUSMENDIK_TRYOUT[selectedSubject].nama}
-                </span>
+                </button>
               </>
             )}
             {activePackage && (
               <>
                 <span className="text-blue-300/50">/</span>
-                <span className="text-white font-bold">
+                <span className="text-amber-300 font-medium truncate max-w-[150px] sm:max-w-xs">
                   {activePackage.namaPaket}
                 </span>
               </>
@@ -485,12 +531,17 @@ const Tryout = () => {
           </div>
 
           <button
-            onClick={handleBackToDashboard}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 hover:text-blue-700 text-xs font-semibold transition-all cursor-pointer shadow-sm"
+            onClick={handleBackNavigation}
+            className="self-start sm:self-auto flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 hover:text-blue-700 text-xs font-semibold transition-all cursor-pointer shadow-sm active:scale-95"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Kembali ke Dashboard</span>
-            <span className="sm:hidden">Kembali</span>
+            <span>
+              {activePackage
+                ? 'Kembali ke Paket Tryout'
+                : selectedSubject
+                ? 'Ganti Mata Pelajaran'
+                : 'Dashboard'}
+            </span>
           </button>
         </div>
 
