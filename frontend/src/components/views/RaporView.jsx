@@ -15,6 +15,22 @@ import {
   X,
 } from 'lucide-react';
 
+const getStatusBadge = (status) => {
+  switch (status) {
+    case 'Sangat Mahir':
+      return 'bg-emerald-50 text-emerald-700 border-emerald-300';
+    case 'Mahir':
+      return 'bg-blue-50 text-blue-700 border-blue-300';
+    case 'Cukup Mahir':
+      return 'bg-amber-50 text-amber-700 border-amber-300';
+    case 'Perlu Latihan':
+      return 'bg-rose-50 text-rose-700 border-rose-300';
+    case 'Belum Dimulai':
+    default:
+      return 'bg-slate-100 text-slate-600 border-slate-300';
+  }
+};
+
 /**
  * Komponen Rapor Aktivitas Belajar Siswa TKA SD
  * Menampilkan statistik komprehensif dari seluruh aktivitas:
@@ -198,9 +214,16 @@ const RaporView = ({ isOpen, onClose }) => {
                             />
                           </div>
 
-                          <div className="flex justify-end">
-                            <span className="text-[10px] text-slate-500 font-medium">
-                              Status: <strong className="text-[#047857]">{k.status}</strong>
+                          <div className="flex items-center justify-between pt-0.5">
+                            <span className="text-[10px] text-slate-500 font-medium truncate mr-2">
+                              {k.detail?.summary || 'Belum ada aktivitas'}
+                            </span>
+                            <span
+                              className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border shrink-0 transition-colors duration-300 ${getStatusBadge(
+                                k.status
+                              )}`}
+                            >
+                              {k.status}
                             </span>
                           </div>
                         </div>
@@ -231,9 +254,16 @@ const RaporView = ({ isOpen, onClose }) => {
                             />
                           </div>
 
-                          <div className="flex justify-end">
-                            <span className="text-[10px] text-slate-500 font-medium">
-                              Status: <strong className="text-[#881337]">{k.status}</strong>
+                          <div className="flex items-center justify-between pt-0.5">
+                            <span className="text-[10px] text-slate-500 font-medium truncate mr-2">
+                              {k.detail?.summary || 'Belum ada aktivitas'}
+                            </span>
+                            <span
+                              className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border shrink-0 transition-colors duration-300 ${getStatusBadge(
+                                k.status
+                              )}`}
+                            >
+                              {k.status}
                             </span>
                           </div>
                         </div>
@@ -242,13 +272,25 @@ const RaporView = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* Catatan / Rekomendasi Personal */}
+              {/* Catatan / Rekomendasi Personal Dinamis */}
               <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-50 via-indigo-50 to-blue-50 border border-purple-200 flex items-start space-x-3 text-xs shadow-sm">
                 <Sparkles className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <h4 className="font-bold text-purple-950">Rekomendasi Belajar untuk Kamu</h4>
                   <p className="text-slate-700 leading-relaxed">
-                    Penguasaanmu pada materi <strong>Bilangan</strong> dan <strong>Pemahaman Tekstual</strong> sudah sangat kuat! Pertahankan prestasimu dan tingkatkan latihan pada bab <strong>Geometri & Pengukuran</strong> untuk memaksimalkan perolehan nilai pada Tryout Akbar berikutnya.
+                    {stats.rekomendasi?.kuat && stats.rekomendasi?.kuat !== 'Belum Ada Aktivitas' ? (
+                      <>
+                        Penguasaanmu pada materi <strong>{stats.rekomendasi.kuat}</strong> sudah sangat kuat!{' '}
+                        {stats.rekomendasi.lemah && stats.rekomendasi.lemah !== 'Pertahankan Seluruh Topik' && (
+                          <>
+                            Tingkatkan latihan pada topik <strong>{stats.rekomendasi.lemah}</strong>.{' '}
+                          </>
+                        )}
+                        {stats.rekomendasi.saranAksi}
+                      </>
+                    ) : (
+                      <span>{stats.rekomendasi?.saranAksi || 'Mulai pelajari materi dan kerjakan latihan soal untuk melacak kompetensimu!'}</span>
+                    )}
                   </p>
                 </div>
               </div>

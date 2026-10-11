@@ -19,6 +19,22 @@ import {
   ChevronRight,
 } from 'lucide-react';
 
+const getStatusBadge = (status) => {
+  switch (status) {
+    case 'Sangat Mahir':
+      return 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]';
+    case 'Mahir':
+      return 'bg-[#EFF6FF] text-[#1D4ED8] border-[#BFDBFE]';
+    case 'Cukup Mahir':
+      return 'bg-[#FFFBEB] text-[#B45309] border-[#FDE68A]';
+    case 'Perlu Latihan':
+      return 'bg-[#FEF2F2] text-[#B91C1C] border-[#FECACA]';
+    case 'Belum Dimulai':
+    default:
+      return 'bg-[#F3F4F6] text-[#6B7280] border-[#E5E7EB]';
+  }
+};
+
 /**
  * Halaman Rapor Aktivitas Belajar Siswa TKA SD
  * Bersih, terstruktur, bebas dinding teks bertele-tele, dan nyaman dilihat.
@@ -272,8 +288,15 @@ const Rapor = () => {
                               />
                             </div>
 
-                            <div className="flex justify-end">
-                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-[#ECFDF5] text-[#047857] border-[#A7F3D0] transition-colors duration-300">
+                            <div className="flex items-center justify-between pt-0.5">
+                              <span className="text-[10px] text-[#6E6258] font-medium truncate mr-2">
+                                {k.detail?.summary || 'Belum ada aktivitas'}
+                              </span>
+                              <span
+                                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border shrink-0 transition-colors duration-300 ${getStatusBadge(
+                                  k.status
+                                )}`}
+                              >
                                 {k.status}
                               </span>
                             </div>
@@ -309,8 +332,15 @@ const Rapor = () => {
                               />
                             </div>
 
-                            <div className="flex justify-end">
-                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-[#FFF1F2] text-[#881337] border-[#FECDD3] transition-colors duration-300">
+                            <div className="flex items-center justify-between pt-0.5">
+                              <span className="text-[10px] text-[#6E6258] font-medium truncate mr-2">
+                                {k.detail?.summary || 'Belum ada aktivitas'}
+                              </span>
+                              <span
+                                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border shrink-0 transition-colors duration-300 ${getStatusBadge(
+                                  k.status
+                                )}`}
+                              >
                                 {k.status}
                               </span>
                             </div>
@@ -320,7 +350,7 @@ const Rapor = () => {
                   </div>
                 </div>
 
-                {/* 3. Rekomendasi Belajar Ringkas (Bukan Wall-of-Text) */}
+                {/* 3. Rekomendasi Belajar Dinamis */}
                 <div className="p-4 sm:p-5 rounded-xl bg-[#FAECE6] border-2 border-[#C25E38] space-y-3 shadow-xs">
                   <div className="flex items-center space-x-2">
                     <Sparkles className="w-4 h-4 text-[#C25E38]" />
@@ -335,7 +365,7 @@ const Rapor = () => {
                         ✓ Topik Sangat Baik:
                       </span>
                       <p className="text-[#261C14] font-medium">
-                        Pemahaman Tekstual & Operasi Bilangan
+                        {stats.rekomendasi?.kuat || 'Belum Ada Aktivitas'}
                       </p>
                     </div>
 
@@ -344,13 +374,14 @@ const Rapor = () => {
                         ⚡ Perlu Ditingkatkan:
                       </span>
                       <p className="text-[#261C14] font-medium">
-                        Geometri & Penalaran Inferensial
+                        {stats.rekomendasi?.lemah || 'Semua Topik Perlu Dipelajari'}
                       </p>
                     </div>
                   </div>
 
                   <p className="text-[11px] sm:text-xs text-[#6E6258] leading-relaxed pt-1">
-                    Fokuskan sesi latihan berikutnya pada materi Geometri untuk memaksimalkan perolehan skor Tryout Akbar!
+                    {stats.rekomendasi?.saranAksi ||
+                      'Fokuskan belajar pada materi dasar untuk membuka peta kompetensi!'}
                   </p>
                 </div>
               </div>

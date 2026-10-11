@@ -759,15 +759,8 @@ export const getFullStats = () => {
       ? (data.tryoutHistory.reduce((acc, curr) => acc + (curr.score || 0), 0) / totalTryout).toFixed(1)
       : '0.0';
 
-  // 4. Penguasaan Kompetensi Pusmendik (%)
-  const kompetensi = [
-    { nama: 'Pemahaman Tekstual', mapel: 'Bahasa Indonesia', nilai: 92, status: 'Sangat Mahir' },
-    { nama: 'Pemahaman Inferensial', mapel: 'Bahasa Indonesia', nilai: 86, status: 'Mahir' },
-    { nama: 'Evaluasi & Apresiasi', mapel: 'Bahasa Indonesia', nilai: 88, status: 'Mahir' },
-    { nama: 'Bilangan', mapel: 'Matematika', nilai: 94, status: 'Sangat Mahir' },
-    { nama: 'Geometri & Pengukuran', mapel: 'Matematika', nilai: 82, status: 'Cukup Mahir' },
-    { nama: 'Pengolahan Data', mapel: 'Matematika', nilai: 90, status: 'Sangat Mahir' },
-  ];
+  // 4. Penguasaan Kompetensi Pusmendik (%) Dinamis Tersinkronisasi
+  const topicMastery = calculateTopicMastery(data);
 
   return {
     materiSelesai,
@@ -788,6 +781,247 @@ export const getFullStats = () => {
     rataRataTryout,
     latihanHistory: data.latihanHistory,
     tryoutHistory: data.tryoutHistory,
-    kompetensi,
+    kompetensi: topicMastery.kompetensi,
+    rekomendasi: topicMastery.rekomendasi,
   };
+};
+
+/**
+ * Definisi Topik Asesmen Pusmendik TKA SD
+ * 3 Topik Bahasa Indonesia & 3 Topik Matematika
+ */
+export const TOPIC_DEFINITIONS = [
+  {
+    id: 'bi_tekstual',
+    nama: 'Pemahaman Tekstual',
+    mapel: 'Bahasa Indonesia',
+    subjectKey: 'bahasa_indonesia',
+    deskripsi: 'Ejaan, Tanda Baca, Kata Berimbuhan, Frasa, dan Makna Kata',
+    materiBabs: ['bi_1', 'bi_2', 'bi_3', 'bi_4', 'bi_5', 'bi_6', 'bi_7', 'bi_8', 'bi_9', 'bi_10'],
+    latihanLevels: [1, 2, 3, 4],
+    latihanIds: ['bi_lat_1', 'bi_lat_2', 'bi_lat_3', 'bi_lat_4'],
+  },
+  {
+    id: 'bi_inferensial',
+    nama: 'Pemahaman Inferensial',
+    mapel: 'Bahasa Indonesia',
+    subjectKey: 'bahasa_indonesia',
+    deskripsi: 'Informasi Tersurat/Tersirat, Ide Pokok, Menarik Kesimpulan, dan Analisis Hubungan Teks',
+    materiBabs: ['bi_16', 'bi_17', 'bi_18', 'bi_19', 'bi_20', 'bi_21'],
+    latihanLevels: [8, 9, 10],
+    latihanIds: ['bi_lat_8', 'bi_lat_9', 'bi_lat_10'],
+  },
+  {
+    id: 'bi_sastra',
+    nama: 'Evaluasi & Apresiasi',
+    mapel: 'Bahasa Indonesia',
+    subjectKey: 'bahasa_indonesia',
+    deskripsi: 'Menyimak, Menulis, Puisi, Prosa, Respon Teks Fiksi, dan Nilai Sastra',
+    materiBabs: ['bi_11', 'bi_12', 'bi_13', 'bi_14', 'bi_15'],
+    latihanLevels: [5, 6, 7],
+    latihanIds: ['bi_lat_5', 'bi_lat_6', 'bi_lat_7'],
+  },
+  {
+    id: 'mtk_bilangan',
+    nama: 'Bilangan',
+    mapel: 'Matematika',
+    subjectKey: 'matematika',
+    deskripsi: 'Operasi Hitung Bilangan, Perbandingan & Skala, KPK/FPB, dan Bilangan Pangkat',
+    materiBabs: ['mtk_1', 'mtk_2', 'mtk_3', 'mtk_4'],
+    latihanLevels: [1, 2, 3, 4],
+    latihanIds: ['mtk_lat_1', 'mtk_lat_2', 'mtk_lat_3', 'mtk_lat_4'],
+  },
+  {
+    id: 'mtk_geometri',
+    nama: 'Geometri & Pengukuran',
+    mapel: 'Matematika',
+    subjectKey: 'matematika',
+    deskripsi: 'Pengukuran, Jarak & Kecepatan, Bangun Datar, Bangun Ruang, Sudut, dan Penaksiran',
+    materiBabs: ['mtk_5', 'mtk_6', 'mtk_7', 'mtk_8', 'mtk_11', 'mtk_12'],
+    latihanLevels: [5, 6, 7, 8],
+    latihanIds: ['mtk_lat_5', 'mtk_lat_6', 'mtk_lat_7', 'mtk_lat_8'],
+  },
+  {
+    id: 'mtk_data',
+    nama: 'Pengolahan Data',
+    mapel: 'Matematika',
+    subjectKey: 'matematika',
+    deskripsi: 'Koordinat Kartesius, Pengelolaan Data, Tabel, Diagram, dan Statistika Dasar',
+    materiBabs: ['mtk_9', 'mtk_10'],
+    latihanLevels: [9, 10],
+    latihanIds: ['mtk_lat_9', 'mtk_lat_10'],
+  },
+];
+
+/**
+ * Menghitung tingkat penguasaan 6 topik asesmen Pusmendik secara dinamis
+ * berdasarkan sinkronisasi kemajuan Materi, Latihan Soal, dan Tryout
+ */
+export const calculateTopicMastery = (data = {}) => {
+  const materiCompleted = data.materiCompleted || [];
+  const materiStars = data.materiStars || {};
+  const latihanCompleted = data.latihanCompleted || [];
+  const latihanStars = data.latihanStars || {};
+  const latihanHistory = data.latihanHistory || [];
+  const tryoutHistory = data.tryoutHistory || [];
+
+  const topics = TOPIC_DEFINITIONS.map((topic) => {
+    // 1. Pilar Materi (Teori & Konsep)
+    const completedBabs = topic.materiBabs.filter((b) => materiCompleted.includes(b));
+    const materiCount = completedBabs.length;
+    const materiTotal = topic.materiBabs.length;
+    let skorMateri = null;
+
+    if (materiCount > 0) {
+      let totalStars = 0;
+      completedBabs.forEach((b) => {
+        totalStars += materiStars[b] ? Number(materiStars[b]) : 3;
+      });
+      const avgStars = totalStars / materiCount;
+      const starQuality = Math.min(1, Math.max(0.65, avgStars / 3));
+      skorMateri = Math.min(100, Math.round((materiCount / materiTotal) * starQuality * 100));
+    }
+
+    // 2. Pilar Latihan (Drill & Pemecahan Soal)
+    const completedLevels = topic.latihanIds.filter((id) => latihanCompleted.includes(id));
+    const latihanCount = completedLevels.length;
+    const latihanTotal = topic.latihanLevels.length;
+    const topicHistory = latihanHistory.filter((h) => {
+      if (h.subject !== topic.subjectKey) return false;
+      const lvlNum =
+        typeof h.level === 'number'
+          ? h.level
+          : parseInt(String(h.level).replace(/\D/g, ''), 10) || 0;
+      return topic.latihanLevels.includes(lvlNum);
+    });
+
+    let skorLatihan = null;
+    if (latihanCount > 0 || topicHistory.length > 0) {
+      let scoreAcc = 0;
+      if (topicHistory.length > 0) {
+        scoreAcc =
+          topicHistory.reduce((acc, h) => acc + (h.score || 0), 0) / topicHistory.length;
+      } else {
+        let starsTotal = 0;
+        completedLevels.forEach((id) => {
+          starsTotal += latihanStars[id] ? Number(latihanStars[id]) : 3;
+        });
+        const avgS = starsTotal / (latihanCount || 1);
+        scoreAcc = avgS === 3 ? 100 : avgS === 2 ? 80 : 65;
+      }
+      const completionRatio = latihanCount / latihanTotal;
+      skorLatihan = Math.min(100, Math.round(scoreAcc * 0.6 + completionRatio * 100 * 0.4));
+    }
+
+    // 3. Pilar Tryout (Simulasi Ujian Komprehensif)
+    const subjectTryouts = tryoutHistory.filter((t) => t.subject === topic.subjectKey);
+    let skorTryout = null;
+    if (subjectTryouts.length > 0) {
+      const avgTo =
+        subjectTryouts.reduce((acc, t) => acc + (t.score || 0), 0) / subjectTryouts.length;
+      skorTryout = Math.min(100, Math.round(avgTo));
+    }
+
+    // 4. Agregasi Terbobot Sinkron
+    let nilai = 0;
+    if (skorTryout === null) {
+      if (skorMateri === null && skorLatihan === null) {
+        nilai = 0;
+      } else if (skorMateri !== null && skorLatihan === null) {
+        nilai = Math.round(skorMateri * 0.8);
+      } else if (skorMateri === null && skorLatihan !== null) {
+        nilai = Math.round(skorLatihan * 0.85);
+      } else {
+        nilai = Math.round(skorMateri * 0.45 + skorLatihan * 0.55);
+      }
+    } else {
+      if (skorMateri === null && skorLatihan === null) {
+        nilai = Math.round(skorTryout * 0.3); // Tryout saja tanpa materi/drill topik
+      } else if (skorMateri !== null && skorLatihan === null) {
+        nilai = Math.round(skorMateri * 0.5 + skorTryout * 0.35);
+      } else if (skorMateri === null && skorLatihan !== null) {
+        nilai = Math.round(skorLatihan * 0.6 + skorTryout * 0.35);
+      } else {
+        nilai = Math.round(skorMateri * 0.35 + skorLatihan * 0.4 + skorTryout * 0.25);
+      }
+    }
+
+    nilai = Math.max(0, Math.min(100, nilai));
+
+    let status = 'Belum Dimulai';
+    if (nilai >= 85) status = 'Sangat Mahir';
+    else if (nilai >= 70) status = 'Mahir';
+    else if (nilai >= 50) status = 'Cukup Mahir';
+    else if (nilai > 0) status = 'Perlu Latihan';
+
+    let summary = 'Belum ada aktivitas';
+    if (nilai > 0) {
+      const parts = [];
+      if (materiCount > 0) parts.push(`Materi ${materiCount}/${materiTotal}`);
+      if (latihanCount > 0) parts.push(`Latihan ${latihanCount}/${latihanTotal}`);
+      if (skorTryout !== null) parts.push(`TO ${skorTryout}%`);
+      summary = parts.length > 0 ? parts.join(' • ') : `Skor ${nilai}%`;
+    }
+
+    return {
+      id: topic.id,
+      nama: topic.nama,
+      mapel: topic.mapel,
+      nilai,
+      status,
+      deskripsi: topic.deskripsi,
+      detail: {
+        materiSelesai: materiCount,
+        totalMateri: materiTotal,
+        latihanSelesai: latihanCount,
+        totalLatihan: latihanTotal,
+        skorMateri,
+        skorLatihan,
+        skorTryout,
+        summary,
+      },
+    };
+  });
+
+  // 5. Rekomendasi Belajar Dinamis
+  const activeTopics = topics.filter((t) => t.nilai > 0);
+  let kuat = 'Belum Ada Aktivitas';
+  let lemah = 'Semua Topik Perlu Dipelajari';
+  let saranAksi =
+    'Yuk mulai pelajari materi bab pertama atau coba latihan soal untuk membuka rekam penguasaan kompetensimu!';
+
+  if (activeTopics.length > 0) {
+    const sortedDesc = [...topics].sort((a, b) => b.nilai - a.nilai);
+    const sortedAsc = [...topics].sort((a, b) => a.nilai - b.nilai);
+
+    const bestTopics = sortedDesc.filter((t) => t.nilai >= 70);
+    if (bestTopics.length >= 2) {
+      kuat = `${bestTopics[0].nama} & ${bestTopics[1].nama}`;
+    } else if (bestTopics.length === 1) {
+      kuat = `${bestTopics[0].nama} (${bestTopics[0].nilai}%)`;
+    } else {
+      kuat = `${sortedDesc[0].nama} (${sortedDesc[0].nilai}%)`;
+    }
+
+    const weakCandidates = sortedAsc.filter((t) => t.nilai < 70);
+    if (weakCandidates.length >= 2) {
+      lemah = `${weakCandidates[0].nama} & ${weakCandidates[1].nama}`;
+    } else if (weakCandidates.length === 1) {
+      lemah = weakCandidates[0].nama;
+    } else {
+      lemah = 'Pertahankan Seluruh Topik';
+    }
+
+    const targetLemah = sortedAsc[0];
+    if (targetLemah && targetLemah.nilai === 0) {
+      saranAksi = `Fokuskan belajarmu berikutnya pada topik ${targetLemah.nama} (${targetLemah.mapel}) agar nilaimu seimbang dan siap menghadapi Tryout!`;
+    } else if (targetLemah && targetLemah.nilai < 70) {
+      saranAksi = `Tingkatkan latihan soal dan ulas materi pada topik ${targetLemah.nama} untuk mendongkrak penguasaan kompetensi TKA SD!`;
+    } else {
+      saranAksi =
+        'Luar biasa! Seluruh topik materi telah dikuasai dengan baik. Pertahankan prestasimu dengan rutin mengikuti simulasi Tryout Akbar!';
+    }
+  }
+
+  return { kompetensi: topics, rekomendasi: { kuat, lemah, saranAksi } };
 };
