@@ -156,7 +156,7 @@ const RaporView = ({ isOpen, onClose }) => {
                 <div className="p-4 rounded-2xl bg-white border-2 border-amber-600 shadow-sm flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-                      <span>Rata-rata Tryout</span>
+                      <span>Tryout</span>
                       <Trophy className="w-4 h-4 text-amber-600" />
                     </div>
                     <div className="grid grid-cols-2 gap-2 mt-1.5">
@@ -166,7 +166,8 @@ const RaporView = ({ isOpen, onClose }) => {
                           <span className="truncate">B. Indo</span>
                         </div>
                         <div className="text-base sm:text-lg font-black text-[#047857] mt-0.5">
-                          {stats.totalTryoutBI > 0 ? stats.rataRataTryoutBI : '-'}
+                          {stats.paketTryoutSelesaiBI}
+                          <span className="text-[10px] font-normal text-slate-500 ml-0.5">/ {stats.totalPaketBITersedia} Paket</span>
                         </div>
                       </div>
                       <div className="p-2 rounded-xl bg-slate-50 border border-[#881337]/30">
@@ -175,14 +176,25 @@ const RaporView = ({ isOpen, onClose }) => {
                           <span className="truncate">MTK</span>
                         </div>
                         <div className="text-base sm:text-lg font-black text-[#881337] mt-0.5">
-                          {stats.totalTryoutMTK > 0 ? stats.rataRataTryoutMTK : '-'}
+                          {stats.paketTryoutSelesaiMTK}
+                          <span className="text-[10px] font-normal text-slate-500 ml-0.5">/ {stats.totalPaketMTKTersedia} Paket</span>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="mt-2 text-[10px] text-slate-500 font-medium flex items-center justify-between pt-1 border-t border-slate-100">
-                    <span>BI: {stats.totalTryoutBI} sesi</span>
-                    <span>MTK: {stats.totalTryoutMTK} sesi</span>
+                  <div className="mt-3">
+                    <div className="flex items-center justify-between text-[11px] text-slate-500 mb-1 font-medium">
+                      <span>{stats.persenTryout}% Selesai</span>
+                      <span className="text-[10px] text-slate-400">
+                        {stats.totalPaketTryoutSelesai} / {stats.totalPaketTryoutTersedia} Paket
+                      </span>
+                    </div>
+                    <div className="w-full h-1.5 rounded-full bg-slate-200 overflow-hidden">
+                      <div
+                        className="h-full bg-amber-600 rounded-full transition-all duration-300"
+                        style={{ width: `${Math.max(4, stats.persenTryout)}%` }}
+                      />
+                    </div>
                   </div>
                 </div>
 

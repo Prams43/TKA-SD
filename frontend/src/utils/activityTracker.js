@@ -759,21 +759,35 @@ export const getFullStats = () => {
       ? (data.tryoutHistory.reduce((acc, curr) => acc + (curr.score || 0), 0) / totalTryout).toFixed(1)
       : '0.0';
 
-  // Rata-rata Terpisah: Bahasa Indonesia
+  // Rata-rata & Paket Selesai: Bahasa Indonesia (5 Paket Tersedia)
   const tryoutHistoryBI = data.tryoutHistory.filter((t) => t.subject === 'bahasa_indonesia');
   const totalTryoutBI = tryoutHistoryBI.length;
+  const uniquePaketBI = new Set(tryoutHistoryBI.map((t) => t.packageNum)).size;
+  const paketTryoutSelesaiBI = Math.min(5, uniquePaketBI);
+  const totalPaketBITersedia = 5;
   const rataRataTryoutBI =
     totalTryoutBI > 0
       ? (tryoutHistoryBI.reduce((acc, curr) => acc + (curr.score || 0), 0) / totalTryoutBI).toFixed(1)
       : '0.0';
 
-  // Rata-rata Terpisah: Matematika
+  // Rata-rata & Paket Selesai: Matematika (5 Paket Tersedia)
   const tryoutHistoryMTK = data.tryoutHistory.filter((t) => t.subject === 'matematika');
   const totalTryoutMTK = tryoutHistoryMTK.length;
+  const uniquePaketMTK = new Set(tryoutHistoryMTK.map((t) => t.packageNum)).size;
+  const paketTryoutSelesaiMTK = Math.min(5, uniquePaketMTK);
+  const totalPaketMTKTersedia = 5;
   const rataRataTryoutMTK =
     totalTryoutMTK > 0
       ? (tryoutHistoryMTK.reduce((acc, curr) => acc + (curr.score || 0), 0) / totalTryoutMTK).toFixed(1)
       : '0.0';
+
+  // Total Paket Tryout Selesai Gabungan
+  const totalPaketTryoutTersedia = 10; // 5 Paket BI + 5 Paket MTK
+  const totalPaketTryoutSelesai = paketTryoutSelesaiBI + paketTryoutSelesaiMTK;
+  const persenTryout = Math.min(
+    100,
+    Math.round((totalPaketTryoutSelesai / totalPaketTryoutTersedia) * 100)
+  );
 
   // 4. Penguasaan Kompetensi Pusmendik (%) Dinamis Tersinkronisasi
   const topicMastery = calculateTopicMastery(data);
@@ -799,11 +813,28 @@ export const getFullStats = () => {
     rataRataTryoutBI,
     totalTryoutMTK,
     rataRataTryoutMTK,
+    paketTryoutSelesaiBI,
+    totalPaketBITersedia,
+    paketTryoutSelesaiMTK,
+    totalPaketMTKTersedia,
+    totalPaketTryoutSelesai,
+    totalPaketTryoutTersedia,
+    persenTryout,
     tryoutStats: {
       total: totalTryout,
       rataRata: rataRataTryout,
-      bi: { total: totalTryoutBI, rataRata: rataRataTryoutBI },
-      mtk: { total: totalTryoutMTK, rataRata: rataRataTryoutMTK },
+      bi: {
+        total: totalTryoutBI,
+        paketSelesai: paketTryoutSelesaiBI,
+        totalPaket: totalPaketBITersedia,
+        rataRata: rataRataTryoutBI,
+      },
+      mtk: {
+        total: totalTryoutMTK,
+        paketSelesai: paketTryoutSelesaiMTK,
+        totalPaket: totalPaketMTKTersedia,
+        rataRata: rataRataTryoutMTK,
+      },
     },
     latihanHistory: data.latihanHistory,
     tryoutHistory: data.tryoutHistory,
