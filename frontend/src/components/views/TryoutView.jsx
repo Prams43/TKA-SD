@@ -355,7 +355,7 @@ const TryoutView = ({ isOpen, onClose }) => {
                       Terjawab: <strong className="text-[#C25E38]">{Object.keys(userAnswers).length}</strong> / {activePackage.soal.length}
                     </span>
                   </div>
-                  <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
+                  <div className="flex items-center space-x-1.5 overflow-x-auto pb-2.5 pt-0.5 exam-nav-scrollbar">
                     {activePackage.soal.map((_, idx) => {
                       const isAnswered = userAnswers[idx] !== undefined && userAnswers[idx] !== '';
                       const isCurrent = currentQuestionIndex === idx;
