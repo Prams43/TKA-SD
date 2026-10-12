@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { PUSMENDIK_TRYOUT } from '../data/tryoutData';
@@ -253,6 +253,18 @@ const Tryout = () => {
   const [isReviewMode, setIsReviewMode] = useState(false);
   const [scoreResult, setScoreResult] = useState(null);
   const [completedTryouts, setCompletedTryouts] = useState({});
+  const activeNavBtnRef = useRef(null);
+
+  // Auto-scroll ke nomor soal yang sedang aktif di lembar navigasi
+  useEffect(() => {
+    if (activeNavBtnRef.current) {
+      activeNavBtnRef.current.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest',
+      });
+    }
+  }, [currentQuestionIndex]);
 
   // Muat status paket tryout yang sudah pernah dikerjakan secara persisten
   const loadCompletedTryouts = () => {
@@ -983,8 +995,8 @@ const Tryout = () => {
                         </span>
                       </div>
 
-                      {/* Baris Tunggal Navigasi dengan Horizontal Scroll */}
-                      <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 pt-0.5 no-scrollbar">
+                      {/* Baris Tunggal Navigasi dengan Horizontal Scrollbar yang Jelas */}
+                      <div className="flex items-center space-x-1.5 overflow-x-auto pb-2.5 pt-0.5 exam-nav-scrollbar">
                         {activePackage.soal.map((q, idx) => {
                           const isAnswered = checkAnswered(q, userAnswers[idx]);
                           const isCurrent = currentQuestionIndex === idx;
@@ -992,6 +1004,7 @@ const Tryout = () => {
                           return (
                             <button
                               key={idx}
+                              ref={isCurrent ? activeNavBtnRef : null}
                               onClick={() => setCurrentQuestionIndex(idx)}
                               className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg text-xs sm:text-sm font-semibold transition-all flex-shrink-0 cursor-pointer flex items-center justify-center relative active:scale-95 ${
                                 isCurrent

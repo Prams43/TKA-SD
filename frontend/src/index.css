@@ -231,6 +231,27 @@ input[type="password"]::-ms-clear {
     scrollbar-width: none;
   }
 
+  /* Scrollbar horizontal navigasi lembar soal tryout (mudah dilihat & di-drag) */
+  .exam-nav-scrollbar {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #C25E38 #F2ECE4;
+  }
+  .exam-nav-scrollbar::-webkit-scrollbar {
+    height: 7px;
+  }
+  .exam-nav-scrollbar::-webkit-scrollbar-track {
+    background: #F2ECE4;
+    border-radius: 9999px;
+  }
+  .exam-nav-scrollbar::-webkit-scrollbar-thumb {
+    background: #C25E38;
+    border-radius: 9999px;
+  }
+  .exam-nav-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #A94D2B;
+  }
+
   /* Safe Area Inset untuk smartphone berlayar notch/poni */
   .pt-safe {
     padding-top: env(safe-area-inset-top, 0px);

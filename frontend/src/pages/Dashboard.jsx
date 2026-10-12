@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import CharacterIllustration from '../components/CharacterIllustration';
 import PillMenuButton from '../components/PillMenuButton';
-import { BookOpen, FileQuestion, Trophy, BarChart3, Crown } from 'lucide-react';
+import { BookOpen, ClipboardCheck, Trophy, BarChart3, Crown } from 'lucide-react';
 import { getUserProfileStats } from '../utils/activityTracker';
 import { getCharacterAvatar } from '../utils/characterAvatars';
 import LeaderboardModal from '../components/LeaderboardModal';
@@ -121,7 +121,7 @@ const Dashboard = () => {
               {/* Tombol 2: Latihan Soal */}
               <PillMenuButton
                 label="Latihan Soal"
-                icon={FileQuestion}
+                icon={ClipboardCheck}
                 accentColor="emerald"
                 onClick={() => navigate('/latihan')}
               />
