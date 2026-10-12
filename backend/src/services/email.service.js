@@ -122,20 +122,16 @@ export const sendMailInternal = async ({ to, subject, text, html }) => {
     throw new Error('Gagal menginisialisasi pengirim email SMTP. Periksa konfigurasi di backend/.env.');
   }
 
+  const senderName = process.env.EMAIL_FROM_NAME || 'TKA SD';
+
   try {
     await transporter.sendMail({
-      from: `"Portal Belajar TKA SD" <${process.env.SMTP_USER}>`,
+      from: `"${senderName}" <${process.env.SMTP_USER}>`,
       replyTo: process.env.SMTP_USER,
       to,
       subject,
       text,
       html,
-      headers: {
-        'X-Priority': '3',
-        'X-MSMail-Priority': 'Normal',
-        Importance: 'Normal',
-        'X-Entity-Ref-ID': `tka-${Date.now()}`,
-      },
     });
     console.log(`[EMAIL/SMTP] Email berhasil dikirim ke: ${to}`);
     return { sent: true, provider: 'smtp' };
@@ -154,50 +150,57 @@ export const sendMailInternal = async ({ to, subject, text, html }) => {
  * @returns {Promise<{ sent: boolean }>}
  */
 export const sendOtpEmail = async (to, otpCode, username = 'Siswa') => {
-  const subject = '[TKA SD] Verifikasi Pendaftaran Akun Baru Anda';
-  const text = `Halo ${username},\n\nKode verifikasi akun TKA SD Anda adalah: ${otpCode}\n\nKode ini berlaku selama 10 menit. Jangan berikan kode ini kepada siapapun demi keamanan akun Anda.\n\nSalam,\nTim Portal TKA SD`;
+  // Format subject terpercaya: menyertakan kode OTP langsung agar dikenali filter sebagai 2FA / autentikasi resmi
+  const subject = `Kode Verifikasi TKA SD: ${otpCode}`;
+  const text = `Halo ${username},\n\nKode verifikasi akun Portal TKA SD Anda adalah: ${otpCode}\n\nKode ini berlaku selama 10 menit. Masukkan kode ini pada halaman pendaftaran untuk mengaktifkan akun Anda.\n\nJika Anda tidak merasa mendaftar di Portal TKA SD, Anda dapat mengabaikan pesan ini dengan aman.\n\nSalam,\nTim Portal TKA SD`;
 
   const html = `
     <!DOCTYPE html>
     <html lang="id">
     <head>
       <meta charset="utf-8">
-      <title>Kode Verifikasi TKA SD</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Kode Verifikasi TKA SD: ${otpCode}</title>
     </head>
-    <body style="font-family: Arial, Helvetica, sans-serif; background-color: #f8fafc; margin: 0; padding: 20px; color: #1e293b;">
-      <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 520px; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; margin: 0 auto;">
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f1f5f9; margin: 0; padding: 24px 12px; color: #1e293b;">
+      <!-- Hidden Preheader Preview Text -->
+      <div style="display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;mso-hide:all;">
+        Kode verifikasi akun Anda adalah ${otpCode}. Masukkan kode ini untuk menyelesaikan pendaftaran di Portal TKA SD.
+      </div>
+
+      <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 520px; background-color: #ffffff; border-radius: 16px; border: 1px solid #cbd5e1; overflow: hidden; margin: 0 auto; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
         <tr>
-          <td style="padding: 24px 28px 16px 28px; text-align: center; background-color: #2563eb;">
-            <h1 style="color: #ffffff; font-size: 20px; margin: 0; font-weight: bold; letter-spacing: 0.5px;">Portal TKA SD</h1>
-            <p style="color: #dbeafe; font-size: 13px; margin: 4px 0 0 0;">Tes Kemampuan Akademik Sekolah Dasar</p>
+          <td style="padding: 24px 28px; text-align: center; background-color: #162e5b;">
+            <h1 style="color: #ffffff; font-size: 20px; margin: 0; font-weight: 700; letter-spacing: 0.5px;">Portal Belajar TKA SD</h1>
+            <p style="color: #93c5fd; font-size: 13px; margin: 6px 0 0 0;">Asesmen & Latihan Soal Sekolah Dasar</p>
           </td>
         </tr>
         <tr>
-          <td style="padding: 28px;">
+          <td style="padding: 32px 28px;">
             <p style="font-size: 15px; line-height: 1.5; margin: 0 0 16px 0; color: #334155;">
               Halo <strong>${username}</strong>,
             </p>
             <p style="font-size: 14px; line-height: 1.6; margin: 0 0 20px 0; color: #475569;">
-              Terima kasih telah mendaftar di Portal Latihan Soal TKA SD. Berikut adalah kode verifikasi akun Anda:
+              Terima kasih telah mendaftar di Portal Belajar TKA SD. Gunakan kode verifikasi keamanan berikut untuk mengaktifkan akun Anda:
             </p>
-            <div style="text-align: center; margin: 24px 0;">
-              <div style="display: inline-block; background-color: #eff6ff; border: 2px dashed #2563eb; border-radius: 8px; padding: 12px 28px;">
-                <span style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #1d4ed8; font-family: monospace;">
+            <div style="text-align: center; margin: 28px 0;">
+              <div style="display: inline-block; background-color: #eff6ff; border: 2px solid #3b82f6; border-radius: 12px; padding: 14px 32px;">
+                <span style="font-size: 34px; font-weight: 800; letter-spacing: 8px; color: #1d4ed8; font-family: monospace;">
                   ${otpCode}
                 </span>
               </div>
             </div>
-            <p style="font-size: 13px; line-height: 1.5; color: #64748b; margin: 0 0 16px 0; text-align: center;">
-              Kode ini berlaku selama <strong>10 menit</strong>. Jangan bagikan kode ini kepada siapa pun.
+            <p style="font-size: 13px; line-height: 1.5; color: #64748b; margin: 0 0 20px 0; text-align: center;">
+              ⏱️ Kode keamanan ini berlaku selama <strong>10 menit</strong>. Jangan bagikan kode ini kepada siapa pun.
             </p>
-            <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 24px 0 16px 0;" />
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0 16px 0;" />
             <p style="font-size: 12px; line-height: 1.5; color: #94a3b8; margin: 0;">
-              Jika Anda tidak merasa melakukan pendaftaran akun di Portal TKA SD, abaikan email ini.
+              Jika Anda tidak merasa melakukan pendaftaran akun di Portal TKA SD, silakan abaikan email ini. Akun Anda tidak akan aktif tanpa kode di atas.
             </p>
           </td>
         </tr>
         <tr>
-          <td style="background-color: #f8fafc; padding: 16px 28px; text-align: center; border-top: 1px solid #e2e8f0;">
+          <td style="background-color: #f8fafc; padding: 18px 28px; text-align: center; border-top: 1px solid #e2e8f0;">
             <p style="font-size: 11px; color: #94a3b8; margin: 0;">
               &copy; ${new Date().getFullYear()} Portal TKA SD. Seluruh hak cipta dilindungi.
             </p>
@@ -234,50 +237,57 @@ export const sendOtpEmail = async (to, otpCode, username = 'Siswa') => {
  * @returns {Promise<{ sent: boolean }>}
  */
 export const sendResetPasswordEmail = async (to, otpCode, username = 'Pengguna') => {
-  const subject = '[TKA SD] Permintaan Reset Kata Sandi Akun';
-  const text = `Halo ${username},\n\nKami menerima permintaan untuk mereset kata sandi (password) akun Anda di Portal TKA SD.\n\nKode verifikasi reset password Anda adalah: ${otpCode}\n\nKode ini berlaku selama 10 menit. Jangan berikan kode ini kepada siapapun demi keamanan akun Anda.\n\nJika Anda tidak merasa meminta reset password, akun Anda tetap aman dan Anda dapat mengabaikan email ini.\n\nSalam,\nTim Portal TKA SD`;
+  // Format subject terpercaya: menyertakan kode OTP langsung agar dikenali filter sebagai 2FA / autentikasi resmi
+  const subject = `Kode Reset Password TKA SD: ${otpCode}`;
+  const text = `Halo ${username},\n\nKami menerima permintaan untuk mereset kata sandi akun Portal TKA SD Anda.\n\nKode verifikasi reset password Anda adalah: ${otpCode}\n\nKode ini berlaku selama 10 menit. Masukkan kode ini pada form untuk mengatur kata sandi baru Anda.\n\nJika Anda tidak meminta perubahan kata sandi ini, akun Anda tetap aman dan abaikan pesan ini.\n\nSalam,\nTim Portal TKA SD`;
 
   const html = `
     <!DOCTYPE html>
     <html lang="id">
     <head>
       <meta charset="utf-8">
-      <title>Reset Password TKA SD</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Kode Reset Password TKA SD: ${otpCode}</title>
     </head>
-    <body style="font-family: Arial, Helvetica, sans-serif; background-color: #f8fafc; margin: 0; padding: 20px; color: #1e293b;">
-      <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 520px; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; margin: 0 auto;">
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f1f5f9; margin: 0; padding: 24px 12px; color: #1e293b;">
+      <!-- Hidden Preheader Preview Text -->
+      <div style="display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;mso-hide:all;">
+        Kode reset kata sandi akun Anda adalah ${otpCode}. Berlaku selama 10 menit untuk Portal TKA SD.
+      </div>
+
+      <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 520px; background-color: #ffffff; border-radius: 16px; border: 1px solid #cbd5e1; overflow: hidden; margin: 0 auto; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
         <tr>
-          <td style="padding: 24px 28px 16px 28px; text-align: center; background-color: #0f172a;">
-            <h1 style="color: #ffffff; font-size: 20px; margin: 0; font-weight: bold; letter-spacing: 0.5px;">Portal TKA SD</h1>
-            <p style="color: #94a3b8; font-size: 13px; margin: 4px 0 0 0;">Permintaan Reset Kata Sandi Akun</p>
+          <td style="padding: 24px 28px; text-align: center; background-color: #162e5b;">
+            <h1 style="color: #ffffff; font-size: 20px; margin: 0; font-weight: 700; letter-spacing: 0.5px;">Portal Belajar TKA SD</h1>
+            <p style="color: #93c5fd; font-size: 13px; margin: 6px 0 0 0;">Permintaan Reset Kata Sandi Akun</p>
           </td>
         </tr>
         <tr>
-          <td style="padding: 28px;">
+          <td style="padding: 32px 28px;">
             <p style="font-size: 15px; line-height: 1.5; margin: 0 0 16px 0; color: #334155;">
               Halo <strong>${username}</strong>,
             </p>
             <p style="font-size: 14px; line-height: 1.6; margin: 0 0 20px 0; color: #475569;">
-              Kami menerima permintaan untuk mereset kata sandi (password) akun Portal TKA SD Anda. Gunakan kode keamanan berikut untuk mengatur password baru:
+              Kami menerima permintaan untuk mereset kata sandi akun Portal TKA SD Anda. Gunakan kode keamanan berikut untuk mengatur kata sandi baru:
             </p>
-            <div style="text-align: center; margin: 24px 0;">
-              <div style="display: inline-block; background-color: #f1f5f9; border: 2px dashed #0f172a; border-radius: 8px; padding: 12px 28px;">
-                <span style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #0f172a; font-family: monospace;">
+            <div style="text-align: center; margin: 28px 0;">
+              <div style="display: inline-block; background-color: #eff6ff; border: 2px solid #3b82f6; border-radius: 12px; padding: 14px 32px;">
+                <span style="font-size: 34px; font-weight: 800; letter-spacing: 8px; color: #1d4ed8; font-family: monospace;">
                   ${otpCode}
                 </span>
               </div>
             </div>
-            <p style="font-size: 13px; line-height: 1.5; color: #64748b; margin: 0 0 16px 0; text-align: center;">
-              Kode ini berlaku selama <strong>10 menit</strong>. Jangan bagikan kode ini kepada siapa pun demi keamanan akun Anda.
+            <p style="font-size: 13px; line-height: 1.5; color: #64748b; margin: 0 0 20px 0; text-align: center;">
+              ⏱️ Kode keamanan ini berlaku selama <strong>10 menit</strong>. Jangan bagikan kode ini kepada siapa pun demi keamanan akun Anda.
             </p>
-            <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 24px 0 16px 0;" />
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0 16px 0;" />
             <p style="font-size: 12px; line-height: 1.5; color: #94a3b8; margin: 0;">
-              Jika Anda tidak meminta perubahan kata sandi ini, akun Anda tetap aman dan abaikan email ini.
+              Jika Anda tidak meminta perubahan kata sandi ini, akun Anda tetap aman dan Anda dapat mengabaikan email ini.
             </p>
           </td>
         </tr>
         <tr>
-          <td style="background-color: #f8fafc; padding: 16px 28px; text-align: center; border-top: 1px solid #e2e8f0;">
+          <td style="background-color: #f8fafc; padding: 18px 28px; text-align: center; border-top: 1px solid #e2e8f0;">
             <p style="font-size: 11px; color: #94a3b8; margin: 0;">
               &copy; ${new Date().getFullYear()} Portal TKA SD. Seluruh hak cipta dilindungi.
             </p>
