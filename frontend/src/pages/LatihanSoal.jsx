@@ -380,7 +380,10 @@ const LatihanSoal = () => {
     }
 
     // EXP HANYA DIBERIKAN JIKA MENYELESAIKAN SEMUA SOAL LATIHAN
-    const expEarned = isCompletedAll ? (80 + starsEarned * 15) : 0;
+    // DAN HANYA JIKA LATIHAN INI BELUM PERNAH DISELESAIKAN SEBELUMNYA (mencegah farming EXP saat kerjakan ulang latihan)
+    const actData = getActivityData();
+    const isAlreadyCompleted = (actData.latihanCompleted || []).includes(activeLatihan.id);
+    const expEarned = (isCompletedAll && !isAlreadyCompleted) ? (80 + starsEarned * 15) : 0;
 
     const result = {
       score,
@@ -391,6 +394,7 @@ const LatihanSoal = () => {
       isCompletedAll,
       answeredCount,
       expEarned,
+      isReplay: isAlreadyCompleted,
     };
 
     setLatestScoreResult(result);
@@ -549,9 +553,28 @@ const LatihanSoal = () => {
             {selectedSubject && (
               <>
                 <span className="text-blue-300/50">/</span>
-                <span className="text-white font-semibold">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (
+                      activeLatihan &&
+                      !isFinished &&
+                      Object.keys(userAnswers).length > 0 &&
+                      !window.confirm('Yakin ingin kembali ke peta latihan? Jawaban latihan ini belum disimpan.')
+                    ) {
+                      return;
+                    }
+                    setActiveLatihan(null);
+                    setJumpChallengeLevel(null);
+                    setSearchQuery('');
+                    refreshActivity();
+                  }}
+                  className={`font-medium hover:text-white transition-colors cursor-pointer ${
+                    !activeLatihan ? 'text-white font-bold' : 'text-blue-200'
+                  }`}
+                >
                   {currentSubject?.title}
-                </span>
+                </button>
               </>
             )}
             {activeLatihan && (
@@ -1235,10 +1258,16 @@ const LatihanSoal = () => {
                   {/* Status EXP Sesuai Kelengkapan Soal */}
                   <div className="pt-0.5">
                     {latestScoreResult?.isCompletedAll ? (
-                      <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#E8F2EF] text-[#286657] border border-[#BCD9D0] text-xs font-bold shadow-2xs">
-                        <Sparkles className="w-3.5 h-3.5 text-[#286657]" />
-                        <span>+{latestScoreResult?.expEarned} EXP Didapatkan! (Semua Soal Selesai)</span>
-                      </span>
+                      latestScoreResult?.expEarned > 0 ? (
+                        <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#E8F2EF] text-[#286657] border border-[#BCD9D0] text-xs font-bold shadow-2xs">
+                          <Sparkles className="w-3.5 h-3.5 text-[#286657]" />
+                          <span>+{latestScoreResult?.expEarned} EXP Didapatkan! (Semua Soal Selesai)</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-300 text-xs font-medium">
+                          <span>0 EXP (Latihan Diulang - Tidak Menambah EXP)</span>
+                        </span>
+                      )
                     ) : (
                       <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FDF1F1] text-[#C93B3B] border border-[#F4C7C7] text-xs font-medium">
                         <span>0 EXP (EXP hanya didapat jika menyelesaikan seluruh {latestScoreResult?.totalCount} soal latihan)</span>
@@ -1641,14 +1670,6 @@ const LatihanSoal = () => {
                         {currentLevels.reduce((acc, lvl) => acc + getLevelStars(lvl.id), 0)}/{currentLevels.length * 3} Bintang
                       </span>
                     </span>
-
-                    <button
-                      onClick={() => setShowResetConfirm(true)}
-                      className="text-[#8C7E72] hover:text-[#C93B3B] transition-colors text-[11px] underline ml-1 cursor-pointer"
-                      title="Reset progres untuk mulai dari awal"
-                    >
-                      Reset
-                    </button>
                   </div>
                 </div>
               </div>

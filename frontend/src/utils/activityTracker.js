@@ -786,7 +786,8 @@ export const setActiveAvatar = (avatarId) => {
 export const markMateriComplete = (babId, stars = 3) => {
   const data = getActivityData();
   if (!data.materiCompleted) data.materiCompleted = [];
-  if (!data.materiCompleted.includes(babId)) {
+  const isFirstTime = !data.materiCompleted.includes(babId);
+  if (isFirstTime) {
     data.materiCompleted.push(babId);
   }
   if (!data.unlockedMateri) data.unlockedMateri = ['mtk_1', 'bi_1'];
@@ -798,10 +799,13 @@ export const markMateriComplete = (babId, stars = 3) => {
   data.materiStars[babId] = Math.max(prevStars, Math.max(1, Math.min(3, stars)));
   saveActivityData(data);
 
-  // EXP hanya diberikan saat materi dan kuis pemahamannya diselesaikan sampai habis
-  const materiExp = 60 + stars * 10;
-  recordUserActivity('materi', materiExp);
+  // EXP hanya diberikan saat materi pertama kali diselesaikan (mencegah farming EXP saat pelajari ulang materi)
+  const materiExp = isFirstTime ? (60 + stars * 10) : 0;
+  if (isFirstTime && materiExp > 0) {
+    recordUserActivity('materi', materiExp);
+  }
   checkAndUnlockAvatars(data);
+  return { isFirstTime, expEarned: materiExp };
 };
 
 export const unlockLatihan = (latihanId) => {
@@ -816,7 +820,8 @@ export const unlockLatihan = (latihanId) => {
 export const markLatihanComplete = (latihanId, stars = 3, awardExp = true) => {
   const data = getActivityData();
   if (!data.latihanCompleted) data.latihanCompleted = [];
-  if (!data.latihanCompleted.includes(latihanId)) {
+  const isFirstTime = !data.latihanCompleted.includes(latihanId);
+  if (isFirstTime) {
     data.latihanCompleted.push(latihanId);
   }
   if (!data.unlockedLatihan) data.unlockedLatihan = ['mtk_lat_1', 'bi_lat_1'];
@@ -828,11 +833,13 @@ export const markLatihanComplete = (latihanId, stars = 3, awardExp = true) => {
   data.latihanStars[latihanId] = Math.max(prevStars, Math.max(1, Math.min(3, stars)));
   saveActivityData(data);
 
-  // Berikan EXP hanya jika awardExp bernilai true
-  if (awardExp) {
-    recordUserActivity('latihan', 80 + stars * 15);
+  // Berikan EXP hanya jika awardExp bernilai true dan ini pertama kali tuntas (mencegah farming EXP saat kerjakan ulang latihan)
+  const expEarned = (awardExp && isFirstTime) ? (80 + stars * 15) : 0;
+  if (expEarned > 0) {
+    recordUserActivity('latihan', expEarned);
   }
   checkAndUnlockAvatars(data);
+  return { isFirstTime, expEarned };
 };
 
 export const resetLatihanProgress = (subject = null) => {

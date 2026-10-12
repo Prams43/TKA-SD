@@ -212,6 +212,7 @@ const Materi = () => {
   const [showQuizHint, setShowQuizHint] = useState(false);
   const [quizFinished, setQuizFinished] = useState(false);
   const [quizMistakes, setQuizMistakes] = useState(0);
+  const [quizExpResult, setQuizExpResult] = useState({ isFirstTime: true, expEarned: 0 });
 
   // State Mode Tantangan Lompat Level (Jump Challenge)
   const [jumpChallengeBab, setJumpChallengeBab] = useState(null);
@@ -271,6 +272,7 @@ const Materi = () => {
     setShowQuizHint(false);
     setQuizFinished(false);
     setQuizMistakes(0);
+    setQuizExpResult({ isFirstTime: true, expEarned: 0 });
     isQuizTransitioningRef.current = false;
     setIsQuizTransitioning(false);
   };
@@ -311,7 +313,8 @@ const Materi = () => {
         setQuizFinished(true);
         // Hitung bintang: 0 salah -> 3 bintang; 1 salah -> 2 bintang; >=2 salah -> 1 bintang
         const earnedStars = quizMistakes === 0 ? 3 : quizMistakes === 1 ? 2 : 1;
-        markMateriComplete(activeBab.id, earnedStars);
+        const completionResult = markMateriComplete(activeBab.id, earnedStars);
+        setQuizExpResult(completionResult || { isFirstTime: false, expEarned: 0 });
 
         // Buka level berikutnya secara otomatis
         const currentIndex = currentLevels.findIndex((b) => b.id === activeBab.id);
@@ -463,9 +466,19 @@ const Materi = () => {
             {selectedSubject && (
               <>
                 <span className="text-blue-300/50">/</span>
-                <span className="text-white font-semibold">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveBab(null);
+                    setJumpChallengeBab(null);
+                    setSearchQuery('');
+                  }}
+                  className={`font-medium hover:text-white transition-colors cursor-pointer ${
+                    !activeBab ? 'text-white font-bold' : 'text-blue-200'
+                  }`}
+                >
                   {currentSubject?.title}
-                </span>
+                </button>
               </>
             )}
             {activeBab && (
@@ -710,6 +723,7 @@ const Materi = () => {
                   setIsAnswerCorrect(false);
                   setQuizFinished(false);
                   setQuizMistakes(0);
+                  setQuizExpResult({ isFirstTime: true, expEarned: 0 });
                   isQuizTransitioningRef.current = false;
                   setIsQuizTransitioning(false);
                 }}
@@ -789,10 +803,16 @@ const Materi = () => {
                       </p>
 
                       <div className="pt-2">
-                        <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0] text-xs font-bold shadow-2xs">
-                          <Sparkles className="w-3.5 h-3.5 text-[#047857]" />
-                          <span>+{quizMistakes === 0 ? 90 : quizMistakes === 1 ? 80 : 70} EXP Didapatkan (Materi Selesai)!</span>
-                        </span>
+                        {quizExpResult?.isFirstTime && quizExpResult?.expEarned > 0 ? (
+                          <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0] text-xs font-bold shadow-2xs">
+                            <Sparkles className="w-3.5 h-3.5 text-[#047857]" />
+                            <span>+{quizExpResult.expEarned} EXP Didapatkan (Materi Selesai)!</span>
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-300 text-xs font-medium">
+                            <span>0 EXP (Materi Diulang - Tidak Menambah EXP)</span>
+                          </span>
+                        )}
                       </div>
                     </div>
                   ) : (
@@ -1031,14 +1051,6 @@ const Materi = () => {
                         {currentLevels.reduce((acc, bab) => acc + getLevelStars(bab.id), 0)}/{currentLevels.length * 3} Bintang
                       </span>
                     </span>
-
-                    <button
-                      onClick={() => setShowResetConfirm(true)}
-                      className="text-[#8C7E72] hover:text-[#C93B3B] transition-colors text-[10px] underline ml-1 cursor-pointer"
-                      title="Reset progres untuk mulai dari awal"
-                    >
-                      Reset
-                    </button>
                   </div>
                 </div>
               </div>
