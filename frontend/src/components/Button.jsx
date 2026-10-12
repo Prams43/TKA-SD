@@ -20,9 +20,9 @@ const Button = ({
 
   const variants = {
     primary:
-      'bg-[#0B1A34] hover:bg-[#1E3A8A] text-white border border-[#1E3A8A] focus:ring-[#1E3A8A]/30 disabled:bg-[#1E293B] shadow-sm active:scale-[0.99]',
+      'bg-[#162E5B] hover:bg-[#1E3A8A] text-white border border-[#1E3A8A] focus:ring-[#1E3A8A]/30 disabled:bg-[#1E293B] shadow-sm active:scale-[0.99]',
     secondary:
-      'bg-blue-50/80 hover:bg-blue-100/90 text-[#0B1A34] border-2 border-[#1E3A8A]/30 hover:border-[#1E3A8A] focus:ring-[#1E3A8A]/20 disabled:bg-slate-50 disabled:text-slate-400 font-semibold shadow-xs active:scale-[0.99]',
+      'bg-blue-50/80 hover:bg-blue-100/90 text-[#162E5B] border-2 border-[#1E3A8A]/30 hover:border-[#1E3A8A] focus:ring-[#1E3A8A]/20 disabled:bg-slate-50 disabled:text-slate-400 font-semibold shadow-xs active:scale-[0.99]',
     danger:
       'bg-[#C93B3B] hover:bg-[#B32D2D] text-white focus:ring-[#C93B3B]/30 disabled:bg-[#FCD8D8]',
     outline:

@@ -23,6 +23,8 @@ export const getProfile = async (req, res, next) => {
         unlockedTitles: ['pemula'],
         streak: { count: 0, lastActiveDate: null, activeToday: false },
         activityData: {
+          avatar: 'baby-boy',
+          unlockedAvatars: ['baby-boy', 'baby-girl'],
           materiCompleted: [],
           unlockedMateri: ['mtk_1', 'bi_1'],
           materiStars: {},

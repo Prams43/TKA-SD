@@ -13,6 +13,7 @@ import Tryout from './pages/Tryout';
 import Rapor from './pages/Rapor';
 import NavyBackground from './components/NavyBackground';
 import RewardModal from './components/RewardModal';
+import FantasyGachaModal from './components/FantasyGachaModal';
 
 function App() {
   return (
@@ -26,6 +27,8 @@ function App() {
           <HashRouter>
             {/* Modal Selebrasi EXP & Level Up ala Duolingo Global */}
             <RewardModal />
+            {/* Modal Hadiah Spesial Gacha Karakter Fantasi (Tryout >= 80%) */}
+            <FantasyGachaModal />
 
             <Routes>
           {/* Route Publik (Pengguna yang sudah login akan otomatis dialihkan ke /dashboard) */}

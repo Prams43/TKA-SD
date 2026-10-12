@@ -17,16 +17,27 @@ export const syncLeaderboardFromDatabase = async () => {
   try {
     const list = await profileService.getLeaderboard(100);
     if (Array.isArray(list) && list.length > 0) {
-      const mapped = list.map((item) => ({
-        id: `user_${item.id}`,
-        name: item.username,
-        level: item.level || 1,
-        exp: item.exp || 0,
-        titleId: item.active_title || 'pemula',
-        streak: item.streak_count || 0,
-        avatar: item.active_title === 'pemula' ? '🌱' : '🦁',
-        updatedAt: Date.now(),
-      }));
+      const mapped = list.map((item) => {
+        let avatarVal = 'baby-boy';
+        try {
+          if (typeof item.activity_data === 'string') {
+            const parsed = JSON.parse(item.activity_data);
+            if (parsed.avatar) avatarVal = parsed.avatar;
+          } else if (typeof item.activity_data === 'object' && item.activity_data?.avatar) {
+            avatarVal = item.activity_data.avatar;
+          }
+        } catch (_) {}
+        return {
+          id: `user_${item.id}`,
+          name: item.username,
+          level: item.level || 1,
+          exp: item.exp || 0,
+          titleId: item.active_title || 'pemula',
+          streak: item.streak_count || 0,
+          avatar: avatarVal,
+          updatedAt: Date.now(),
+        };
+      });
       saveLeaderboardRegistry(mapped);
       return mapped;
     }
@@ -111,6 +122,8 @@ export const syncLeaderboardUser = (currentUser, userStats) => {
   const exp = stats?.totalExp || 0;
   const streak = stats?.streak?.count || 0;
 
+  const avatar = stats?.avatar || 'baby-boy';
+
   const registry = getLeaderboardRegistry();
   const existingIndex = registry.findIndex(
     (u) => u.name.toLowerCase() === userName.toLowerCase()
@@ -123,6 +136,7 @@ export const syncLeaderboardUser = (currentUser, userStats) => {
       exp,
       titleId: currentTitleId,
       streak,
+      avatar,
       updatedAt: Date.now(),
     };
   } else {
@@ -133,7 +147,7 @@ export const syncLeaderboardUser = (currentUser, userStats) => {
       exp,
       titleId: currentTitleId,
       streak,
-      avatar: '🦁',
+      avatar,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -168,7 +182,7 @@ export const getLeaderboardData = (currentUser, userStats) => {
       exp: stats?.totalExp || 0,
       titleId: stats?.activeTitle?.id || 'pemula',
       streak: stats?.streak?.count || 0,
-      avatar: '🦁',
+      avatar: stats?.avatar || 'baby-boy',
     });
     saveLeaderboardRegistry(registry);
   }
@@ -186,7 +200,7 @@ export const getLeaderboardData = (currentUser, userStats) => {
       exp: entry.exp || 0,
       title: isCurrentUser ? (stats?.activeTitle || titleObj) : titleObj,
       streak: entry.streak || 0,
-      avatar: entry.avatar || (isCurrentUser ? '🦁' : '🧑‍🎓'),
+      avatar: entry.avatar || (isCurrentUser ? (stats?.avatar || 'baby-boy') : 'baby-boy'),
       isCurrentUser,
     };
   });

@@ -84,6 +84,7 @@ export const getLeaderboardList = async (limit = 100) => {
       COALESCE(p.level, 1) as level, 
       COALESCE(p.active_title, 'pemula') as active_title, 
       COALESCE(p.streak_count, 0) as streak_count,
+      COALESCE(p.activity_data, '{}') as activity_data,
       COALESCE(p.updated_at, u.created_at) as updated_at
     FROM users u
     LEFT JOIN user_profiles p ON u.id = p.user_id

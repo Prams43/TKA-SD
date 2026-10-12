@@ -202,7 +202,7 @@ const Login = () => {
             <div>
               {/* Header Kartu Akun Tersimpan (Dominan Navy) */}
               <div className="flex flex-col items-center text-center mb-5">
-                <div className="w-14 h-14 rounded-2xl bg-[#0B1A34] border-2 border-blue-400 text-white flex items-center justify-center text-xl font-bold mb-3 shadow-md">
+                <div className="w-14 h-14 rounded-2xl bg-[#162E5B] border-2 border-blue-400 text-white flex items-center justify-center text-xl font-bold mb-3 shadow-md">
                   {savedUser.username ? savedUser.username.charAt(0).toUpperCase() : 'U'}
                 </div>
                 <span className="text-[11px] font-semibold text-[#1E3A8A] bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200 mb-1.5">
@@ -282,7 +282,7 @@ const Login = () => {
                     setServerError('');
                     setErrors({});
                   }}
-                  className="w-full mt-2.5 py-2.5 px-4 text-sm font-semibold text-[#0B1A34] bg-blue-50/70 hover:bg-blue-100/90 rounded-lg transition-all border-2 border-[#1E3A8A]/30 hover:border-[#1E3A8A] flex items-center justify-center space-x-2 cursor-pointer shadow-xs active:scale-[0.99]"
+                  className="w-full mt-2.5 py-2.5 px-4 text-sm font-semibold text-[#162E5B] bg-blue-50/70 hover:bg-blue-100/90 rounded-lg transition-all border-2 border-[#1E3A8A]/30 hover:border-[#1E3A8A] flex items-center justify-center space-x-2 cursor-pointer shadow-xs active:scale-[0.99]"
                 >
                   <UserPlus className="w-4 h-4 text-[#1E3A8A]" />
                   <span>Login Akun Lain</span>

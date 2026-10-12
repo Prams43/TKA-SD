@@ -132,6 +132,7 @@ const TryoutView = ({ isOpen, onClose }) => {
       score,
       correct: correctCount,
       total: questions.length,
+      isCompletedAll: true,
     });
   };
 

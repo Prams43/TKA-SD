@@ -9,6 +9,7 @@ import {
   resetLatihanProgress,
   recordLatihan,
 } from '../utils/activityTracker';
+import { getCharacterAvatar } from '../utils/characterAvatars';
 import { formatMath } from '../utils/mathRenderer';
 import {
   BookOpen,
@@ -78,20 +79,23 @@ const SUBJECTS_CONFIG = {
       4: {
         title: 'Peti Bintang Fondasi Literasi',
         requiredLevel: 4,
-        desc: 'Pencapaian menuntaskan 4 Latihan Pertama: Fondasi Kosakata, Kalimat Efektif, dan Pemahaman Eksplisit.',
-        reward: '⭐ Medali Ahli Fondasi Literasi TKA SD',
+        desc: 'Pencapaian menuntaskan 4 Latihan Pertama Bahasa Indonesia.',
+        reward: '🎁 Foto Profil: Sapi Sahabat',
+        avatarIds: ['cow'],
       },
       7: {
         title: 'Peti Perak Analisis & Makna Bahasa',
         requiredLevel: 7,
-        desc: 'Pencapaian menuntaskan 7 Latihan: Makna Tersirat, Hubungan Kausalitas, dan Paragraf Terpadu.',
-        reward: '🥈 Medali Master Analisis Bahasa',
+        desc: 'Pencapaian menuntaskan 7 Latihan Bahasa Indonesia.',
+        reward: '🎁 Foto Profil: Beruang Manis',
+        avatarIds: ['teddy-bear-heart'],
       },
       10: {
         title: 'Piala Maestro Bahasa Indonesia TKA SD',
         requiredLevel: 10,
         desc: 'Piala kebanggaan tertinggi setelah menuntaskan seluruh 10 Tingkat Latihan Soal Bahasa Indonesia Kemendikdasmen RI.',
-        reward: '👑 Gelar Maestro Latihan Bahasa Indonesia 100%',
+        reward: '👑 Foto Profil: Panda Lucu',
+        avatarIds: ['panda'],
       },
     },
   },
@@ -120,20 +124,23 @@ const SUBJECTS_CONFIG = {
       4: {
         title: 'Peti Bintang Fondasi Numerasi',
         requiredLevel: 4,
-        desc: 'Pencapaian menuntaskan 4 Latihan Pertama: Operasi Hitung Dasar, Pecahan, dan Skala Bilangan.',
-        reward: '⭐ Medali Ahli Fondasi Numerasi TKA SD',
+        desc: 'Pencapaian menuntaskan 4 Latihan Pertama Matematika.',
+        reward: '🎁 Foto Profil: Ksatria Tangguh',
+        avatarIds: ['knight'],
       },
       7: {
         title: 'Peti Perak Logika & Geometri',
         requiredLevel: 7,
-        desc: 'Pencapaian menuntaskan 7 Latihan: Pengukuran Satuan, Keliling & Luas, dan Bangun Ruang.',
-        reward: '🏆 Medali Master Logika Matematika',
+        desc: 'Pencapaian menuntaskan 7 Latihan Matematika.',
+        reward: '🎁 Foto Profil: Ninja Gesit',
+        avatarIds: ['ninja'],
       },
       10: {
         title: 'Piala Maestro Matematika TKA SD',
         requiredLevel: 10,
         desc: 'Piala kebanggaan tertinggi setelah menuntaskan seluruh 10 Tingkat Latihan Soal Matematika Kemendikdasmen RI.',
-        reward: '👑 Gelar Maestro Latihan Matematika 100%',
+        reward: '👑 Foto Profil: Koboi Cilik',
+        avatarIds: ['cowboy'],
       },
     },
   },
@@ -1940,6 +1947,7 @@ const LatihanSoal = () => {
                                 requiredLevel: milestoneItem.requiredLevel,
                                 unlocked: completedCount >= milestoneItem.requiredLevel,
                                 reward: milestoneItem.reward,
+                                avatarIds: milestoneItem.avatarIds || [],
                               })
                             }
                             className="relative flex flex-col items-center my-3 cursor-pointer group"
@@ -1971,6 +1979,7 @@ const LatihanSoal = () => {
                                 requiredLevel: currentLevels.length,
                                 unlocked: completedCount === currentLevels.length,
                                 reward: milestoneItem?.reward || `👑 Gelar Maestro ${currentSubject.title} TKA SD 100%`,
+                                avatarIds: milestoneItem?.avatarIds || [],
                               })
                             }
                             className="relative flex flex-col items-center pt-4 pb-2 cursor-pointer group animate-fade-in"
@@ -2508,7 +2517,25 @@ const LatihanSoal = () => {
               <p className="text-xs text-[#6E6258] mt-1 leading-relaxed">{milestoneModal.desc}</p>
             </div>
 
-            <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] text-xs font-medium">
+            <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] text-xs font-medium space-y-2">
+              {milestoneModal.avatarIds && milestoneModal.avatarIds.length > 0 && (
+                <div className="flex items-center justify-center gap-2.5 py-1">
+                  {milestoneModal.avatarIds.map((avId) => {
+                    const char = getCharacterAvatar(avId);
+                    return (
+                      <div key={avId} className="flex flex-col items-center">
+                        <div className="w-12 h-12 rounded-xl bg-white border-2 border-amber-400 overflow-hidden shadow-xs flex items-center justify-center">
+                          <img src={char.image} alt={char.name} className="w-full h-full object-cover" />
+                        </div>
+                        <span className="text-[10px] font-bold text-slate-800 mt-1 truncate max-w-[85px]">
+                          {char.name}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
               {milestoneModal.unlocked ? (
                 <div className="text-[#286657]">
                   <span>Status: <strong>Terbuka!</strong></span>

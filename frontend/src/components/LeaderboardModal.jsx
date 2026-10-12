@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Trophy, Medal, Flame, Star, Sparkles, User, Award, Shield, Search } from 'lucide-react';
 import { getLeaderboardData, syncLeaderboardFromDatabase } from '../utils/leaderboardData';
+import { getCharacterAvatar } from '../utils/characterAvatars';
 
 /**
  * Komponen Modal / Tampilan Papan Peringkat (Leaderboard) TKA SD
@@ -22,6 +23,25 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
   if (!isOpen) return null;
 
   const { list, myRank, myEntry } = getLeaderboardData(user, profileStats);
+
+  const renderAvatar = (avatarVal, className = 'w-9 h-9') => {
+    const isEmoji = typeof avatarVal === 'string' && /\p{Extended_Pictographic}/u.test(avatarVal);
+    if (!isEmoji) {
+      const char = getCharacterAvatar(avatarVal);
+      if (char?.image) {
+        return (
+          <div className={`${className} rounded-xl overflow-hidden bg-white border border-slate-300 flex items-center justify-center flex-shrink-0 shadow-xs`}>
+            <img
+              src={char.image}
+              alt={char.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        );
+      }
+    }
+    return <span className="text-2xl flex-shrink-0">{avatarVal || '🦁'}</span>;
+  };
 
   // Filter pencarian
   const filteredList = list.filter((item) => {
@@ -119,8 +139,8 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
                   <span className="text-xs font-semibold text-[#C25E38] bg-[#FAECE6] px-2.5 py-0.5 rounded border border-[#F2D2C4] mb-2">
                     Juara #1
                   </span>
-                  <div className="relative mb-2">
-                    <span className="text-3xl">{top3[0].avatar}</span>
+                  <div className="relative mb-2 flex items-center justify-center">
+                    {renderAvatar(top3[0].avatar, 'w-12 h-12')}
                   </div>
                   <h6 className="text-sm font-bold text-[#261C14] truncate w-full">
                     {top3[0].name}
@@ -141,7 +161,9 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
                   <span className="text-[10px] font-semibold text-[#6E6258] bg-[#F2ECE4] px-2 py-0.5 rounded border border-slate-300 mb-1.5">
                     Juara 2
                   </span>
-                  <span className="text-2xl mb-1">{top3[1].avatar}</span>
+                  <div className="flex items-center justify-center mb-1">
+                    {renderAvatar(top3[1].avatar, 'w-10 h-10')}
+                  </div>
                   <h6 className="text-xs font-bold text-[#261C14] truncate w-full">
                     {top3[1].name}
                   </h6>
@@ -158,7 +180,9 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
                   <span className="text-[10px] font-semibold text-[#C25E38] bg-[#FAECE6] px-2 py-0.5 rounded border border-[#F2D2C4] mb-1.5">
                     Juara 1
                   </span>
-                  <span className="text-3xl mb-1">{top3[0].avatar}</span>
+                  <div className="flex items-center justify-center mb-1">
+                    {renderAvatar(top3[0].avatar, 'w-12 h-12')}
+                  </div>
                   <h6 className="text-xs font-bold text-[#261C14] truncate w-full">
                     {top3[0].name}
                   </h6>
@@ -179,7 +203,9 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
                     <span className="text-[10px] font-semibold text-[#6E6258] bg-[#F2ECE4] px-2 py-0.5 rounded border border-slate-300 mb-1.5">
                       Juara 2
                     </span>
-                    <span className="text-2xl mb-1">{top3[1].avatar}</span>
+                    <div className="flex items-center justify-center mb-1">
+                      {renderAvatar(top3[1].avatar, 'w-10 h-10')}
+                    </div>
                     <h6 className="text-xs font-bold text-[#261C14] truncate w-full">
                       {top3[1].name}
                     </h6>
@@ -198,7 +224,9 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
                     <span className="text-[10px] font-semibold text-[#C25E38] bg-[#FAECE6] px-2 py-0.5 rounded border border-[#F2D2C4] mb-1.5">
                       Juara 1
                     </span>
-                    <span className="text-3xl mb-1">{top3[0].avatar}</span>
+                    <div className="flex items-center justify-center mb-1">
+                      {renderAvatar(top3[0].avatar, 'w-12 h-12')}
+                    </div>
                     <h6 className="text-xs sm:text-sm font-bold text-[#261C14] truncate w-full">
                       {top3[0].name}
                     </h6>
@@ -217,7 +245,9 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
                     <span className="text-[10px] font-semibold text-[#D97E26] bg-[#FEF7EE] px-2 py-0.5 rounded border border-[#F6D8B8] mb-1.5">
                       Juara 3
                     </span>
-                    <span className="text-2xl mb-1">{top3[2].avatar}</span>
+                    <div className="flex items-center justify-center mb-1">
+                      {renderAvatar(top3[2].avatar, 'w-10 h-10')}
+                    </div>
                     <h6 className="text-xs font-bold text-[#261C14] truncate w-full">
                       {top3[2].name}
                     </h6>
@@ -283,7 +313,9 @@ const LeaderboardModal = ({ isOpen, onClose, user, profileStats }) => {
                         {item.rank}
                       </div>
 
-                      <span className="text-2xl flex-shrink-0">{item.avatar}</span>
+                      <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+                        {renderAvatar(item.avatar, 'w-8 h-8')}
+                      </div>
 
                       <div className="min-w-0">
                         <div className="flex items-center space-x-2">

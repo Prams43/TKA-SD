@@ -1,4 +1,10 @@
 import { profileService } from '../services/profileService';
+import {
+  CHARACTER_AVATARS,
+  DEFAULT_AVATAR_ID,
+  STARTER_AVATAR_IDS,
+  FANTASY_AVATAR_IDS,
+} from './characterAvatars';
 
 /**
  * Activity Tracker TKA SD
@@ -249,6 +255,8 @@ export const getActivityData = () => {
       exp: 0,
       unlockedTitles: ['pemula'],
       activeTitle: 'pemula',
+      avatar: 'baby-boy',
+      unlockedAvatars: ['baby-boy', 'baby-girl'],
     };
   }
 
@@ -313,8 +321,24 @@ export const getActivityData = () => {
     data.activeTitle = 'pemula';
   }
 
+  if (!data.avatar || data.avatar === 'boy') {
+    data.avatar = 'baby-boy';
+  }
+
+  if (!data.unlockedAvatars || !Array.isArray(data.unlockedAvatars)) {
+    data.unlockedAvatars = ['baby-boy', 'baby-girl'];
+  }
+
   // Cek apakah ada gelar baru yang memenuhi syarat
   checkAndUnlockTitles(data);
+
+  // Cek apakah ada karakter avatar / paket hadiah baru yang memenuhi syarat
+  checkAndUnlockAvatars(data);
+
+  // Pastikan avatar aktif selalu valid dan berada di daftar avatar yang sudah terbuka
+  if (!data.unlockedAvatars.includes(data.avatar)) {
+    data.avatar = 'baby-boy';
+  }
 
   return data;
 };
@@ -339,6 +363,8 @@ export const syncProfileToDatabase = (data) => {
         unlockedTitles: data.unlockedTitles || ['pemula'],
         streak: data.streak || { count: 0, lastActiveDate: null, activeToday: false },
         activityData: {
+          avatar: data.avatar || 'baby-boy',
+          unlockedAvatars: data.unlockedAvatars || ['baby-boy', 'baby-girl'],
           materiCompleted: data.materiCompleted || [],
           unlockedMateri: data.unlockedMateri || ['mtk_1', 'bi_1'],
           materiStars: data.materiStars || {},
@@ -393,6 +419,10 @@ export const syncProfileFromDatabase = async () => {
       if (Array.isArray(act.latihanCompleted)) data.latihanCompleted = act.latihanCompleted;
       if (Array.isArray(act.unlockedLatihan)) data.unlockedLatihan = act.unlockedLatihan;
       if (act.latihanStars) data.latihanStars = act.latihanStars;
+      if (act.avatar) data.avatar = act.avatar;
+      if (Array.isArray(act.unlockedAvatars)) {
+        data.unlockedAvatars = act.unlockedAvatars;
+      }
       if (Array.isArray(act.latihanHistory)) data.latihanHistory = act.latihanHistory;
       if (Array.isArray(act.tryoutHistory)) data.tryoutHistory = act.tryoutHistory;
     }
@@ -546,12 +576,211 @@ export const getUserProfileStats = () => {
     streak: data.streak || { count: 0, lastActiveDate: null, activeToday: false },
     activeTitle: activeTitleObj,
     unlockedTitles: data.unlockedTitles || ['pemula'],
+    avatar: data.avatar || 'baby-boy',
+    unlockedAvatars: data.unlockedAvatars || ['baby-boy', 'baby-girl'],
     allTitles: AVAILABLE_TITLES.map((t) => ({
       ...t,
       unlocked: (data.unlockedTitles || []).includes(t.id),
       isActive: (data.activeTitle || 'pemula') === t.id,
     })),
   };
+};
+
+/**
+ * Memeriksa dan membuka kunci karakter avatar berdasarkan capaian materi dan latihan soal.
+ * Membedakan capaian antara Bahasa Indonesia dan Matematika:
+ * - Starter: 'baby-boy' (Adik Pintar) & 'baby-girl' (Adik Manis)
+ * - Paket Siswa & Siswi ('boy' & 'girl'): Materi Bahasa Indonesia (min. 1 Bab)
+ * - Paket Anak Petualang & Ceria ('child-boy' & 'child-girl'): Materi Matematika (min. 1 Bab)
+ * - Paket Raja & Ratu ('king' & 'queen'): Capai Level 5 dari gabungan belajar
+ * - Pahlawan ('knight', 'ninja', 'cowboy'): Latihan Soal Matematika (1, 3, 5 sesi)
+ * - Hewan ('fox', 'red-wolf', 'cow', 'teddy-bear-heart', 'panda', 'sheep', 'frog'): Materi & Latihan B. Indo / Matematika
+ * - Fantasi: Spesial Gacha Tryout (min. 80% benar)
+ */
+export const checkAndUnlockAvatars = (data) => {
+  // Ambil karakter fantasi yang sebelumnya sudah sah di-gacha
+  const existingGacha = (data.unlockedAvatars || []).filter((id) =>
+    FANTASY_AVATAR_IDS.includes(id)
+  );
+
+  // Set avatar yang sah terbuka: starter ('baby-boy', 'baby-girl') + gacha fantasi yang sudah didapat
+  const legitUnlocked = new Set(['baby-boy', 'baby-girl', ...existingGacha]);
+
+  const materiCompleted = data.materiCompleted || [];
+  const biMateriCount = materiCompleted.filter((id) => id.startsWith('bi_')).length;
+  const mtkMateriCount = materiCompleted.filter((id) => id.startsWith('mtk_')).length;
+
+  const latihanCompleted = data.latihanCompleted || [];
+  const latihanHistory = data.latihanHistory || [];
+
+  const biLatihanCount = Math.max(
+    latihanCompleted.filter((id) => id.startsWith('bi_')).length,
+    latihanHistory.filter(
+      (l) => l.subject?.toLowerCase().includes('indonesia') || l.subject?.toLowerCase().includes('bi')
+    ).length
+  );
+
+  const mtkLatihanCount = Math.max(
+    latihanCompleted.filter((id) => id.startsWith('mtk_')).length,
+    latihanHistory.filter(
+      (l) => l.subject?.toLowerCase().includes('mat') || l.subject?.toLowerCase().includes('mtk')
+    ).length
+  );
+
+  const biPerfectScore = latihanHistory.some(
+    (l) =>
+      (l.subject?.toLowerCase().includes('indonesia') || l.subject?.toLowerCase().includes('bi')) &&
+      (l.score || 0) >= 100
+  );
+
+  const mtkPerfectScore = latihanHistory.some(
+    (l) =>
+      (l.subject?.toLowerCase().includes('mat') || l.subject?.toLowerCase().includes('mtk')) &&
+      (l.score || 0) >= 100
+  );
+
+  const level = calculateLevelInfo(data.exp || 0).level;
+
+  // 1. Peti Materi 5 Bahasa Indonesia: Paket Siswa dan Siswi ('boy' & 'girl')
+  if (biMateriCount >= 5) {
+    legitUnlocked.add('boy');
+    legitUnlocked.add('girl');
+  }
+
+  // 2. Peti Materi 10 Bahasa Indonesia: Rubah Cerdas ('fox')
+  if (biMateriCount >= 10) {
+    legitUnlocked.add('fox');
+  }
+
+  // 3. Peti Materi 15 Bahasa Indonesia: Serigala Berani ('red-wolf')
+  if (biMateriCount >= 15) {
+    legitUnlocked.add('red-wolf');
+  }
+
+  // 4. Piala Puncak Materi 21 Bahasa Indonesia: Paket Raja dan Ratu ('king' & 'queen')
+  if (biMateriCount >= 21) {
+    legitUnlocked.add('king');
+    legitUnlocked.add('queen');
+  }
+
+  // 5. Peti Materi 4 Matematika: Paket Anak Petualang dan Anak Ceria ('child-boy' & 'child-girl')
+  if (mtkMateriCount >= 4) {
+    legitUnlocked.add('child-boy');
+    legitUnlocked.add('child-girl');
+  }
+
+  // 6. Peti Materi 8 Matematika: Domba Lembut ('sheep')
+  if (mtkMateriCount >= 8) {
+    legitUnlocked.add('sheep');
+  }
+
+  // 7. Piala Puncak Materi 12 Matematika: Katak Lincah ('frog')
+  if (mtkMateriCount >= 12) {
+    legitUnlocked.add('frog');
+  }
+
+  // 8. Peti Latihan 4 Matematika: Ksatria Tangguh ('knight')
+  if (mtkLatihanCount >= 4) {
+    legitUnlocked.add('knight');
+  }
+
+  // 9. Peti Latihan 7 Matematika: Ninja Gesit ('ninja')
+  if (mtkLatihanCount >= 7) {
+    legitUnlocked.add('ninja');
+  }
+
+  // 10. Piala Puncak Latihan 10 Matematika: Koboi Cilik ('cowboy')
+  if (mtkLatihanCount >= 10) {
+    legitUnlocked.add('cowboy');
+  }
+
+  // 11. Peti Latihan 4 Bahasa Indonesia: Sapi Sahabat ('cow')
+  if (biLatihanCount >= 4) {
+    legitUnlocked.add('cow');
+  }
+
+  // 12. Peti Latihan 7 Bahasa Indonesia: Beruang Manis ('teddy-bear-heart')
+  if (biLatihanCount >= 7) {
+    legitUnlocked.add('teddy-bear-heart');
+  }
+
+  // 13. Piala Puncak Latihan 10 Bahasa Indonesia: Panda Lucu ('panda')
+  if (biLatihanCount >= 10) {
+    legitUnlocked.add('panda');
+  }
+
+  const prevList = data.unlockedAvatars || ['baby-boy', 'baby-girl'];
+  const nextList = Array.from(legitUnlocked);
+
+  const newlyUnlocked = nextList
+    .filter((id) => !prevList.includes(id))
+    .map((id) => CHARACTER_AVATARS.find((c) => c.id === id))
+    .filter(Boolean);
+
+  data.unlockedAvatars = nextList;
+
+  // Pastikan avatar aktif selalu valid
+  if (!data.unlockedAvatars.includes(data.avatar)) {
+    data.avatar = 'baby-boy';
+  }
+
+  return newlyUnlocked;
+};
+
+/**
+ * Mengundi (gacha) 1 karakter kategori Fantasi secara acak
+ * ketika siswa menyelesaikan Tryout dengan nilai minimal 80% benar.
+ */
+export const rollFantasyGacha = (data) => {
+  const fantasyAvatars = CHARACTER_AVATARS.filter((c) => c.category === 'Fantasi');
+  const unlocked = data.unlockedAvatars || ['baby-boy', 'baby-girl'];
+  const lockedFantasy = fantasyAvatars.filter((c) => !unlocked.includes(c.id));
+
+  if (lockedFantasy.length === 0) {
+    return null; // Seluruh karakter fantasi sudah berhasil dikoleksi
+  }
+
+  // Pilih secara acak dari karakter fantasi yang masih terkunci
+  const randomIndex = Math.floor(Math.random() * lockedFantasy.length);
+  const wonAvatar = lockedFantasy[randomIndex];
+
+  if (!data.unlockedAvatars) data.unlockedAvatars = ['baby-boy', 'baby-girl'];
+  data.unlockedAvatars.push(wonAvatar.id);
+
+  saveActivityData(data, true);
+  notifyProfileUpdate();
+
+  // Memicu notifikasi modal perayaan gacha fantasi
+  if (typeof window !== 'undefined') {
+    setTimeout(() => {
+      window.dispatchEvent(
+        new CustomEvent('tka_fantasy_gacha_reward', {
+          detail: { character: wonAvatar },
+        })
+      );
+    }, 600);
+  }
+
+  return wonAvatar;
+};
+
+/**
+ * Menyimpan karakter avatar aktif yang dipilih oleh pengguna
+ * @param {string} avatarId
+ */
+export const setActiveAvatar = (avatarId) => {
+  const data = getActivityData();
+  const unlocked = data.unlockedAvatars || ['baby-boy', 'baby-girl'];
+
+  // Pastikan hanya karakter yang sudah terbuka yang bisa dipasang
+  if (!unlocked.includes(avatarId)) {
+    return false;
+  }
+
+  data.avatar = avatarId;
+  saveActivityData(data, true);
+  notifyProfileUpdate();
+  return true;
 };
 
 export const markMateriComplete = (babId, stars = 3) => {
@@ -572,6 +801,7 @@ export const markMateriComplete = (babId, stars = 3) => {
   // EXP hanya diberikan saat materi dan kuis pemahamannya diselesaikan sampai habis
   const materiExp = 60 + stars * 10;
   recordUserActivity('materi', materiExp);
+  checkAndUnlockAvatars(data);
 };
 
 export const unlockLatihan = (latihanId) => {
@@ -602,6 +832,7 @@ export const markLatihanComplete = (latihanId, stars = 3, awardExp = true) => {
   if (awardExp) {
     recordUserActivity('latihan', 80 + stars * 15);
   }
+  checkAndUnlockAvatars(data);
 };
 
 export const resetLatihanProgress = (subject = null) => {
@@ -695,7 +926,16 @@ export const recordTryout = ({
     recordUserActivity('tryout', finalExp);
   }
 
-  return newRecord;
+  // SISTEM GACHA KATEGORI FANTASI: Didapat jika Tryout selesai dan nilai min. 80% benar
+  let fantasyReward = null;
+  const percentScore = total > 0 ? (correct / total) * 100 : score;
+  if (isCompletedAll && (score >= 80 || percentScore >= 80)) {
+    fantasyReward = rollFantasyGacha(data);
+  }
+
+  checkAndUnlockAvatars(data);
+
+  return { ...newRecord, fantasyReward };
 };
 
 /**

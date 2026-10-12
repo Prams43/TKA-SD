@@ -9,6 +9,7 @@ import {
   getActivityData,
   recordUserActivity,
 } from '../utils/activityTracker';
+import { getCharacterAvatar } from '../utils/characterAvatars';
 import MaterialReader from '../components/views/MaterialReader';
 import {
   BookOpen,
@@ -75,26 +76,30 @@ const SUBJECTS_CONFIG = {
       5: {
         title: 'Peti Bintang Ejaan & Tata Bahasa',
         requiredLevel: 5,
-        desc: 'Pencapaian menuntaskan 5 Materi Pertama: Huruf Kapital, Kata Depan, Tanda Baca, Kata Berimbuhan, dan Frasa.',
-        reward: '⭐ Medali Ahli Ejaan & Frasa TKA SD',
+        desc: 'Pencapaian menuntaskan 5 Materi Pertama Bahasa Indonesia.',
+        reward: '🎁 Foto Profil: Paket Siswa & Siswi (Siswa Hebat & Siswi Bintang)',
+        avatarIds: ['boy', 'girl'],
       },
       10: {
         title: 'Peti Perak Makna & Kalimat Efektif',
         requiredLevel: 10,
-        desc: 'Pencapaian menuntaskan 10 Materi: Makna Kata, Ungkapan, Sinonim/Antonim, Diksi, dan Struktur Kalimat.',
-        reward: '🥈 Medali Master Kalimat & Diksi',
+        desc: 'Pencapaian menuntaskan 10 Materi Bahasa Indonesia.',
+        reward: '🎁 Foto Profil: Rubah Cerdas',
+        avatarIds: ['fox'],
       },
       15: {
         title: 'Peti Emas Sastra, Prosa & Puisi',
         requiredLevel: 15,
-        desc: 'Pencapaian menuntaskan 15 Materi: Menyimak, Menulis, Puisi, Prosa, dan Kosakata Lanjutan.',
-        reward: '💎 Medali Maestro Sastra & Literasi',
+        desc: 'Pencapaian menuntaskan 15 Materi Bahasa Indonesia.',
+        reward: '🎁 Foto Profil: Serigala Berani',
+        avatarIds: ['red-wolf'],
       },
       21: {
         title: 'Piala Maestro Bahasa Indonesia TKA SD',
         requiredLevel: 21,
         desc: 'Piala kebanggaan tertinggi setelah menuntaskan seluruh 21 Materi Bahasa Indonesia Pusmendik Kemendikdasmen RI.',
-        reward: '👑 Gelar Maestro Bahasa Indonesia TKA SD 100%',
+        reward: '👑 Foto Profil: Paket Raja & Ratu (Raja Bijak & Ratu Anggun)',
+        avatarIds: ['king', 'queen'],
       },
     },
   },
@@ -119,20 +124,23 @@ const SUBJECTS_CONFIG = {
       4: {
         title: 'Peti Bintang Dasar Numerasi',
         requiredLevel: 4,
-        desc: 'Peti pencapaian untuk menuntaskan 4 Materi Pertama: Operasi Hitung, Skala, KPK/FPB, dan Pangkat.',
-        reward: '⭐ Medali Ahli Bilangan TKA SD',
+        desc: 'Peti pencapaian untuk menuntaskan 4 Materi Pertama Matematika.',
+        reward: '🎁 Foto Profil: Paket Anak Petualang & Anak Ceria',
+        avatarIds: ['child-boy', 'child-girl'],
       },
       8: {
         title: 'Peti Emas Geometri & Pengukuran',
         requiredLevel: 8,
-        desc: 'Peti pencapaian untuk menuntaskan 8 Materi: Pengukuran, Jarak/Kecepatan, Bangun Datar, dan Bangun Ruang.',
-        reward: '🏆 Medali Master Spasial & Geometri',
+        desc: 'Peti pencapaian untuk menuntaskan 8 Materi Matematika.',
+        reward: '🎁 Foto Profil: Domba Lembut',
+        avatarIds: ['sheep'],
       },
       12: {
         title: 'Piala Maestro Matematika TKA SD',
         requiredLevel: 12,
         desc: 'Piala kebanggaan tertinggi setelah menuntaskan seluruh 12 Materi Matematika Pusmendik Kemendikdasmen RI.',
-        reward: '👑 Gelar Maestro Matematika TKA SD 100%',
+        reward: '👑 Foto Profil: Katak Lincah',
+        avatarIds: ['frog'],
       },
     },
   },
@@ -1346,6 +1354,7 @@ const Materi = () => {
                                 requiredLevel: milestoneItem.requiredLevel,
                                 unlocked: completedCount >= milestoneItem.requiredLevel,
                                 reward: milestoneItem.reward,
+                                avatarIds: milestoneItem.avatarIds || [],
                               })
                             }
                             className="relative flex flex-col items-center my-3 cursor-pointer group"
@@ -1377,6 +1386,7 @@ const Materi = () => {
                                 requiredLevel: currentLevels.length,
                                 unlocked: completedCount === currentLevels.length,
                                 reward: milestoneItem?.reward || `Gelar Maestro ${currentSubject.title} TKA SD 100%`,
+                                avatarIds: milestoneItem?.avatarIds || [],
                               })
                             }
                             className="relative flex flex-col items-center pt-4 pb-2 cursor-pointer group animate-fade-in"
@@ -1926,7 +1936,25 @@ const Materi = () => {
               <p className="text-xs text-[#6E6258] mt-1 leading-relaxed">{milestoneModal.desc}</p>
             </div>
 
-            <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] text-xs font-medium">
+            <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E6DFD5] text-xs font-medium space-y-2">
+              {milestoneModal.avatarIds && milestoneModal.avatarIds.length > 0 && (
+                <div className="flex items-center justify-center gap-2.5 py-1">
+                  {milestoneModal.avatarIds.map((avId) => {
+                    const char = getCharacterAvatar(avId);
+                    return (
+                      <div key={avId} className="flex flex-col items-center">
+                        <div className="w-12 h-12 rounded-xl bg-white border-2 border-amber-400 overflow-hidden shadow-xs flex items-center justify-center">
+                          <img src={char.image} alt={char.name} className="w-full h-full object-cover" />
+                        </div>
+                        <span className="text-[10px] font-bold text-slate-800 mt-1 truncate max-w-[85px]">
+                          {char.name}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
               {milestoneModal.unlocked ? (
                 <div className="text-[#286657]">
                   <span>Status: <strong>Terbuka!</strong></span>

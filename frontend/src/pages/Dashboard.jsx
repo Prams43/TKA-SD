@@ -6,6 +6,7 @@ import CharacterIllustration from '../components/CharacterIllustration';
 import PillMenuButton from '../components/PillMenuButton';
 import { BookOpen, FileQuestion, Trophy, BarChart3, Crown } from 'lucide-react';
 import { getUserProfileStats } from '../utils/activityTracker';
+import { getCharacterAvatar } from '../utils/characterAvatars';
 import LeaderboardModal from '../components/LeaderboardModal';
 import ProfileModal from '../components/ProfileModal';
 
@@ -44,14 +45,31 @@ const Dashboard = () => {
       <main className="flex-1 flex flex-col justify-center items-center px-3 sm:px-6 lg:px-12 py-3 xs:py-4 sm:py-10">
         <div className="max-w-6xl w-full mx-auto flex flex-col justify-center">
           {/* Bagian Profil Siswa di Dashboard - Dominan Navy Solid (Tanpa Gradient) */}
-          <div className="mb-4 sm:mb-8 p-3.5 sm:p-5 rounded-2xl bg-[#0B1A34] border-2 border-blue-500/40 shadow-lg text-white flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
+          <div className="mb-4 sm:mb-8 p-3.5 sm:p-5 rounded-2xl bg-[#162E5B] border-2 border-blue-500/40 shadow-lg text-white flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
             <div className="flex items-center space-x-3 sm:space-x-4">
-              <div
-                onClick={() => setIsProfileModalOpen(true)}
-                className="w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-[#1E3A8A] hover:bg-blue-600 text-white border-2 border-blue-400 flex items-center justify-center text-xl sm:text-2xl font-bold shadow-md flex-shrink-0 cursor-pointer transition-all active:scale-95"
-                title="Buka profil"
-              >
-                {profileStats?.activeTitle?.icon || (user?.username ? user.username.charAt(0).toUpperCase() : '🦁')}
+              {/* Foto Profil dengan Badge Gelar di Luar Container */}
+              <div className="relative flex-shrink-0">
+                <div
+                  onClick={() => setIsProfileModalOpen(true)}
+                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white hover:border-blue-300 border-2 border-blue-400 flex items-center justify-center shadow-md cursor-pointer transition-all active:scale-95 group overflow-hidden"
+                  title="Buka profil & ganti karakter"
+                >
+                  <img
+                    src={getCharacterAvatar(profileStats?.avatar).image}
+                    alt={getCharacterAvatar(profileStats?.avatar).name}
+                    className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                  />
+                </div>
+
+                {/* Icon Gelar Aktif di Kiri Atas (tanpa background dan kotak) */}
+                {profileStats?.activeTitle?.icon && (
+                  <span
+                    className="absolute -top-2 -left-2 text-xl sm:text-2xl filter drop-shadow-md select-none pointer-events-none z-20 leading-none"
+                    title={`Gelar: ${profileStats.activeTitle.name}`}
+                  >
+                    {profileStats.activeTitle.icon}
+                  </span>
+                )}
               </div>
               <div className="min-w-0">
                 <div className="flex items-center space-x-1.5 sm:space-x-2 flex-wrap">
@@ -74,7 +92,7 @@ const Dashboard = () => {
             <div className="flex items-center self-stretch md:self-auto justify-between md:justify-end border-t border-[#1E3A8A] md:border-t-0 pt-2.5 md:pt-0">
               <span className="text-[11px] text-blue-300 md:hidden font-medium">Progres EXP</span>
               <div
-                className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-[#071325] border-2 border-blue-500/40 shadow-xs select-none"
+                className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-[#0F2042] border-2 border-blue-500/40 shadow-xs select-none"
               >
                 <span className="text-xs font-bold text-blue-400">Lv.{profileStats.level}</span>
                 <div className="w-16 sm:w-20 bg-slate-800 h-2 rounded-full overflow-hidden">

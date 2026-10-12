@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { GraduationCap, LogOut, User, Flame, Award, ChevronDown } from 'lucide-react';
 import { getUserProfileStats } from '../utils/activityTracker';
+import { getCharacterAvatar } from '../utils/characterAvatars';
 import ProfileModal from './ProfileModal';
 
 /**
@@ -61,7 +62,7 @@ const Navbar = () => {
             <div className="flex items-center space-x-1.5 sm:space-x-3">
               {/* 1. Indikator Streak Belajar (Dominan Navy) */}
               <div
-                className={`inline-flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs font-semibold select-none border transition-all duration-300 shadow-sm bg-[#0B1A34] border-[#1E3A8A] flex-shrink-0 ${
+                className={`inline-flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs font-semibold select-none border transition-all duration-300 shadow-sm bg-[#162E5B] border-[#1E3A8A] flex-shrink-0 ${
                   profileStats.streak.activeToday
                     ? 'text-amber-300'
                     : 'text-slate-300'
@@ -90,11 +91,15 @@ const Navbar = () => {
               {/* 2. Tombol Profil Pengguna (Dominan Navy) */}
               <button
                 onClick={() => setIsProfileModalOpen(true)}
-                className="flex items-center space-x-1.5 sm:space-x-2 text-xs text-white bg-[#0B1A34] hover:bg-[#0F2447] px-2 sm:px-3 py-1.5 rounded-lg border border-[#1E3A8A] transition-all cursor-pointer shadow-sm active:scale-95"
+                className="flex items-center space-x-1.5 sm:space-x-2 text-xs text-white bg-[#162E5B] hover:bg-[#1B386C] px-2 sm:px-3 py-1.5 rounded-lg border border-[#1E3A8A] transition-all cursor-pointer shadow-sm active:scale-95 group"
                 title="Buka detail profil, level, dan gelar"
               >
-                <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#1E3A8A] text-white border border-blue-400/40 flex items-center justify-center font-bold text-[10px] sm:text-[11px] flex-shrink-0">
-                  {user?.username ? user.username.charAt(0).toUpperCase() : <User className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
+                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white border border-blue-400/80 flex items-center justify-center flex-shrink-0 overflow-hidden shadow-xs group-hover:border-blue-300">
+                  <img
+                    src={getCharacterAvatar(profileStats?.avatar).image}
+                    alt={getCharacterAvatar(profileStats?.avatar).name}
+                    className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                  />
                 </div>
                 <span className="font-semibold text-[11px] sm:text-xs text-white truncate max-w-[65px] xs:max-w-[90px] sm:max-w-[130px]">
                   {user?.username || (user?.email ? user.email.split('@')[0] : 'Siswa')}
@@ -108,7 +113,7 @@ const Navbar = () => {
               {/* 3. Tombol Keluar (Logout - Dominan Navy) */}
               <button
                 onClick={handleLogout}
-                className="inline-flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#0B1A34] hover:bg-[#1E3A8A] border border-[#1E3A8A] transition-all cursor-pointer shadow-sm active:scale-95"
+                className="inline-flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#162E5B] hover:bg-[#1E3A8A] border border-[#1E3A8A] transition-all cursor-pointer shadow-sm active:scale-95"
                 title="Keluar dari akun"
               >
                 <LogOut className="w-3.5 h-3.5 text-blue-200" />
