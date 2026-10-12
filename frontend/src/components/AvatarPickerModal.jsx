@@ -209,7 +209,7 @@ const AvatarPickerModal = ({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari karakter (misal: Siswa, Raja, Naga, Unicorn)..."
+              placeholder="Cari karakter"
               className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-[#0F2042] border border-blue-500/40 text-xs text-white placeholder-blue-300/60 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all"
             />
             {searchQuery && (
