@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar';
 import CharacterIllustration from '../components/CharacterIllustration';
 import PillMenuButton from '../components/PillMenuButton';
 import { BookOpen, ClipboardCheck, Trophy, BarChart3, Crown } from 'lucide-react';
-import { getUserProfileStats } from '../utils/activityTracker';
+import { getUserProfileStats, getTitleBadgeClass } from '../utils/activityTracker';
 import { getCharacterAvatar } from '../utils/characterAvatars';
 import LeaderboardModal from '../components/LeaderboardModal';
 import ProfileModal from '../components/ProfileModal';
@@ -61,10 +61,10 @@ const Dashboard = () => {
                   />
                 </div>
 
-                {/* Icon Gelar Aktif di Kiri Atas (tanpa background dan kotak) */}
+                {/* Icon Gelar Aktif di Kiri Atas (posisi & kemiringan disesuaikan per icon) */}
                 {profileStats?.activeTitle?.icon && (
                   <span
-                    className="absolute -top-2 -left-2 text-xl sm:text-2xl filter drop-shadow-md select-none pointer-events-none z-20 leading-none"
+                    className={`absolute text-xl sm:text-2xl filter drop-shadow-md select-none pointer-events-none z-20 leading-none inline-block transform ${getTitleBadgeClass(profileStats.activeTitle)}`}
                     title={`Gelar: ${profileStats.activeTitle.name}`}
                   >
                     {profileStats.activeTitle.icon}

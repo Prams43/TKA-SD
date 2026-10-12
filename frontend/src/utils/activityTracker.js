@@ -41,6 +41,61 @@ export const getYesterdayDateStr = () => {
 /**
  * Daftar Gelar Pembelajaran TKA SD yang bisa didapatkan siswa
  */
+/**
+ * Konfigurasi posisi dan sudut kemiringan (tilt) yang presisi untuk setiap icon gelar
+ * disesuaikan dengan proporsi, bobot visual & bentuk emoji masing-masing.
+ */
+export const TITLE_BADGE_CONFIG = {
+  pemula: {
+    // 🌱 Tunas: tumbuh keluar dari sudut kiri atas
+    className: '-top-3 -left-2.5 -rotate-[15deg]',
+  },
+  literasi_fondasi: {
+    // 📖 Buku: stiker buku terbuka
+    className: '-top-2.5 -left-2.5 -rotate-[10deg]',
+  },
+  numerasi_dasar: {
+    // 🔢 Angka: balok keypad angka rapi
+    className: '-top-2 -left-2 -rotate-[8deg]',
+  },
+  pejuang_latihan: {
+    // ⚔️ Pedang: pedang ksatria pejuang latihan
+    className: '-top-2.5 -left-2.5 -rotate-[10deg]',
+  },
+  bintang_tryout: {
+    // ⭐ Bintang: bintang emas dinamis
+    className: '-top-2.5 -left-2.5 -rotate-[15deg]',
+  },
+  streak_master: {
+    // 🔥 Api: kobaran api semangat
+    className: '-top-3 -left-2 -rotate-[8deg]',
+  },
+  juara_skor: {
+    // 👑 Mahkota: mahkota raja bertengger di atas kepala
+    className: '-top-3.5 -left-2 -rotate-[15deg]',
+  },
+  cendekiawan_muda: {
+    // 🎓 Toga: topi wisuda cendekiawan
+    className: '-top-3 -left-2 -rotate-[12deg]',
+  },
+  legenda_sd: {
+    // 🏆 Piala: piala emas juara nusantara
+    className: '-top-3 -left-2 -rotate-[10deg]',
+  },
+  default: {
+    className: '-top-2.5 -left-2 -rotate-[12deg]',
+  },
+};
+
+/**
+ * Mendapatkan class Tailwind posisi & rotasi yang pas untuk icon gelar tertentu
+ */
+export const getTitleBadgeClass = (titleOrId) => {
+  if (!titleOrId) return TITLE_BADGE_CONFIG.default.className;
+  const titleId = typeof titleOrId === 'string' ? titleOrId : titleOrId?.id;
+  return (TITLE_BADGE_CONFIG[titleId] || TITLE_BADGE_CONFIG.default).className;
+};
+
 export const AVAILABLE_TITLES = [
   {
     id: 'pemula',
@@ -48,6 +103,7 @@ export const AVAILABLE_TITLES = [
     icon: '🌱',
     color: 'emerald',
     badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-300',
+    badgeClassName: '-top-3 -left-2.5 -rotate-[15deg]',
     desc: 'Gelar kehormatan untuk murid yang siap menaklukkan Asesmen TKA SD.',
     requirement: 'Terbuka otomatis untuk seluruh siswa',
     isUnlocked: () => true,
@@ -58,6 +114,7 @@ export const AVAILABLE_TITLES = [
     icon: '📖',
     color: 'blue',
     badgeColor: 'bg-blue-50 text-blue-700 border-blue-300',
+    badgeClassName: '-top-2.5 -left-2.5 -rotate-[10deg]',
     desc: 'Menguasai konsep dasar pemahaman teks Bahasa Indonesia.',
     requirement: 'Selesaikan minimal 1 materi atau latihan Bahasa Indonesia',
     isUnlocked: (data) =>
@@ -70,6 +127,7 @@ export const AVAILABLE_TITLES = [
     icon: '🔢',
     color: 'teal',
     badgeColor: 'bg-teal-50 text-teal-700 border-teal-300',
+    badgeClassName: '-top-2 -left-2 -rotate-[8deg]',
     desc: 'Mahir dalam operasi hitung bilangan dan logika Matematika.',
     requirement: 'Selesaikan minimal 1 materi atau latihan Matematika',
     isUnlocked: (data) =>
@@ -79,9 +137,10 @@ export const AVAILABLE_TITLES = [
   {
     id: 'pejuang_latihan',
     name: 'Pejuang Latihan Tangguh',
-    icon: '🛡️',
+    icon: '⚔️',
     color: 'indigo',
     badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-300',
+    badgeClassName: '-top-2.5 -left-2.5 -rotate-[10deg]',
     desc: 'Menuntaskan banyak variasi butir soal latihan Pusmendik.',
     requirement: 'Selesaikan minimal 3 sesi Latihan Soal',
     isUnlocked: (data) =>
@@ -93,6 +152,7 @@ export const AVAILABLE_TITLES = [
     icon: '⭐',
     color: 'amber',
     badgeColor: 'bg-amber-50 text-amber-700 border-amber-300',
+    badgeClassName: '-top-2.5 -left-2.5 -rotate-[15deg]',
     desc: 'Menuntaskan simulasi Tryout Asesmen Berstandar Pusmendik.',
     requirement: 'Selesaikan minimal 1 sesi paket Tryout',
     isUnlocked: (data) => (data.tryoutHistory || []).length >= 1,
@@ -103,6 +163,7 @@ export const AVAILABLE_TITLES = [
     icon: '🔥',
     color: 'orange',
     badgeColor: 'bg-orange-50 text-orange-700 border-orange-300',
+    badgeClassName: '-top-3 -left-2 -rotate-[8deg]',
     desc: 'Konsisten belajar setiap hari berturut-turut tanpa putus.',
     requirement: 'Capai streak belajar minimal 3 hari',
     isUnlocked: (data) => (data.streak?.count || 0) >= 3,
@@ -113,6 +174,7 @@ export const AVAILABLE_TITLES = [
     icon: '👑',
     color: 'yellow',
     badgeColor: 'bg-yellow-50 text-yellow-800 border-yellow-300',
+    badgeClassName: '-top-3.5 -left-2 -rotate-[15deg]',
     desc: 'Meraih skor sempurna 100 pada Latihan Soal atau Tryout.',
     requirement: 'Raih nilai 100 pada Latihan Soal atau Tryout',
     isUnlocked: (data) =>
@@ -125,6 +187,7 @@ export const AVAILABLE_TITLES = [
     icon: '🎓',
     color: 'purple',
     badgeColor: 'bg-purple-50 text-purple-700 border-purple-300',
+    badgeClassName: '-top-3 -left-2 -rotate-[12deg]',
     desc: 'Mencapai Level 5 ke atas dari dedikasi belajar konsisten.',
     requirement: 'Capai Level 5 (kumpulkan minimal 1.400 EXP)',
     isUnlocked: (data) => calculateLevelInfo(data.exp || 0).level >= 5,
@@ -135,6 +198,7 @@ export const AVAILABLE_TITLES = [
     icon: '🏆',
     color: 'rose',
     badgeColor: 'bg-rose-50 text-rose-700 border-rose-300',
+    badgeClassName: '-top-3 -left-2 -rotate-[10deg]',
     desc: 'Pencapaian master tertinggi di seluruh penjuru Nusantara.',
     requirement: 'Capai Level 10 (kumpulkan minimal 9.200 EXP)',
     isUnlocked: (data) => calculateLevelInfo(data.exp || 0).level >= 10,

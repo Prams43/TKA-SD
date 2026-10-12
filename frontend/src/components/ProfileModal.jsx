@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Award, Flame, Zap, Trophy, Check, Lock, Star, Sparkles, Pencil } from 'lucide-react';
-import { setActiveTitle, setActiveAvatar, triggerRewardCelebration, calculateLevelInfo } from '../utils/activityTracker';
+import { setActiveTitle, setActiveAvatar, triggerRewardCelebration, calculateLevelInfo, getTitleBadgeClass } from '../utils/activityTracker';
 import { getCharacterAvatar } from '../utils/characterAvatars';
 import AvatarPickerModal from './AvatarPickerModal';
 
@@ -66,10 +66,10 @@ const ProfileModal = ({ isOpen, onClose, user, profileStats, onProfileUpdated, o
                 />
               </div>
 
-              {/* Icon Gelar Aktif di Kiri Atas (tanpa background dan kotak) */}
+              {/* Icon Gelar Aktif di Kiri Atas (posisi & kemiringan disesuaikan per icon) */}
               {activeTitle?.icon && !isAvatarPickerOpen && (
                 <span
-                  className="absolute -top-2 -left-2 text-xl sm:text-2xl filter drop-shadow-md select-none pointer-events-none z-10 leading-none"
+                  className={`absolute text-xl sm:text-2xl filter drop-shadow-md select-none pointer-events-none z-10 leading-none inline-block transform ${getTitleBadgeClass(activeTitle)}`}
                   title={`Gelar Aktif: ${activeTitle?.name}`}
                 >
                   {activeTitle.icon}
@@ -188,11 +188,10 @@ const ProfileModal = ({ isOpen, onClose, user, profileStats, onProfileUpdated, o
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2.5">
                 <div
-                  className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg border-2 transition-all ${
-                    streak.activeToday
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg border-2 transition-all ${streak.activeToday
                       ? 'bg-[#162E5B] text-amber-400 border-amber-500'
                       : 'bg-[#162E5B] text-slate-400 border-slate-700'
-                  }`}
+                    }`}
                 >
                   🔥
                 </div>
@@ -207,11 +206,10 @@ const ProfileModal = ({ isOpen, onClose, user, profileStats, onProfileUpdated, o
               </div>
 
               <span
-                className={`px-3 py-1 rounded-full text-[11px] font-bold border-2 transition-all ${
-                  streak.activeToday
+                className={`px-3 py-1 rounded-full text-[11px] font-bold border-2 transition-all ${streak.activeToday
                     ? 'bg-emerald-600 text-white border-emerald-400 shadow-xs'
                     : 'bg-amber-600 text-white border-amber-400 shadow-xs'
-                }`}
+                  }`}
               >
                 {streak.activeToday ? '✓ Menyala Hari Ini' : 'Belum Aktif'}
               </span>
@@ -254,13 +252,12 @@ const ProfileModal = ({ isOpen, onClose, user, profileStats, onProfileUpdated, o
                 return (
                   <div
                     key={title.id}
-                    className={`p-3.5 rounded-xl border-2 transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                      isEquipped
+                    className={`p-3.5 rounded-xl border-2 transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${isEquipped
                         ? 'bg-[#1E3A8A] border-blue-400 text-white shadow-sm'
                         : isUnlocked
-                        ? 'bg-[#0F2042] border-blue-500/40 text-white hover:border-blue-400'
-                        : 'bg-[#0F2042] border-slate-700 text-slate-500'
-                    }`}
+                          ? 'bg-[#0F2042] border-blue-500/40 text-white hover:border-blue-400'
+                          : 'bg-[#0F2042] border-slate-700 text-slate-500'
+                      }`}
                   >
                     <div className="flex items-start space-x-3 min-w-0">
                       <span className="text-2xl flex-shrink-0 mt-0.5">

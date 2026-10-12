@@ -7,7 +7,7 @@ import {
   DEFAULT_AVATAR_ID,
   STARTER_AVATAR_IDS,
 } from '../utils/characterAvatars';
-import { getUserProfileStats } from '../utils/activityTracker';
+import { getUserProfileStats, getTitleBadgeClass } from '../utils/activityTracker';
 
 /**
  * Modal Pemilihan Foto Profil Karakter (.gif)
@@ -100,18 +100,16 @@ const AvatarPickerModal = ({
               {/* Wadah Foto Profil & Badge Gelar di Luar Container */}
               <div className="relative flex-shrink-0">
                 <div
-                  className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white border-2 flex items-center justify-center overflow-hidden shadow-md relative ${
-                    isSelectedUnlocked
+                  className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white border-2 flex items-center justify-center overflow-hidden shadow-md relative ${isSelectedUnlocked
                       ? 'border-blue-400'
                       : 'border-amber-400/80 ring-2 ring-amber-400/20'
-                  }`}
+                    }`}
                 >
                   <img
                     src={activePreview.image}
                     alt={activePreview.name}
-                    className={`w-full h-full object-cover ${
-                      !isSelectedUnlocked ? 'filter contrast-105' : ''
-                    }`}
+                    className={`w-full h-full object-cover ${!isSelectedUnlocked ? 'filter contrast-105' : ''
+                      }`}
                   />
                   {!isSelectedUnlocked && (
                     <div className="absolute inset-0 bg-slate-950/40 flex items-center justify-center">
@@ -122,10 +120,10 @@ const AvatarPickerModal = ({
                   )}
                 </div>
 
-                {/* Icon Gelar Aktif di Kiri Atas (tanpa background dan kotak) */}
+                {/* Icon Gelar Aktif di Kiri Atas (posisi & kemiringan disesuaikan per icon) */}
                 {activeTitle?.icon && (
                   <span
-                    className="absolute -top-2 -left-2 text-xl sm:text-2xl filter drop-shadow-md select-none pointer-events-none z-20 leading-none"
+                    className={`absolute text-xl sm:text-2xl filter drop-shadow-md select-none pointer-events-none z-20 leading-none inline-block transform ${getTitleBadgeClass(activeTitle)}`}
                     title={`Gelar: ${activeTitle.name}`}
                   >
                     {activeTitle.icon}
@@ -169,11 +167,10 @@ const AvatarPickerModal = ({
           {/* Info Syarat Pembukaan jika Terkunci */}
           {!isSelectedUnlocked && (
             <div
-              className={`p-2.5 rounded-xl border text-xs space-y-1 ${
-                activePreview.isGachaFantasy
+              className={`p-2.5 rounded-xl border text-xs space-y-1 ${activePreview.isGachaFantasy
                   ? 'bg-gradient-to-r from-purple-950/70 via-indigo-950/60 to-amber-950/70 border-amber-400/50 text-amber-100'
                   : 'bg-[#162E5B] border-blue-900/80 text-blue-200'
-              }`}
+                }`}
             >
               <div className="flex items-start gap-1.5">
                 {activePreview.isGachaFantasy ? (
@@ -232,15 +229,14 @@ const AvatarPickerModal = ({
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1 ${
-                    active
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1 ${active
                       ? isFantasy
                         ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-bold shadow-md'
                         : 'bg-blue-600 text-white shadow-xs'
                       : isFantasy
-                      ? 'bg-amber-950/40 text-amber-300 hover:bg-amber-900/60 border border-amber-500/40'
-                      : 'bg-[#0F2042] text-blue-200 hover:bg-[#1E3A8A] hover:text-white border border-blue-900/60'
-                  }`}
+                        ? 'bg-amber-950/40 text-amber-300 hover:bg-amber-900/60 border border-amber-500/40'
+                        : 'bg-[#0F2042] text-blue-200 hover:bg-[#1E3A8A] hover:text-white border border-blue-900/60'
+                    }`}
                 >
                   {isFantasy && <Sparkles className="w-3 h-3 text-amber-300" />}
                   <span>{isFantasy ? 'Fantasi (Gacha)' : cat}</span>
@@ -270,24 +266,22 @@ const AvatarPickerModal = ({
                     key={char.id}
                     type="button"
                     onClick={() => setSelectedId(char.id)}
-                    className={`group relative rounded-xl overflow-hidden flex flex-col text-center transition-all duration-200 cursor-pointer border-2 ${
-                      isSelected
+                    className={`group relative rounded-xl overflow-hidden flex flex-col text-center transition-all duration-200 cursor-pointer border-2 ${isSelected
                         ? isUnlocked
                           ? 'bg-[#1E3A8A] border-blue-400 shadow-md ring-2 ring-blue-400/40 scale-102'
                           : 'bg-[#1A2644] border-amber-400 shadow-md ring-2 ring-amber-400/40 scale-102'
                         : isUnlocked
-                        ? 'bg-[#0F2042] border-blue-900/60 hover:border-blue-400 hover:bg-[#152A50] hover:scale-101'
-                        : 'bg-[#0F2042]/70 border-slate-800/80 opacity-75 hover:opacity-100 hover:border-amber-500/50'
-                    }`}
+                          ? 'bg-[#0F2042] border-blue-900/60 hover:border-blue-400 hover:bg-[#152A50] hover:scale-101'
+                          : 'bg-[#0F2042]/70 border-slate-800/80 opacity-75 hover:opacity-100 hover:border-amber-500/50'
+                      }`}
                   >
                     {/* Wadah Gambar Square yang Menutup Penuh Tanpa Rongga Kosong */}
                     <div className="w-full aspect-square bg-white relative overflow-hidden flex items-center justify-center">
                       <img
                         src={char.image}
                         alt={char.name}
-                        className={`w-full h-full object-cover transition-transform duration-200 group-hover:scale-105 ${
-                          !isUnlocked ? 'filter contrast-95 opacity-80' : ''
-                        }`}
+                        className={`w-full h-full object-cover transition-transform duration-200 group-hover:scale-105 ${!isUnlocked ? 'filter contrast-95 opacity-80' : ''
+                          }`}
                         loading="lazy"
                       />
 
@@ -328,9 +322,8 @@ const AvatarPickerModal = ({
                         {char.name}
                       </span>
                       <span
-                        className={`text-[9px] block truncate mt-0.5 ${
-                          !isUnlocked ? 'text-amber-400 font-medium' : 'text-blue-300'
-                        }`}
+                        className={`text-[9px] block truncate mt-0.5 ${!isUnlocked ? 'text-amber-400 font-medium' : 'text-blue-300'
+                          }`}
                       >
                         {!isUnlocked ? '🔒 Terkunci' : char.category}
                       </span>
